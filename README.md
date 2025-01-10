@@ -1,6 +1,6 @@
 # Getting Started
 
-See the demostration at [https://www.linkedin.com/posts/davi-castr_buscando-me-aprimorar-nos-desenvolvimentos-activity-7282420396803420160-ArFy?utm_source=share&utm_medium=member_desktop]
+See the demostration at https://www.linkedin.com/posts/davi-castr_buscando-me-aprimorar-nos-desenvolvimentos-activity-7282420396803420160-ArFy?utm_source=share&utm_medium=member_desktop
 
 Welcome to your new project.
 
