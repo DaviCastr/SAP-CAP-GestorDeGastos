@@ -1,8 +1,9 @@
 const cds = require('@sap/cds');
+const excel = require('exceljs');
+const fs = require('fs');
+const path = require('path');
 const axios = require('axios');
-const { cache } = require('@sap/cds/lib/compile/resolve');
-const { fetch } = require('@sap/cds/lib/plugins');
-const { IdentityService } = require('@sap/xssec');
+const nodemailer = require("nodemailer");
 
 class GestaoGastos extends cds.ApplicationService {
 
@@ -13,6 +14,8 @@ class GestaoGastos extends cds.ApplicationService {
         this.after("READ", Pessoa, this.afterReadPessoa);
 
         this.before("UPDATE", Pessoa.drafts, this.beforeUpdatePessoa);
+
+        this.before("UPDATE", Cartao.drafts, this.beforeUpdateCartao);
 
         this.after("READ", Cartao, this.afterReadCartao);
 
@@ -28,6 +31,11 @@ class GestaoGastos extends cds.ApplicationService {
 
         this.on("excluirTransacao", this.excluirTransacao);
 
+        this.on("exportarBackup", this.exportarBackup);
+
+        // Importar Backup
+        this.on("importarBackup", this.importarBackup);
+
         return super.init();
     }
 
@@ -40,30 +48,33 @@ class GestaoGastos extends cds.ApplicationService {
             const oGastos = await this.selecionaGastosPorPessoa(pessoa.ID);
 
             pessoa.TotalDeGastos = oGastos.totalDeGastos;
-            pessoa.TotalDeGastos = parseFloat(pessoa.TotalDeGastos.toFixed(2));
+            pessoa.TotalDeGastos = parseFloat((Math.round((pessoa.TotalDeGastos + Number.EPSILON) * 100) / 100));
             pessoa.TotalDoMes = oGastos.totalDoMes;
-            pessoa.TotalDoMes = parseFloat(pessoa.TotalDoMes.toFixed(2));
+            pessoa.TotalDoMes = parseFloat((Math.round((pessoa.TotalDoMes + Number.EPSILON) * 100) / 100));
             pessoa.ValorAEconomizar = pessoa.TotalDoMes - pessoa.ObjetivoDeGasto;
-            pessoa.ValorAEconomizar = parseFloat(pessoa.ValorAEconomizar.toFixed(2));
+            pessoa.ValorAEconomizar = parseFloat((Math.round((pessoa.ValorAEconomizar + Number.EPSILON) * 100) / 100));
             pessoa.TotalDoMesEmAberto = oGastos.totalDoMesEmAberto;
-            pessoa.TotalDoMesEmAberto = parseFloat(pessoa.TotalDoMesEmAberto.toFixed(2));
+            pessoa.TotalDoMesEmAberto = parseFloat((Math.round((pessoa.TotalDoMesEmAberto + Number.EPSILON) * 100) / 100));
             pessoa.TotalDoMesFechado = oGastos.totalDoMesFechado;
-            pessoa.TotalDoMesFechado = parseFloat(pessoa.TotalDoMesFechado.toFixed(2));
+            pessoa.TotalDoMesFechado = parseFloat((Math.round((pessoa.TotalDoMesFechado + Number.EPSILON) * 100) / 100));
             pessoa.TotalDoMesPago = oGastos.totalDoMesPago;
-            pessoa.TotalDoMesPago = parseFloat(pessoa.TotalDoMesPago.toFixed(2));
+            pessoa.TotalDoMesPago = parseFloat((Math.round((pessoa.TotalDoMesPago + Number.EPSILON) * 100) / 100));
 
-            if(pessoa.TotalDoMes > pessoa.ObjetivoDeGasto){
+            if (pessoa.TotalDoMes > pessoa.ObjetivoDeGasto) {
                 pessoa.CriticidadeDoMes = 1;
-            }else{
+            } else {
                 pessoa.CriticidadeDoMes = 3;
             }
 
-            if(pessoa.TotalDoMesEmAberto > pessoa.ObjetivoDeGasto){
+            if (pessoa.TotalDoMesEmAberto > pessoa.ObjetivoDeGasto) {
                 pessoa.CriticidadeEmAberto = 1;
-            }else{
+            } else {
                 pessoa.CriticidadeEmAberto = 3;
             }
+
+            this.enviarAviso(pessoa);
         }
+
     }
 
 
@@ -76,7 +87,50 @@ class GestaoGastos extends cds.ApplicationService {
         if (oPessoa && req.data.Moeda_code) {
 
             if (oPessoa.Moeda_code != req.data.Moeda_code) {
-               req.reject(400, `O valor do campo Moeda não pode ser mudado, pois o mesmo é usado para converter valores de gastos`, 'Moeda_code')
+                req.reject(400, `O valor do campo Moeda não pode ser mudado, pois o mesmo é usado para converter valores de gastos`, 'Moeda_code')
+            }
+        }
+
+        if (req.data.Renda) {
+            if (req.data.Renda < 0) {
+                req.reject(400, `O valor da renda não pode ser negativo.`, 'Renda')
+            }
+        }
+
+        if (req.data.ObjetivoDeGasto) {
+            if (req.data.ObjetivoDeGasto < 0) {
+                req.reject(400, `O valor do objetivo não pode ser negativo.`, 'ObjetivoDeGasto')
+            }
+        }
+
+    }
+
+    async beforeUpdateCartao(req) {
+
+        const { Pessoa, Cartao } = this.entities
+
+        let oCartao = await SELECT.one.from(Cartao).where({ ID: req.data.ID });
+
+        if (oCartao) {
+            let oPessoa = await SELECT.one.from(Pessoa).where({ ID: oCartao.Pessoa_ID });
+
+            if (oPessoa && req.data.Moeda_code) {
+
+                if (oPessoa.Moeda_code != req.data.Moeda_code) {
+                    req.reject(400, `O valor do campo Moeda não pode ser mudado/diferente da moeda da pessoa.`, 'Moeda_code')
+                }
+            }
+        }
+
+        if (req.data.Limite) {
+            if (req.data.Limite < 0) {
+                req.reject(400, `O valor da renda não pode ser negativo.`, 'Limite')
+            }
+        }
+
+        if (req.data.DiaFechamento && req.data.DiaVencimento) {
+            if (req.data.DiaVencimento - req.data.DiaVencimento < 2) {
+                req.reject(400, `O valor do dia de vencimento tem que ter diferença maior de 1 dia da fatura.`, 'DiaVencimento');
             }
         }
 
@@ -96,9 +150,9 @@ class GestaoGastos extends cds.ApplicationService {
 
         let oDate = new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
         oDate = oDate.replaceAll(",", " ");
-        let [oDay, oMes, oAno] = oDate.split(" ")[0].split("/");
+        let [oDia, oMes, oAno] = oDate.split(" ")[0].split("/");
 
-        oDay = Number(oDay);
+        oDia = Number(oDia);
         oMes = Number(oMes);
         oAno = Number(oAno);
 
@@ -122,13 +176,13 @@ class GestaoGastos extends cds.ApplicationService {
                     oTotalDeGastos += Number(fatura.ValorTotal)
                     if (fatura.Mes == oMes && fatura.Ano == oAno) {
                         oTotalDoMes += Number(fatura.ValorTotal);
-                        if (cartao.DiaFechamento > oDay)
+                        if (cartao.DiaFechamento > oDia)
                             oTotalDoMesEmAberto += Number(fatura.ValorTotal)
-                        else if (cartao.DiaFechamento <= oDay && cartao.DiaVencimento >= oDay)
+                        else if (cartao.DiaFechamento <= oDia && cartao.DiaVencimento >= oDia)
                             oTotalDoMesFechado += Number(fatura.ValorTotal)
                         else
                             oTotalDoMesPago += Number(fatura.ValorTotal)
-                    } else if (fatura.Ano == oAnoSeguinte && fatura.Mes == oMesSeguinte && cartao.DiaFechamento <= oDay) {
+                    } else if (fatura.Ano == oAnoSeguinte && fatura.Mes == oMesSeguinte && cartao.DiaFechamento <= oDia) {
                         oTotalDoMesEmAberto += Number(fatura.ValorTotal)
                     }
                 }
@@ -166,9 +220,9 @@ class GestaoGastos extends cds.ApplicationService {
 
         let oDate = new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
         oDate = oDate.replaceAll(",", " ");
-        let [oDay, oMes, oAno] = oDate.split(" ")[0].split("/");
+        let [oDia, oMes, oAno] = oDate.split(" ")[0].split("/");
 
-        oDay = Number(oDay);
+        oDia = Number(oDia);
         oMes = Number(oMes);
         oAno = Number(oAno);
 
@@ -197,20 +251,21 @@ class GestaoGastos extends cds.ApplicationService {
                     oTotalDeGastos += Number(fatura.ValorTotal)
                     if (fatura.Mes == oMes && fatura.Ano == oAno) {
                         oTotalDoMes += Number(fatura.ValorTotal);
-                        if (cartao.DiaFechamento > oDay)
+                        if (cartao.DiaFechamento > oDia) {
                             oTotalDoMesEmAberto += Number(fatura.ValorTotal)
-                        else
+                        } else if (cartao.DiaVencimento >= oDia) {
                             oTotalDoMesFechado += Number(fatura.ValorTotal)
-                    } else if (fatura.Ano == oAnoSeguinte && fatura.Mes == oMesSeguinte && cartao.DiaFechamento <= oDay) {
+                        }
+                    } else if (fatura.Ano == oAnoSeguinte && fatura.Mes == oMesSeguinte && cartao.DiaFechamento <= oDia) {
                         oTotalDoMesEmAberto += Number(fatura.ValorTotal)
                     }
                 }
 
             });
 
-            cartao.LimiteDisponivel = cartao.Limite - oTotalDeGastos;
+            cartao.LimiteDisponivel = (Math.round(((cartao.Limite - oTotalDeGastos) + Number.EPSILON) * 100) / 100);
             cartao.ValorFaturaEmAberto = oTotalDoMesEmAberto;
-            if (cartao.DiaFechamento > oDay)
+            if (cartao.DiaFechamento > oDia)
                 cartao.ValorFaturaParaPagamento = cartao.ValorFaturaEmAberto
             else
                 cartao.ValorFaturaParaPagamento = oTotalDoMesFechado
@@ -319,20 +374,20 @@ class GestaoGastos extends cds.ApplicationService {
         }
 
         return {
-            TotalDeGastos: oTotalDeGastos,
-            TotalDoMes: oTotalDoMes,
-            ValorAEconomizar: oTotalDoMes - oObjetivoDeGasto,
+            TotalDeGastos: (Math.round((oTotalDeGastos + Number.EPSILON) * 100) / 100),
+            TotalDoMes: (Math.round((oTotalDoMes + Number.EPSILON) * 100) / 100),
+            ValorAEconomizar: (Math.round(((oTotalDoMes - oObjetivoDeGasto) + Number.EPSILON) * 100) / 100),
             Moeda_code: oMoeda
         }
     }
 
-    async adicionarGasto(pessoa, descricao, valor, moeda, data, parcelas, cartao) {
+    async adicionarGasto(pessoa, descricao, valor, moeda, data, parcelas, gastofixo, cartao) {
 
         const { Pessoa, Fatura, Transacao, Cartao } = this.entities
 
-        const oDataGasto = new Date(data);
-        const oAnoGasto = oDataGasto.getFullYear();       // Retorna 2025
-        const oMesGasto = Number(String(oDataGasto.getMonth() + 1).padStart(2, "0")); // Retorna 01 (mês é zero-based)
+        const oDataGasto = new Date(`${data}T00:00:00`);
+        const oAnoGasto = oDataGasto.getFullYear();      
+        const oMesGasto = Number(String(oDataGasto.getMonth() + 1).padStart(2, "0")); 
         const oDiaGasto = Number(String(oDataGasto.getDate()).padStart(2, "0"));
 
         let oAnoFatura = oAnoGasto;
@@ -364,6 +419,8 @@ class GestaoGastos extends cds.ApplicationService {
 
         }
 
+        let oParcelaGastoFixo = 1;
+
         if (oCartao.DiaFechamento <= oDiaGasto) {
 
             if (oMesFatura == 12) {
@@ -375,17 +432,28 @@ class GestaoGastos extends cds.ApplicationService {
 
         }
 
+        if (gastofixo) {
+
+            oParcelaGastoFixo = (12 - oMesFatura) + 1;
+
+        }
+
         try {
 
             let oParcela = 0;
-            let oValor = Math.round(((valor / parcelas) + Number.EPSILON) * 100) / 100;
+            let oValor = (Math.round(((valor / parcelas) + Number.EPSILON) * 100) / 100);
+            let oDiferenca = (oValor * parcelas) - valor;
+            let oValorPrimeiraParcela = (Math.round(((oValor - oDiferenca) + Number.EPSILON) * 100) / 100);
             let oIdentificadorGasto = this.generateUUID();
-            let oFatura = await this.recuperaFatura(oAnoFatura, oMesFatura, oValor, oPessoa.Moeda_code, cartao);
-            do {
+            let oFatura = await this.recuperaFatura(oAnoFatura, oMesFatura, oValorPrimeiraParcela, oPessoa.Moeda_code, cartao);
 
+            do {
+                let oValorParcela = oValorPrimeiraParcela;
                 oParcela += 1;
 
                 if (oParcela > 1) {
+
+                    oValorParcela = oValor;
 
                     if (oMesFatura == 12) {
                         oMesFatura = 1;
@@ -394,18 +462,23 @@ class GestaoGastos extends cds.ApplicationService {
                         oMesFatura += 1;
                     }
 
-                    oFatura = await this.recuperaFatura(oAnoFatura, oMesFatura, oValor, oPessoa.Moeda_code, cartao);
+                    oFatura = await this.recuperaFatura(oAnoFatura, oMesFatura, oValorParcela, oPessoa.Moeda_code, cartao);
+                }
+
+                let oParcelaTransacao = oParcela;
+
+                if (gastofixo) {
+                    oParcelaTransacao = 1
                 }
 
                 let oNovaTransacao = {
                     Identificador: oIdentificadorGasto,
                     Data: data,
-                    Valor: oValor,
+                    Valor: oValorParcela,
                     Moeda_code: oPessoa.Moeda_code,
                     ParcelasTotais: parcelas,
-                    Parcela: oParcela,
+                    Parcela: oParcelaTransacao,
                     Descricao: descricao,
-                    //ParcelaParaPagamento: ,
                     Fatura_ID: oFatura.ID,
                 }
 
@@ -413,7 +486,7 @@ class GestaoGastos extends cds.ApplicationService {
 
                 await this.atualizaValorFatura(oFatura.ID);
 
-            } while (oParcela < parcelas);
+            } while (oParcela < parcelas || oParcela < oParcelaGastoFixo);
 
             return {
                 sucesso: true
@@ -526,7 +599,7 @@ class GestaoGastos extends cds.ApplicationService {
 
         const oSoma = await SELECT.one`coalesce (sum (Valor),0) as Valor`.from(Transacao).where({ Fatura_ID: Fatura_ID });
 
-        const oValorTotal = parseFloat(oSoma.Valor.toFixed(2));//Math.round((oSoma + Number.EPSILON) * 100) / 100;
+        const oValorTotal = parseFloat((Math.round((oSoma.Valor + Number.EPSILON) * 100) / 100));
 
         await UPDATE(Fatura, Fatura_ID).with({ ValorTotal: oValorTotal })
 
@@ -567,10 +640,225 @@ class GestaoGastos extends cds.ApplicationService {
 
     }
 
+    async exportarBackup(req) {
+
+        const tx = cds.transaction(req);
+        const workbook = new excel.Workbook();
+
+        // Adicionar tabelas no Excel
+        const tables = ['Pessoa', 'Cartao', 'Fatura', 'Transacao'];
+        for (const table of tables) {
+            const sheet = workbook.addWorksheet(table);
+
+            // Usar SELECT direto com CDS
+            const data = await tx.run(SELECT.from(`app.entidades.${table}`));
+
+            if (data.length > 0) {
+                sheet.columns = Object.keys(data[0]).map((key) => ({ header: key, key }));
+                sheet.addRows(data);
+            }
+        }
+
+        // Salvar arquivo temporário
+        const filePath = path.join(__dirname, 'backup.xlsx');
+        await workbook.xlsx.writeFile(filePath);
+        const fileContent = fs.readFileSync(filePath);
+        fs.unlinkSync(filePath); 
+
+        return {
+            headers: {
+                'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Content-Disposition': 'attachment; filename=backup.xlsx'
+            },
+            body: fileContent
+        };
+    }
+
+    async importarBackup(req) {
+
+        const tx = cds.transaction(req); // Usar transação
+        const fileBuffer = req;
+
+        const workbook = new excel.Workbook();
+        await workbook.xlsx.load(fileBuffer);
+
+        let oFaturas = [];
+        let oTransacoesTotais = []
+        let oTransacoesInseridas = []
+
+        const tables = ['Pessoa', 'Cartao', 'Fatura', 'Transacao'];
+        for (const table of tables) {
+            const sheet = workbook.getWorksheet(table);
+            if (!sheet) continue;
+
+            const rows = [];
+            let rowHeader = {};
+            sheet.eachRow((row, rowNumber) => {
+                if (rowNumber === 1) { rowHeader = row; return }; // Ignorar cabeçalhos
+                const rowData = {};
+                sheet.columns.forEach((col, i) => {
+                    rowData[rowHeader.getCell(i + 1).value] = row.getCell(i + 1).value;
+                });
+                rows.push(rowData);
+            });
+
+            // Processar cada linha da tabela
+            for (const row of rows) {
+                const exists = await tx.run(
+                    SELECT.from(`app.entidades.${table}`).where({ ID: row.ID })
+                );
+
+                if (table == 'Transacao') {
+                    oTransacoesTotais.push(row.ID)
+                }
+
+                if (exists.length === 0) {
+                    // Inserir se não existir
+                    await tx.run(
+                        INSERT.into(`app.entidades.${table}`).entries(row)
+                    );
+
+                    if (table == 'Transacao') {
+                        oTransacoesInseridas.push(row.ID);
+                        oFaturas.push(row.Fatura_ID);
+                    }
+
+                } 
+            }
+        }
+
+        await tx.commit();
+
+        if (oTransacoesTotais.length > oTransacoesInseridas.length) {
+            let oFaturasParaAtualizarValor = [...new Set(oFaturas)];
+
+            for (const oFatura of oFaturasParaAtualizarValor) {
+
+                await this.atualizaValorFatura(oFatura)
+
+            }
+        }
+
+        return 'Backup importado com sucesso!';
+    }
+
+    async atualizaAvisoEnviadoFatura(Fatura_ID) {
+
+        const { Fatura } = this.entities;
+
+        await UPDATE(Fatura, Fatura_ID).with({ AvisoEnviado: true })
+
+    }
+
+    async enviarAviso(pessoa) {
+
+        let oDate = new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
+        oDate = oDate.replaceAll(",", " ");
+        let [oDia, oMes, oAno] = oDate.split(" ")[0].split("/");
+
+        oDia = Number(oDia);
+        oMes = Number(oMes);
+        oAno = Number(oAno);
+
+        const { Pessoa, Cartao, Fatura } = this.entities
+
+        const oPessoa = await SELECT.one.from(Pessoa).where({ ID: pessoa.ID });
+
+        if (oPessoa.Email == null) {
+            return;
+        }
+
+        const oCartoes = await SELECT.from(Cartao).where({ Pessoa_ID: oPessoa.ID });
+
+        if (!oCartoes) {
+            return;
+        }
+
+        const oFaturas = await SELECT.from(Fatura).where({
+            Ano: oAno,
+            Mes: oMes
+        });
+
+        if (!oFaturas) {
+            return;
+        }
+
+        for (const oCartao of oCartoes) {
+
+            let oFatura = oFaturas.filter(fatura => fatura.Cartao_ID === oCartao.ID);
+
+            if (oFatura.length > 0) {
+
+                oFatura = oFatura[0];
+
+                if (oFatura.AvisoEnviado == false || oFatura.AvisoEnviado == null) {
+
+                    if (oCartao.DiaVencimento - oDia >= 0) {
+
+                        try {
+                            // Configuração do transporte
+                            let oEmail = nodemailer.createTransport({
+                                host: process.env.SMTPHost,
+                                port: 587, // TLS
+                                secure: false, // Use false para TLS
+                                auth: {
+                                    user: process.env.SMTPAddres,
+                                    pass: process.env.SMTPKey
+                                }
+                            });
+
+                            // Detalhes do e-mail
+                            let oOpcoesEmail = {
+                                from: '"Gestor de gastos" <no.reply@gmail.com>',
+                                to: `${oPessoa.Email}`,
+                                subject: `Olá ${oPessoa.Nome}, Sua Fatura do Cartão ${oCartao.NomeCartao} está prestes a vencer.`,
+                                text: `Olá ${oPessoa.Nome}! Este é um aviso para que você lembre-se da data de pagamento da sua fatura do cartão ${oCartao.NomeCartao}.
+                                   Competência do mês ${oFatura.Mes}, valor total da fatura <b>${oFatura.ValorTotal} ${oFatura.Moeda_code}</b>.
+                                   Este e-mail é somente um aviso, caso já tenha pago desconsiderar.`,
+                                html: `<b>Olá ${oPessoa.Nome}!</b><br />Olá! Este é um aviso para que você lembre-se da data de pagamento da sua fatura do cartão ${oCartao.NomeCartao}.
+                                     <br /> Competência do mês ${oFatura.Mes}, valor total da fatura ${oFatura.ValorTotal} ${oFatura.Moeda_code}.
+                                     <i>Este e-mail é somente um aviso, caso já tenha pago desconsiderar.</i>`
+                            };
+
+                            if (process.env.SMTPHost) {
+
+                                await this.atualizaAvisoEnviadoFatura(oFatura.ID);
+
+                                await this.enviarEmail(oEmail, oOpcoesEmail);
+
+                            }
+
+                            console.log("E-mail enviado com sucesso");
+                        } catch (error) {
+                            console.error("Erro ao enviar o e-mail:", error);
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+    async enviarEmail(oEmail, oOpcoesEmail) {
+
+        try {
+            // Envia o e-mail
+            await oEmail.sendMail(oOpcoesEmail);
+            console.log("E-mail enviado com sucesso:", info.messageId);
+
+        } catch (error) {
+            console.error("Erro ao enviar o e-mail:", error);
+        }
+
+    }
+
     generateUUID() {
         return cds.utils.uuid();
     }
 }
-
 
 module.exports = GestaoGastos

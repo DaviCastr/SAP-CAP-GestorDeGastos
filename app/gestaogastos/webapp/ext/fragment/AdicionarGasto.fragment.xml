@@ -90,6 +90,12 @@
                     required="true"
                 />
 
+                <!-- Checkbox para Excluir Transações Relacionadas -->
+                <CheckBox
+                    id="gastoFixoCheckBox"
+                    text="Gasto Fixo"
+                />
+
                 <!-- Seleção do Cartão -->
                 <Label
                     id="_IDGenLabel6"

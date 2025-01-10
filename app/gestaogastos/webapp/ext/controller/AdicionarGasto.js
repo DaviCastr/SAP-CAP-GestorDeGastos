@@ -76,8 +76,7 @@ sap.ui.define([
                             if (!this.pDialog) {
                                 this.pDialog = Fragment.load({
                                     id: oView.getId(),
-                                    name: "apps.dflc.gestaogastos.ext.fragment.AdicionarGasto",
-                                    //controller: this
+                                    name: "apps.dflc.gestaogastos.ext.fragment.AdicionarGasto"
                                 }).then(function (oDialog) {
                                     oView.addDependent(oDialog);
                                     return oDialog;

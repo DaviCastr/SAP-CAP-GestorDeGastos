@@ -10,8 +10,20 @@
     "@sap/cds": "^8",
     "@sap/cds-common-content": "^2.1.0",
     "@sap/xssec": "^4",
+    "archiver": "^7.0.1",
     "axios": "^1.7.9",
-    "express": "^4"
+    "dayjs": "^1.11.13",
+    "exceljs": "^4.4.0",
+    "express": "^4",
+    "fast-csv": "^5.0.2",
+    "fs": "^0.0.1-security",
+    "jszip": "^3.10.1",
+    "nodemailer": "^6.9.16",
+    "path": "^0.12.7",
+    "saxes": "^6.0.0",
+    "tmp": "^0.2.3",
+    "unzipper": "^0.12.3",
+    "uuid": "^11.0.4"
   },
   "devDependencies": {
     "@cap-js/cds-types": "^0.6",

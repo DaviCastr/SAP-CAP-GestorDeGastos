@@ -1,6 +1,7 @@
 sap.ui.define([
-    "sap/m/MessageToast"
-], function (MessageToast) {
+    "sap/m/MessageToast",
+    "sap/ui/model/json/JSONModel"
+], function (MessageToast, JSONModel) {
     'use strict';
 
     return {
@@ -19,10 +20,15 @@ sap.ui.define([
             });
 
             let oTabela = oTabelas[0];
+            let oFatura = this.getBindingContext().getValue();
+
+            if (sap.ui.getCore().oFatura) {
+                oFatura = sap.ui.getCore().oFatura
+            }
 
             // Lógica de envio dos dados para exclusão
             var oPayload = {
-                fatura: this.getBindingContext().getValue().ID,
+                fatura: oFatura.ID,
                 transacao: oIdTransacao,
                 identificador: oIdentificador,
                 excluirRelacionadas: oExcluirRelacionadas
@@ -49,7 +55,7 @@ sap.ui.define([
                         .then(function (response) {
                             const csrfToken = response.headers.get("X-CSRF-Token");
                             return csrfToken;
-                        }.bind(this)).then( function (csrfToken) {
+                        }.bind(this)).then(function (csrfToken) {
 
                             fetch("/Gerenciamento/excluirTransacao", {
                                 method: "POST",
@@ -70,15 +76,30 @@ sap.ui.define([
                                     return oControl.isA("sap.m.Table") && oControl.getId().includes("innerTable");
                                 });
 
-                                let oTransacoesTabela = oTabelas[0];
-                                oTransacoesTabela.refreshItems()
-                                const oFaturaObjeto = this.getBindingContext();
-                                oFaturaObjeto.refresh()
+                                if (oTabelas.length) {
+                                    let oTransacoesTabela = oTabelas[0];
+                                    oTransacoesTabela.refreshItems()
+                                    const oFaturaObjeto = this.getBindingContext();
+                                    oFaturaObjeto.refresh();
+                                }
+
+                                let oVBoxsFaturaAtual = sap.ui.core.Element.registry.filter(function (oControl) {
+                                    return oControl.isA("sap.m.VBox") && oControl.getId().includes("FaturaAtualVBox");
+                                });                    
+
+                                if (oVBoxsFaturaAtual.length) {
+
+                                    let oVBoxFaturaAtual = oVBoxsFaturaAtual[0];
+
+                                    oVBoxFaturaAtual.getBindingContext().refresh();
+
+                                }
+
+                                oView.byId("excluirTransacoesRelacionadas").setSelected(false);
 
                                 sap.m.MessageToast.show("Transação excluída com sucesso.");
                                 oDialog.setBusy(false);
                                 oDialog.close();
-                                oTabela.getModel().refresh();
                                 resolve();
                             }.bind(this)).catch(function (error) {
                                 oDialog.setBusy(false);

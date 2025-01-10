@@ -1,0 +1,2 @@
+sap.ui.define(["sap/m/MessageToast","sap/ui/core/Fragment","sap/ui/model/json/JSONModel"],function(t,e,a){"use strict";return{backup:function(){const t=this.editFlow.getView();if(!this._backupDialog){this._backupDialog=e.load({id:"Backup",name:"apps.dflc.gestaogastos.ext.fragment.Backup"}).then(function(e){t.addDependent(e);return e}.bind(this))}this._backupDialog.then(function(t){t.open()})}}});
+//# sourceMappingURL=Backup.js.map

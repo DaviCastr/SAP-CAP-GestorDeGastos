@@ -55,13 +55,13 @@
     }
   },
   "sap.ui5": {
-    "flexEnabled": true,
     "dependencies": {
       "minUI5Version": "1.131.1",
       "libs": {
         "sap.m": {},
         "sap.ui.core": {},
-        "sap.fe.templates": {}
+        "sap.fe.templates": {},
+        "sap.f": {}
       }
     },
     "contentDensities": {
@@ -94,32 +94,51 @@
       "css": []
     },
     "routing": {
-      "config": {},
+      "config": {
+        "flexibleColumnLayout": {
+          "defaultTwoColumnLayoutType": "TwoColumnsMidExpanded",
+          "defaultThreeColumnLayoutType": "ThreeColumnsMidExpanded"
+        },
+        "routerClass": "sap.f.routing.Router"
+      },
       "routes": [
         {
           "pattern": ":?query:",
           "name": "PessoaList",
-          "target": "PessoaList"
+          "target": [
+            "PessoaList"
+          ]
         },
         {
           "pattern": "Pessoa({key}):?query:",
           "name": "PessoaObjectPage",
-          "target": "PessoaObjectPage"
+          "target": [
+            "PessoaList",
+            "PessoaObjectPage"
+          ]
         },
         {
           "pattern": "Pessoa({key})/Cartao({key2}):?query:",
           "name": "CartaoObjectPage",
-          "target": "CartaoObjectPage"
+          "target": [
+            "PessoaList",
+            "PessoaObjectPage",
+            "CartaoObjectPage"
+          ]
         },
         {
           "name": "Pessoa_Cartao_FaturaObjectPage",
           "pattern": "Pessoa({key})/Cartao({key2})/Fatura({FaturaKey}):?query:",
-          "target": "Pessoa_Cartao_FaturaObjectPage"
+          "target": [
+            "Pessoa_Cartao_FaturaObjectPage"
+          ]
         },
         {
           "name": "Pessoa_Cartao_Fatura_TransacoesObjectPage",
           "pattern": "Pessoa({key})/Cartao({key2})/Fatura({FaturaKey})/Transacoes({TransacoesKey}):?query:",
-          "target": "Pessoa_Cartao_Fatura_TransacoesObjectPage"
+          "target": [
+            "Pessoa_Cartao_Fatura_TransacoesObjectPage"
+          ]
         }
       ],
       "targets": {
@@ -141,12 +160,33 @@
               "controlConfiguration": {
                 "@com.sap.vocabularies.UI.v1.LineItem": {
                   "tableSettings": {
-                    "type": "ResponsiveTable"
+                    "type": "ResponsiveTable",
+                    "personalization": {
+                      "column": true
+                    },
+                    "quickVariantSelection": {
+                      "hideTableTitle": true
+                    }
                   }
                 }
-              }
+              },
+              "content": {
+                "header": {
+                  "actions": {
+                    "Backup": {
+                      "press": "apps.dflc.gestaogastos.ext.controller.Backup.backup",
+                      "visible": true,
+                      "enabled": true,
+                      "text": "{i18n>backup}"
+                    }
+                  }
+                }
+              },
+              "initialLoad": "Enabled"
             }
-          }
+          },
+          "controlAggregation": "beginColumnPages",
+          "contextPattern": ""
         },
         "PessoaObjectPage": {
           "type": "Component",
@@ -193,12 +233,15 @@
                   "tableSettings": {
                     "creationMode": {
                       "name": "Inline"
-                    }
+                    },
+                    "type": "ResponsiveTable"
                   }
                 }
               }
             }
-          }
+          },
+          "controlAggregation": "midColumnPages",
+          "contextPattern": "/Pessoa({key})"
         },
         "CartaoObjectPage": {
           "type": "Component",
@@ -214,9 +257,26 @@
                     "route": "Pessoa_Cartao_FaturaObjectPage"
                   }
                 }
-              }
+              },
+              "content": {
+                "body": {
+                  "sections": {
+                    "FaturaAtual": {
+                      "template": "apps.dflc.gestaogastos.ext.fragment.FaturaAtual",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "i18nDados"
+                      },
+                      "title": "{i18n>faturaAtual}"
+                    }
+                  }
+                }
+              },
+              "showRelatedApps": false
             }
-          }
+          },
+          "controlAggregation": "endColumnPages",
+          "contextPattern": "/Pessoa({key})/Cartao({key2})"
         },
         "Pessoa_Cartao_FaturaObjectPage": {
           "type": "Component",
@@ -255,7 +315,9 @@
                 }
               }
             }
-          }
+          },
+          "controlAggregation": "endColumnPages",
+          "contextPattern": "/Pessoa({key})/Cartao({key2})/Fatura({FaturaKey})"
         },
         "Pessoa_Cartao_Fatura_TransacoesObjectPage": {
           "type": "Component",
@@ -266,7 +328,9 @@
               "navigation": {},
               "contextPath": "/Pessoa/Cartao/Fatura/Transacoes"
             }
-          }
+          },
+          "controlAggregation": "endColumnPages",
+          "contextPattern": "/Pessoa({key})/Cartao({key2})/Fatura({FaturaKey})/Transacoes({TransacoesKey})"
         }
       }
     },
@@ -281,6 +345,12 @@
           }
         }
       }
+    },
+    "rootView": {
+      "viewName": "sap.fe.templates.RootContainer.view.Fcl",
+      "type": "XML",
+      "async": true,
+      "id": "appRootView"
     }
   },
   "sap.fiori": {

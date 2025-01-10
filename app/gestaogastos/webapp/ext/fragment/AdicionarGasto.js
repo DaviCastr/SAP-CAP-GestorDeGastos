@@ -18,7 +18,7 @@ sap.ui.define([
 
         },
 
-        onAdicionarGasto: function (oEvent) {
+        onAdicionarGasto: async function (oEvent) {
             const oView = this.getParent().getParent();
             const oDialog = this.getParent();
 
@@ -28,20 +28,21 @@ sap.ui.define([
             var oValorGastoInput = oView.byId("valorGastoInput");
             var oMoedaGastoInput = oView.byId("moedaGastoInput");
             var oDataGastoPicker = oView.byId("dataGastoPicker");
+            var oGastoFixoCheckBox = oView.byId("gastoFixoCheckBox");
             var oTotalParcelasInput = oView.byId("totalParcelasInput");
             var oCartaoSelect = oView.byId("cartaoSelect");
 
             // Verificar se todos os campos obrigatórios estão preenchidos
-            var bValid = true;  // Flag para verificar a validade dos campos
+            var oValido = true; 
 
             //Campo de descrição
             if (!oDescricaoGastoInput.getValue()) {
                 oDescricaoGastoInput.setValueState("Error");
-                bValid = false;
+                oValido = false;
 
             } else if (oDescricaoGastoInput.getValue() == ' ') {
                 oDescricaoGastoInput.setValueState("Error");
-                bValid = false;
+                oValido = false;
 
             } else {
                 oDescricaoGastoInput.setValueState("None");
@@ -50,11 +51,15 @@ sap.ui.define([
             // Validando o valor do gasto (Input)
             if (!oValorGastoInput.getValue()) {
                 oValorGastoInput.setValueState("Error");
-                bValid = false;
+                oValido = false;
 
             } else if (oValorGastoInput.getValue() == 0) {
                 oValorGastoInput.setValueState("Error");
-                bValid = false;
+                oValido = false;
+
+            } else if (oValorGastoInput.getValue() < 0) {
+                oValorGastoInput.setValueState("Error");
+                oValido = false;
 
             } else {
                 oValorGastoInput.setValueState("None");
@@ -63,14 +68,14 @@ sap.ui.define([
             // Validando a moeda
             if (!oMoedaGastoInput.getValue()) {
                 oMoedaGastoInput.setValueState("Error");
-                bValid = false;
+                oValido = false;
             } else {
 
                 let oMoedaCheck = oView.getModel("Moedas").getData().filter(item => [oMoedaGastoInput.getValue()].includes(item.code));
 
                 if (oMoedaCheck.length == 0) {
                     oMoedaGastoInput.setValueState("Error");
-                    bValid = false;
+                    oValido = false;
                 } else {
                     oMoedaGastoInput.setValueState("None");
                 }
@@ -79,7 +84,7 @@ sap.ui.define([
             // Validando a data (DatePicker)
             if (!oDataGastoPicker.getValue()) {
                 oDataGastoPicker.setValueState("Error");
-                bValid = false;
+                oValido = false;
             } else {
                 oDataGastoPicker.setValueState("None");
             }
@@ -87,11 +92,11 @@ sap.ui.define([
             // Validando o total de parcelas (Input)
             if (!oTotalParcelasInput.getValue()) {
                 oTotalParcelasInput.setValueState("Error");
-                bValid = false;
+                oValido = false;
 
             } else if (oTotalParcelasInput.getValue() == 0) {
                 oTotalParcelasInput.setValueState("Error");
-                bValid = false;
+                oValido = false;
 
             } else {
                 oTotalParcelasInput.setValueState("None");
@@ -100,25 +105,32 @@ sap.ui.define([
             // Validando o cartão (Select)
             if (!oCartaoSelect.getSelectedKey()) {
                 oCartaoSelect.setValueState("Error");
-                bValid = false;
+                oValido = false;
             } else {
                 oCartaoSelect.setValueState("None");
             }
 
             // Caso todos os campos estejam válidos, prosseguir com a lógica
-            if (!bValid) {
+            if (!oValido) {
                 sap.m.MessageToast.show("Por favor, preencha todos os campos obrigatórios.");
                 oDialog.setBusy(false);
                 return;
             }
 
+            if (oGastoFixoCheckBox.getSelected() && oTotalParcelasInput.getValue() > 1) {
+                sap.m.MessageToast.show("Quando o gasto é fixo a parcela deve ser igual a 1");
+                oDialog.setBusy(false);
+                return;
+            }
+
             // Obter os valores do diálogo
-            const sDescricao = oView.byId("descricaoGastoInput").getValue();
-            const sValor = oView.byId("valorGastoInput").getValue();
-            const sMoeda = oView.byId("moedaGastoInput").getValue();
+            const oDescricao = oView.byId("descricaoGastoInput").getValue();
+            const oValor = oView.byId("valorGastoInput").getValue();
+            const oMoeda = oView.byId("moedaGastoInput").getValue();
             const sData = oView.byId("dataGastoPicker").getValue();
-            const sParcelas = oView.byId("totalParcelasInput").getValue();
-            const sCartao = oView.byId("cartaoSelect").getSelectedKey();
+            const oParcelas = oView.byId("totalParcelasInput").getValue();
+            const oGastoFixo = oView.byId("gastoFixoCheckBox").getSelected();
+            const oCartao = oView.byId("cartaoSelect").getSelectedKey();
 
             // Converter a data de DD/MM/YYYY para YYYY-MM-DD
             const partesData = sData.split("/"); // Dividir a data em partes (dia, mês, ano)
@@ -137,103 +149,70 @@ sap.ui.define([
             // Montar o payload para envio
             const oPayload = {
                 pessoa: this.getBindingContext().getValue().ID,
-                descricao: sDescricao,
-                valor: parseFloat(sValor),
-                moeda: sMoeda,
+                descricao: oDescricao,
+                valor: parseFloat(oValor),
+                moeda: oMoeda,
                 data: dataFormatada,
-                parcelas: parseInt(sParcelas, 10),
-                cartao: sCartao
+                parcelas: parseInt(oParcelas, 10),
+                gastofixo: oGastoFixo,
+                cartao: oCartao,
             };
 
-            var securedExecution = () => {
+            let oFunctionName = "adicionarGasto";
+            const oFunction = oView.getModel().bindContext(`/${oFunctionName}(...)`);
 
-                return new Promise((resolve, reject) => {
+            oFunction.setParameter("pessoa", oPayload.pessoa);
+            oFunction.setParameter("descricao", oPayload.descricao);
+            oFunction.setParameter("valor", oPayload.valor);
+            oFunction.setParameter("moeda", oPayload.moeda);
+            oFunction.setParameter("data", oPayload.data);
+            oFunction.setParameter("parcelas", oPayload.parcelas);
+            oFunction.setParameter("gastofixo", oPayload.gastofixo);
+            oFunction.setParameter("cartao", oPayload.cartao);
 
-                    fetch("/Gerenciamento", {
-                        method: "GET",
-                        headers: {
-                            "X-CSRF-Token": "Fetch"
-                        }
-                        })
-                        .then(function (response) {
-                            if (!response.ok) {
-                                throw new Error("Erro ao obter CSRF Token");
-                            }
-                            return response;
-                        }.bind(this))
-                        .then(function (response) {
-                            const csrfToken = response.headers.get("X-CSRF-Token");
-                            return csrfToken;
-                        }.bind(this)).then(function (csrfToken) {
+            await oFunction.execute()
 
-                            fetch("/Gerenciamento/adicionarGasto", {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                    "Accept": "application/json",
-                                    "X-CSRF-Token": csrfToken
-                                },
-                                body: JSON.stringify(oPayload)
-                            }).then(async function (response) {
+            oDialog.setBusy(false);
+            const oContext = oFunction.getBoundContext();
 
-                                oDialog.setBusy(false);
+            let sucesso = oContext.getProperty("sucesso")
 
-                                if (!response.ok) {
-                                    throw new Error("Erro ao adicionar gasto");
-                                }
+            if (sucesso) {
 
-                                let oData = await response.json();
+                oDescricaoGastoInput.setValue("");
+                oValorGastoInput.setValue(0.00);
 
-                                oDescricaoGastoInput.setValue("");
-                                oValorGastoInput.setValue(0.00);
-                                oDataGastoPicker.setValue("");
-                                oTotalParcelasInput.setValue(1);
+                oDataGastoPicker.setValue("");
 
-                                //Pesquisa tabelas da tela para manipulação
-                                let oTabelas = sap.ui.core.Element.registry.filter(function (oControl) {
-                                    return oControl.isA("sap.m.Table") && oControl.getId().includes("innerTable");
-                                });
+                oTotalParcelasInput.setValue(1);
+                oGastoFixoCheckBox.setSelected(false);
 
-                                let oCartoes = oTabelas[0];
-                                oCartoes.refreshItems()
-                                const oPessoa = this.getBindingContext();
-                                oPessoa.refresh()
+                let oTabelas = sap.ui.core.Element.registry.filter(function (oControl) {
+                    return oControl.isA("sap.m.Table") && oControl.getId().includes("innerTable");
+                });
 
-                                oDialog.close();
+                let oCartoes = oTabelas[0];
+                oCartoes.refreshItems()
+                const oPessoa = this.getBindingContext();
+                oPessoa.refresh()
 
-                                sap.m.MessageToast.show("Gasto adicionado com sucesso!");
-                                resolve();
-                            }.bind(this)).catch((error) => {
-                                sap.m.MessageToast.show(error.message);
-                                oDialog.setBusy(false);
-                                reject();
-                            });
+                let oVBoxsFaturaAtual = sap.ui.core.Element.registry.filter(function (oControl) {
+                    return oControl.isA("sap.m.VBox") && oControl.getId().includes("FaturaAtualVBox");
+                });                    
 
-                        }.bind(this)).catch(function (error) {
-                            sap.m.MessageToast.show("Erro ao obter csrf token: " + error);
-                            reject();
+                if (oVBoxsFaturaAtual.length) {
 
-                        });
+                    let oVBoxFaturaAtual = oVBoxsFaturaAtual[0];
 
-                })
-            }
+                    oVBoxFaturaAtual.getBindingContext().refresh();
 
-            let oParameters = {
-                busy: {
-                    set: true,
-                    check: true
-                },
-                dataloss: {
-                    popup: true,
-                    navigation: false
                 }
+
+                oDialog.close();
+
+                sap.m.MessageToast.show("Gasto adicionado com sucesso!");
+
             }
-
-            let editFlow = this.getParent().getParent().getController().getExtensionAPI().getEditFlow();
-
-            editFlow.securedExecution(securedExecution, oParameters).finally((final) => {
-                console.log(final)
-            });
 
         },
 

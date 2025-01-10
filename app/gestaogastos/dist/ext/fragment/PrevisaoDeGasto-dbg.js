@@ -61,12 +61,12 @@ sap.ui.define([
                                     let oTotalDeGastos = this.byId("TotalDeGastos");
                                     let oValorAEconomizar = this.byId("ValorAEconomizar");
 
-                                    oTotalDoMes.setValue(oData.TotalDoMes)
-                                    oTotalDoMes.setDescription(oData.Moeda_code)
-                                    oTotalDeGastos.setValue(oData.TotalDeGastos)
-                                    oTotalDeGastos.setDescription(oData.Moeda_code)
-                                    oValorAEconomizar.setValue(oData.ValorAEconomizar)
-                                    oValorAEconomizar.setDescription(oData.Moeda_code)
+                                    oTotalDoMes.setNumber(oData.TotalDoMes)
+                                    oTotalDoMes.setUnit(oData.Moeda_code)
+                                    oTotalDeGastos.setNumber(oData.TotalDeGastos)
+                                    oTotalDeGastos.setUnit(oData.Moeda_code)
+                                    oValorAEconomizar.setNumber(oData.ValorAEconomizar)
+                                    oValorAEconomizar.setUnit(oData.Moeda_code)
 
                                     resolve();
 

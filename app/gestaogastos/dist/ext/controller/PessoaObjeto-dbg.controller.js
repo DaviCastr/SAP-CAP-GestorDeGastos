@@ -4,6 +4,132 @@ sap.ui.define(['sap/ui/core/mvc/ControllerExtension', "sap/ui/core/message/Messa
 
 		return ControllerExtension.extend('apps.dflc.gestaogastos.ext.controller.PessoaObjeto', {
 			// this section allows to extend lifecycle hooks or hooks provided by Fiori elements
+
+			defineAvisos: async function (oBindingContext) {
+
+				let oPessoa = await oBindingContext.requestObject(oBindingContext.getPath());
+
+				if (!oPessoa.ID) {
+
+					do {
+
+						await this.wait();
+
+						oPessoa = await oBindingContext.requestObject(oBindingContext.getPath());
+
+					} while (!oPessoa.ID);
+
+				}
+
+				const oExtensionAPI = this.base.getExtensionAPI();
+
+				const oMessages = []
+
+				var securedExecution = () => {
+
+					return new Promise((resolve, reject) => {
+
+						try {
+
+							//Serviço de cartões
+							const oPayload = {
+								Pessoa_ID: oPessoa.ID
+							};
+
+							fetch(`/Gerenciamento/Cartao?$filter=Pessoa_ID eq ${oPayload.Pessoa_ID}`, {
+								method: "GET",
+								headers: {
+									"Content-Type": "application/json",
+									"Accept": "application/json",
+								}
+							}).then(async function (data) {
+
+								let oData = await data.json();
+
+								// Modelo para alimentar os cartões
+								let oCartoes;
+
+								if (Array.isArray(oData.value))
+									oCartoes = oData.value
+								else
+									oCartoes = [oData.value]
+
+								let oDate = new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
+								oDate = oDate.replaceAll(",", " ");
+								let [oDay, oMes, oAno] = oDate.split(" ")[0].split("/");
+
+								oCartoes.forEach(cartao => {
+
+									if (cartao.DiaVencimento - oDay >= 0 && cartao.DiaVencimento - oDay < 2) {
+
+										if (oMessages.length == 0) {
+											oMessages.push(new Message({
+												type: MessageType.Warning,
+												message: `A fatura do cartão ${cartao.NomeCartao} está vencendo`
+											}));
+										}
+
+									}
+
+								});
+
+								if (oPessoa.TotalDoMes > oPessoa.ObjetivoDeGasto && oMessages.length == 0) {
+									oMessages.push(new Message({
+										type: MessageType.Warning,
+										message: "Seu gasto está acima do seu objetivo de gasto mensal"
+									}));
+								}
+
+								if (oPessoa.TotalDoMes > oPessoa.Renda && oMessages.length == 0) {
+									oMessages.push(new Message({
+										type: MessageType.Warning,
+										message: "Seu gasto está acima mensal está superior a sua renda, fique de olho e reduza seus gastos!"
+									}));
+								}
+
+								oExtensionAPI.showMessages(oMessages);
+
+								resolve();
+
+							}.bind(this)).catch(function (error) {
+								sap.m.MessageToast.show("Erro:" + error);
+								reject();
+
+							});
+
+						} catch (oError) {
+							sap.m.MessageToast.show("Erro ao chamar serviço: " + oError.message);
+						}
+
+					});
+
+				}
+
+				let oParameters = {
+					busy: {
+						set: true,
+						check: true
+					},
+					dataloss: {
+						popup: true,
+						navigation: false
+					}
+				}
+
+				this.base.getExtensionAPI().editFlow.securedExecution(securedExecution, oParameters).finally((final) => {
+					console.log(final)
+				});
+
+			},
+
+			sleep: function (ms) {
+				return new Promise(resolve => setTimeout(resolve, ms));
+			},
+
+			wait: async function () {
+				await this.sleep(500);
+			},
+
 			override: {
 				/**
 				 * Called when a controller is instantiated and its View controls (if available) are already created.
@@ -26,114 +152,10 @@ sap.ui.define(['sap/ui/core/mvc/ControllerExtension', "sap/ui/core/message/Messa
 				},
 
 				routing: {
+
 					onAfterBinding: async function (oBindingContext) {
-						//Pesquisa tabelas da tela para manipulação
-						let oTabelas = sap.ui.core.Element.registry.filter(function (oControl) {
-							return oControl.isA("sap.m.Table") && oControl.getId().includes("innerTable");
-						});
 
-						let oTabela = oTabelas[0];
-
-						let oPessoa = await oBindingContext.requestObject(oBindingContext.getPath());
-
-						const oExtensionAPI = this.base.getExtensionAPI();
-
-						const oMessages = []
-
-						var securedExecution = () => {
-
-							return new Promise((resolve, reject) => {
-
-								try {
-
-									//Serviço de cartões
-									const oPayload = {
-										Pessoa_ID: oPessoa.ID
-									};
-
-									fetch(`/Gerenciamento/Cartao?$filter=Pessoa_ID eq ${oPayload.Pessoa_ID}`, {
-										method: "GET",
-										headers: {
-											"Content-Type": "application/json",
-											"Accept": "application/json",
-										}
-									}).then(async function (data) {
-
-										let oData = await data.json();
-
-										// Modelo para alimentar os cartões
-										let oCartoes;
-
-										if (Array.isArray(oData.value))
-											oCartoes = oData.value
-										else
-											oCartoes = [oData.value]
-
-										let oDate = new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
-										oDate = oDate.replaceAll(",", " ");
-										let [oDay, oMes, oAno] = oDate.split(" ")[0].split("/");
-
-										oCartoes.forEach(cartao => {
-
-											if (cartao.DiaVencimento - oDay >= 0 && cartao.DiaVencimento - oDay < 2) {
-
-												if (oMessages.length == 0) {
-													oMessages.push(new Message({
-														type: MessageType.Warning,
-														message: `A fatura do cartão ${cartao.NomeCartao} está vencendo`
-													}));
-												}
-
-											}
-
-										});
-
-										if (oPessoa.TotalDoMes > oPessoa.ObjetivoDeGasto && oMessages.length == 0) {
-											oMessages.push(new Message({
-												type: MessageType.Warning,
-												message: "Seu gasto está acima do seu objetivo de gasto mensal"
-											}));
-										}
-
-										if (oPessoa.TotalDoMes > oPessoa.Renda && oMessages.length == 0) {
-											oMessages.push(new Message({
-												type: MessageType.Warning,
-												message: "Seu gasto está acima mensal está superior a sua renda, fique de olho e reduza seus gastos!"
-											}));
-										}
-
-										oExtensionAPI.showMessages(oMessages);
-
-										resolve();
-
-									}.bind(this)).catch(function (error) {
-										sap.m.MessageToast.show("Erro:" + error);
-										reject();
-
-									});
-
-								} catch (oError) {
-									sap.m.MessageToast.show("Erro ao chamar serviço: " + oError.message);
-								}
-
-							});
-
-						}
-
-						let oParameters = {
-							busy: {
-								set: true,
-								check: true
-							},
-							dataloss: {
-								popup: true,
-								navigation: false
-							}
-						}
-
-						this.base.getExtensionAPI().editFlow.securedExecution(securedExecution, oParameters).finally((final) => {
-							console.log(final)
-						});
+						this.defineAvisos(oBindingContext);
 
 					}
 				}

@@ -5,12 +5,14 @@ annotate service.Pessoa with @(
         {
             $Type: 'UI.DataField',
             Value: Imagem,
-            Label: 'Imagem',
+            Label: ' ',
+            ![@UI.Importance] : #High,
         },
         {
             $Type: 'UI.DataField',
             Value: Nome,
             Label: '{i18n>Nome}',
+            ![@UI.Importance] : #High,
         },
         {
             $Type: 'UI.DataField',
@@ -26,6 +28,14 @@ annotate service.Pessoa with @(
             $Type: 'UI.DataField',
             Value: TotalDoMes,
             Label: '{i18n>TotalDoMes}',
+            Criticality : CriticidadeDoMes,
+            ![@UI.Importance] : #High,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : TotalDoMesEmAberto,
+            Label : 'TotalDoMesEmAberto',
+            Criticality : CriticidadeEmAberto,
         },
         {
             $Type: 'UI.DataField',
@@ -103,13 +113,11 @@ annotate service.Pessoa with @(
                 $Type: 'UI.DataField',
                 Value: Email,
                 Label: '{i18n>Email}',
-                ![@UI.Hidden],
             },
             {
                 $Type: 'UI.DataField',
                 Value: Telefone,
                 Label: '{i18n>Telefone}',
-                ![@UI.Hidden],
             },
         ],
     },
@@ -237,12 +245,14 @@ annotate service.Cartao with @(
         {
             $Type: 'UI.DataField',
             Value: Imagem,
-            Label: '{i18n>Imagem}',
+            Label: ' ',
+            ![@UI.Importance] : #High,
         },
         {
             $Type: 'UI.DataField',
             Value: NomeCartao,
             Label: '{i18n>NomeDoCartao}',
+            ![@UI.Importance] : #High,
         },
         {
             $Type: 'UI.DataField',
@@ -268,11 +278,13 @@ annotate service.Cartao with @(
             $Type: 'UI.DataField',
             Value: ValorFaturaEmAberto,
             Label: '{i18n>ValorFaturaEmAberto}',
+            ![@UI.Importance] : #High,
         },
         {
             $Type: 'UI.DataField',
             Value: ValorFaturaParaPagamento,
             Label: '{i18n>ValorFaturaParaPagamento}',
+            ![@UI.Importance] : #High,
         },
     ],
     UI.DataPoint #Imagem              : {
@@ -502,16 +514,19 @@ annotate service.Fatura with @(
             $Type: 'UI.DataField',
             Value: Ano,
             Label: '{i18n>Ano}',
+            ![@UI.Importance] : #High,
         },
         {
             $Type: 'UI.DataField',
             Value: Mes,
             Label: '{i18n>Mes}',
+            ![@UI.Importance] : #High,
         },
         {
             $Type: 'UI.DataField',
             Value: ValorTotal,
             Label: '{i18n>ValorTotal}',
+            ![@UI.Importance] : #High,
         },
     ],
     UI.DataPoint #Ano                           : {
@@ -634,26 +649,31 @@ annotate service.Transacao with @(
             $Type: 'UI.DataField',
             Value: Valor,
             Label: '{i18n>Valor}',
+            ![@UI.Importance] : #High,
         },
         {
             $Type: 'UI.DataField',
             Value: Descricao,
             Label: '{i18n>Descricao}',
+            ![@UI.Importance] : #High,
         },
         {
             $Type: 'UI.DataField',
             Value: Data,
             Label: '{i18n>Data}',
+            ![@UI.Importance] : #High,
         },
         {
             $Type : 'UI.DataField',
             Value : Parcela,
             Label : 'Parcela',
+            ![@UI.Importance] : #High,
         },
         {
             $Type: 'UI.DataField',
             Value: ParcelasTotais,
             Label: '{i18n>ParcelasTotais}',
+            ![@UI.Importance] : #High,
         },
     ],
     UI.DataPoint #Valor_Valor         : {
@@ -705,11 +725,6 @@ annotate service.Transacao with @(
                 $Type: 'UI.DataField',
                 Value: Data,
                 Label: '{i18n>Data}',
-            },
-            {
-                $Type: 'UI.DataField',
-                Value: ParcelaParaPagamento,
-                Label: '{i18n>ParcelaParaPagamento}',
             },
             {
                 $Type: 'UI.DataField',

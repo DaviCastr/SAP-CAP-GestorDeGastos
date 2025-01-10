@@ -17,7 +17,12 @@ service GestaoGastos @(path: '/Gerenciamento') {
 
     action simulaPorMesAno(pessoa: UUID, mes: Integer, ano: Integer) returns db.retornoSimulacao;
 
-    action adicionarGasto(pessoa: UUID, descricao: String, valor: Decimal, moeda: db.Moeda, data: Date, parcelas: Integer, cartao: UUID) returns db.retornoBooleano;
+    action adicionarGasto(pessoa: UUID, descricao: String, valor: Decimal, moeda: db.Moeda, data: Date, parcelas: Integer, gastofixo: Boolean, cartao: UUID) returns db.retornoBooleano;
 
     action excluirTransacao(fatura: UUID, transacao: UUID, identificador: UUID, excluirRelacionadas: Boolean) returns db.retornoBooleano;
+
+    action exportarBackup() returns Binary;
+    
+    action importarBackup(file: Binary) returns String;
+
 }

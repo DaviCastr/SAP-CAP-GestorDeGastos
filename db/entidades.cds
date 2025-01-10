@@ -18,8 +18,8 @@ entity Pessoa : cuid, managed {
     @Semantics.amount.currencyCode: 'Moeda'
     Renda                      : Decimal  @mandatory;
     Moeda                      : Currency  @mandatory;
-    Email                      : String(100);
-    Telefone                   : String(20);
+    Email                      : String(100) @mandatory;
+    Telefone                   : String(20) @mandatory;
 
     @Semantics.amount.currencyCode: 'Moeda'
     ObjetivoDeGasto            : Decimal  @mandatory;
@@ -94,6 +94,7 @@ entity Fatura : cuid, managed {
     @Semantics.amount.currencyCode: 'Moeda'
     ValorTotal : Decimal;
     Moeda      : Currency;
+    AvisoEnviado: Boolean;
     Cartao     : Association to Cartao @mandatory; //@assert.target
     Transacoes : Composition of many Transacao
                      on Transacoes.Fatura = $self

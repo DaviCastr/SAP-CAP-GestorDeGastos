@@ -4,8 +4,8 @@
     xmlns:macros="sap.fe.macros"
     xmlns:layout="sap.ui.layout.form"
 >
-    <VBox
-        id="_IDGenVBox1"
+    <VBox id="_IDGenVBox2"
+        
         core:require="{ handler: 'apps/dflc/gestaogastos/ext/fragment/PrevisaoDeGasto'}"
     >
         <HBox
@@ -49,9 +49,7 @@
             </Select>
 
             <!-- ListBox para os Meses -->
-            <Select
-                id="ListaMes"
-            >
+            <Select id="ListaMes">
                 <core:Item
                     id="_IDGenItem7"
                     text="1"
@@ -116,46 +114,36 @@
             width="300px"
         >
             <!-- Total Do Mês -->
-            <Label
-                id="_IDGenLabel"
-                text="Total Do Mês"
-            />
-            <Input
+            <Label id="_IDGenLabel16"  text="Total Do Mês" />
+
+            <ObjectNumber
                 id="TotalDoMes"
-                type="Number"
-                value=""
-                description=""
-                editable="false"
-                textAlign="End"
+                number="{FaturaAtual>Valor}"
+                unit="{FaturaAtual>Moeda_code}"
             />
 
             <!-- Total De Gastos -->
-            <Label
-                id="_IDGenLabel1"
+            <Label id="_IDGenLabel17"
                 text="Total De Gastos"
             />
-            <Input
+
+            <ObjectNumber
                 id="TotalDeGastos"
-                type="Number"
-                value=""
-                description=""
-                editable="false"
-                textAlign="End"
+                number=""
+                unit=""
             />
 
             <!-- Valor à Economizar -->
-            <Label
-                id="_IDGenLabel3"
+            <Label id="_IDGenLabel12"
                 text="Valor à Economizar"
             />
-            <Input
+
+            <ObjectNumber
                 id="ValorAEconomizar"
-                type="Number"
-                value=""
-                description=""
-                editable="false" 
-                textAlign="End"
+                number=""
+                unit=""
             />
+            
         </layout:SimpleForm>
     </VBox>
 </core:FragmentDefinition>
