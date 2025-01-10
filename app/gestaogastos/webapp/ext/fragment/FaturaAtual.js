@@ -173,14 +173,23 @@ sap.ui.define([
         },
 
         pesquisarTransacao: function (oEvent) {
-            var oTableSearchState = [],
-                sQuery = oEvent.getParameter("query");
+            var oPesquisaTabela = [],
+                oPesquisa = oEvent.getParameter("query");
 
-            if (sQuery && sQuery.length > 0) {
-                oTableSearchState = [new Filter("Name", FilterOperator.Contains, sQuery)];
+            if (oPesquisa && oPesquisa.length > 0) {
+                oPesquisaTabela = [new Filter({ filters: [new Filter("Descricao", FilterOperator.Contains, oPesquisa)]})];
             }
 
-            const oView = this._view.byId("transactionsTable").getBinding("items").filter(oTableSearchState, "Application");
+            //Pesquisa tabelas da tela para manipulação
+            let oTabelas = sap.ui.core.Element.registry.filter(function (oControl) {
+                return oControl.isA("sap.m.Table") && oControl.getId().includes("transactionsTable");
+            });
+
+            let oTabelaTransacoes = oTabelas[0];
+
+            if (oTabelaTransacoes) {
+                oTabelaTransacoes.getBinding("items").filter(oPesquisaTabela, "Application");
+            }
         }
     };
 });
