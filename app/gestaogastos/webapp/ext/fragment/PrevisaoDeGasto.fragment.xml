@@ -1,0 +1,189 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:layout="sap.ui.layout"
+>
+    <VBox
+        id="_IDGenVBox2"
+        core:require="{ handler: 'apps/dflc/gestaogastos/ext/fragment/PrevisaoDeGasto'}"
+    >
+        <HBox
+            id="_IDGenHBox1"
+            alignItems="Center"
+            class="sapUiTinyMarginBottom"
+        >
+            <!-- ListBox para os Anos -->
+            <Select
+                id="ListaAno"
+                class="sapUiTinyMarginEnd"
+            >
+                <core:Item
+                    id="_IDGenItem1"
+                    text="2025"
+                />
+                <core:Item
+                    id="_IDGenItem2"
+                    text="2026"
+                />
+                <core:Item
+                    id="_IDGenItem3"
+                    text="2027"
+                />
+                <core:Item
+                    id="_IDGenItem4"
+                    text="2028"
+                />
+                <core:Item
+                    id="_IDGenItem5"
+                    text="2029"
+                />
+                <core:Item
+                    id="_IDGenItem6"
+                    text="2030"
+                />
+            </Select>
+
+            <!-- ListBox para os Meses -->
+            <Select id="ListaMes">
+                <core:Item
+                    id="_IDGenItem7"
+                    text="1"
+                />
+                <core:Item
+                    id="_IDGenItem8"
+                    text="2"
+                />
+                <core:Item
+                    id="_IDGenItem9"
+                    text="3"
+                />
+                <core:Item
+                    id="_IDGenItem10"
+                    text="4"
+                />
+                <core:Item
+                    id="_IDGenItem11"
+                    text="5"
+                />
+                <core:Item
+                    id="_IDGenItem12"
+                    text="6"
+                />
+                <core:Item
+                    id="_IDGenItem13"
+                    text="7"
+                />
+                <core:Item
+                    id="_IDGenItem14"
+                    text="8"
+                />
+                <core:Item
+                    id="_IDGenItem15"
+                    text="9"
+                />
+                <core:Item
+                    id="_IDGenItem16"
+                    text="10"
+                />
+                <core:Item
+                    id="_IDGenItem17"
+                    text="11"
+                />
+                <core:Item
+                    id="_IDGenItem18"
+                    text="12"
+                />
+            </Select>
+
+            <Button
+                id="_IDGenButton"
+                text="Buscar"
+                press="handler.onBuscarSimulação"
+            />
+        </HBox>
+        <form:SimpleForm
+            id="form"
+            layout="ResponsiveGridLayout"
+            editable="true"
+            class="sapUiSmallMargin"
+            width="300px"
+        >
+            <!-- Total Do Mês -->
+            <Label
+                id="_IDGenLabel16"
+                text="Total Do Mês"
+            />
+
+            <ObjectNumber
+                id="TotalDoMes"
+                number="{FaturaAtual>Valor}"
+                unit="{FaturaAtual>Moeda_code}"
+            />
+
+            <!-- Total De Gastos -->
+            <Label
+                id="_IDGenLabel17"
+                text="Total De Gastos"
+            />
+
+            <ObjectNumber
+                id="TotalDeGastos"
+                number=""
+                unit=""
+            />
+
+            <!-- Valor à Economizar -->
+            <Label
+                id="_IDGenLabel12"
+                text="Valor à Economizar"
+            />
+
+            <ObjectNumber
+                id="ValorAEconomizar"
+                number=""
+                unit=""
+            />
+        </form:SimpleForm>
+
+        <layout:FixFlex >
+            <!-- Painel para Exibição das Categorias -->
+            <layout:fixContent>
+                <Panel
+                    expandable="true"
+                    expanded="true"
+                    headerText="Categorias do mês filtrado"
+                    width="auto"
+                >
+                    <content>
+                        <!-- Para cada Categoria, renderize um micro gráfico -->
+                        <FlexBox
+                            id="categoryPrevisao"
+                            alignItems="Center"
+                            justifyContent="Start"
+                        >
+                        <Label text="Faça a pesquisa inicial" textAlign="Center" />
+                        </FlexBox>
+                    </content>
+                </Panel>
+                <Panel
+                    expandable="true"
+                    expanded="true"
+                    headerText="Categorias da data filtrada pra frente"
+                    width="auto"
+                >
+                    <content>
+                        <!-- Para cada Categoria, renderize um micro gráfico -->
+                        <FlexBox
+                            id="categoryPrevisaoTotal"
+                            alignItems="Center"
+                            justifyContent="Start"
+                        >
+                        <Label text="Faça a pesquisa inicial" textAlign="Center" />
+                        </FlexBox>
+                    </content>
+                </Panel>
+            </layout:fixContent>
+        </layout:FixFlex>
+    </VBox>
+</core:FragmentDefinition>

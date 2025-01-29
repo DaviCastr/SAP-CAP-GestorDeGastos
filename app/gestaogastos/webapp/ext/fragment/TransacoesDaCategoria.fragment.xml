@@ -1,0 +1,30 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+	xmlns:layout="sap.ui.layout"
+>
+    <Dialog
+        id="dialogTransacoesPorCategoria"
+        title="Detalhamento"
+        class="sapUiResponsivePadding"
+        core:require="{ handler: 'apps/dflc/gestaogastos/ext/fragment/TransacoesDaCategoria'}"
+    >
+        <content>
+            <layout:FixFlex
+                id="DetalhamentoCartoesCategoria"
+                class="sapUiSmallMargin"
+            >
+                <!-- Painel para Exibição das Categorias -->
+                <layout:fixContent />
+            </layout:FixFlex>
+        </content>
+        <buttons>
+            <!-- Botão fechar -->
+            <Button
+                id="botaoFechar"
+                text="Fechar"
+                press="handler.fechar"
+            />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

@@ -1,0 +1,466 @@
+{
+  "_version": "1.65.0",
+  "sap.app": {
+    "id": "apps.dflc.gestaogastos",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:lrop",
+      "version": "1.16.1",
+      "toolsId": "b5fab8be-a8a4-4bf3-96db-079ae62fac4e"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "Gerenciamento/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "4.0"
+        }
+      }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "gestaogastos-display": {
+          "semanticObject": "gestaogastos",
+          "action": "display",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "dependencies": {
+      "minUI5Version": "1.131.1",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.fe.templates": {},
+        "sap.f": {},
+        "sap.suite.ui.microchart": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "apps.dflc.gestaogastos.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      },
+      "@i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "uri": "i18n/i18n.properties"
+      },
+      "Variantes": {}
+    },
+    "resources": {
+      "css": [
+        "css/style.css"
+      ]
+    },
+    "routing": {
+      "config": {
+        "flexibleColumnLayout": {
+          "defaultTwoColumnLayoutType": "TwoColumnsMidExpanded",
+          "defaultThreeColumnLayoutType": "ThreeColumnsMidExpanded"
+        },
+        "routerClass": "sap.f.routing.Router"
+      },
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "PessoaList",
+          "target": [
+            "PessoaList"
+          ]
+        },
+        {
+          "pattern": "Pessoa({key}):?query:",
+          "name": "PessoaObjectPage",
+          "target": [
+            "PessoaList",
+            "PessoaObjectPage"
+          ]
+        },
+        {
+          "pattern": "Pessoa({key})/Cartao({key2}):?query:",
+          "name": "CartaoObjectPage",
+          "target": [
+            "PessoaList",
+            "PessoaObjectPage",
+            "CartaoObjectPage"
+          ]
+        },
+        {
+          "name": "Pessoa_Cartao_FaturaObjectPage",
+          "pattern": "Pessoa({key})/Cartao({key2})/Fatura({FaturaKey}):?query:",
+          "target": [
+            "Pessoa_Cartao_FaturaObjectPage"
+          ]
+        },
+        {
+          "name": "Pessoa_Cartao_Fatura_TransacoesObjectPage",
+          "pattern": "Pessoa({key})/Cartao({key2})/Fatura({FaturaKey})/Transacoes({TransacoesKey}):?query:",
+          "target": [
+            "Pessoa_Cartao_Fatura_TransacoesObjectPage"
+          ]
+        }
+      ],
+      "targets": {
+        "PessoaList": {
+          "type": "Component",
+          "id": "PessoaList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "contextPath": "/Pessoa",
+              "variantManagement": "Page",
+              "navigation": {
+                "Pessoa": {
+                  "detail": {
+                    "route": "PessoaObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable",
+                    "personalization": {
+                      "column": true
+                    },
+                    "quickVariantSelection": {
+                      "hideTableTitle": true
+                    }
+                  },
+                  "columns": {
+                    "ImagemPessoaLista": {
+                      "header": "Foto",
+                      "position": {
+                        "anchor": "DataField::Imagem",
+                        "placement": "Before"
+                      },
+                      "template": "apps.dflc.gestaogastos.ext.fragment.ImagemPessoaLista",
+                      "availability": "Default",
+                      "width": "80px"
+                    }
+                  }
+                }
+              },
+              "content": {
+                "header": {
+                  "actions": {
+                    "Backup": {
+                      "press": "apps.dflc.gestaogastos.ext.controller.Backup.backup",
+                      "visible": true,
+                      "enabled": true,
+                      "text": "{i18n>backup}"
+                    }
+                  }
+                }
+              },
+              "initialLoad": "Enabled"
+            }
+          },
+          "controlAggregation": "beginColumnPages",
+          "contextPattern": ""
+        },
+        "PessoaObjectPage": {
+          "type": "Component",
+          "id": "PessoaObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/Pessoa",
+              "navigation": {
+                "Cartao": {
+                  "detail": {
+                    "route": "CartaoObjectPage"
+                  }
+                }
+              },
+              "content": {
+                "body": {
+                  "sections": {
+                    "Dados": {
+                      "subSections": {
+                        "PrevisaoDeGasto": {
+                          "template": "apps.dflc.gestaogastos.ext.fragment.PrevisaoDeGasto",
+                          "title": "{i18n>filtrarPrevisoDeGasto}"
+                        }
+                      }
+                    },
+                    "ImagemPessoa": {
+                      "template": "apps.dflc.gestaogastos.ext.fragment.ImagemPessoa",
+                      "position": {
+                        "placement": "Before",
+                        "anchor": "Dados"
+                      },
+                      "title": "{i18n>uploadDeFotoDo}"
+                    },
+                    "AnaliseCategoriaPessoa": {
+                      "template": "apps.dflc.gestaogastos.ext.fragment.AnaliseCategoriaPessoa",
+                      "position": {
+                        "placement": "Before",
+                        "anchor": "Dados"
+                      },
+                      "title": "Análise de gastos por categoria"
+                    }
+                  }
+                },
+                "header": {
+                  "actions": {
+                    "AdicionarGasto": {
+                      "press": "apps.dflc.gestaogastos.ext.controller.AdicionarGasto.adicionarGasto",
+                      "visible": true,
+                      "enabled": true,
+                      "requiresSelection": false,
+                      "text": "{@i18n>adicionarGasto}"
+                    }
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "Cartao/@com.sap.vocabularies.UI.v1.LineItem#i18nCartes": {
+                  "tableSettings": {
+                    "creationMode": {
+                      "name": "NewPage"
+                    },
+                    "type": "ResponsiveTable",
+                    "selectionLimit": 100,
+                    "enableFullScreen": true,
+                    "enablePaste": true,
+                    "selectAll": true,
+                    "selectionMode": "Multi"
+                  },
+                  "columns": {
+                    "ImagemCartaoLista": {
+                      "header": "Foto",
+                      "width": "80px",
+                      "position": {
+                        "anchor": "DataField::Imagem",
+                        "placement": "Before"
+                      },
+                      "template": "apps.dflc.gestaogastos.ext.fragment.ImagemCartaoLista",
+                      "availability": "Default",
+                      "properties": [
+                        "Imagem"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "controlAggregation": "midColumnPages",
+          "contextPattern": "/Pessoa({key})"
+        },
+        "CartaoObjectPage": {
+          "type": "Component",
+          "id": "CartaoObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/Pessoa/Cartao",
+              "navigation": {
+                "Fatura": {
+                  "detail": {
+                    "route": "Pessoa_Cartao_FaturaObjectPage"
+                  }
+                }
+              },
+              "content": {
+                "body": {
+                  "sections": {
+                    "FaturaAtual": {
+                      "template": "apps.dflc.gestaogastos.ext.fragment.FaturaAtual",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "i18nDados"
+                      },
+                      "title": "{i18n>faturaAtual}"
+                    },
+                    "ImagemCartao": {
+                      "template": "apps.dflc.gestaogastos.ext.fragment.ImagemCartao",
+                      "position": {
+                        "placement": "Before",
+                        "anchor": "i18nDados"
+                      },
+                      "title": "Upload Imagem do Cartao"
+                    },
+                    "AnaliseCategoriaCartao": {
+                      "template": "apps.dflc.gestaogastos.ext.fragment.AnaliseCategoriaCartao",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "FaturaAtual"
+                      },
+                      "title": "Categorias dessa fatura"
+                    }
+                  }
+                }
+              },
+              "showRelatedApps": false
+            }
+          },
+          "controlAggregation": "endColumnPages",
+          "contextPattern": "/Pessoa({key})/Cartao({key2})"
+        },
+        "Pessoa_Cartao_FaturaObjectPage": {
+          "type": "Component",
+          "id": "Pessoa_Cartao_FaturaObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "navigation": {
+                "Transacoes": {
+                  "detail": {
+                    "route": "Pessoa_Cartao_Fatura_TransacoesObjectPage"
+                  }
+                }
+              },
+              "contextPath": "/Pessoa/Cartao/Fatura",
+              "content": {
+                "header": {
+                  "actions": {}
+                },
+                "body": {
+                  "sections": {
+                    "AnaliseCategoriaFatura": {
+                      "template": "apps.dflc.gestaogastos.ext.fragment.AnaliseCategoriaFatura",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "i18nDadosDeControle1"
+                      },
+                      "title": "Categorias"
+                    }
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "Transacoes/@com.sap.vocabularies.UI.v1.LineItem#i18nTransaescompras": {
+                  "actions": {
+                    "ExcluirTransacaoo": {
+                      "press": "apps.dflc.gestaogastos.ext.controller.ExcluirTransacao.excluirTransacao",
+                      "visible": true,
+                      "enabled": true,
+                      "requiresSelection": true,
+                      "text": "{i18n>excluirTransao}"
+                    },
+                    "MudarCategoria": {
+                      "press": "apps.dflc.gestaogastos.ext.controller.MudarCategoria.mudarCategoria",
+                      "visible": true,
+                      "enabled": true,
+                      "requiresSelection": true,
+                      "text": "Mudar Categoria",
+                      "position": {
+                        "placement": "Before",
+                        "anchor": "ExcluirTransacaoo"
+                      }
+                    }
+                  },
+                  "tableSettings": {
+                    "selectAll": false,
+                    "selectionMode": "Single"
+                  },
+                  "columns": {
+                    "DataField::Categoria::Imagem": {
+                      "width": "80px"
+                    }
+                  }
+                }
+              },
+              "editableHeaderContent": false
+            }
+          },
+          "controlAggregation": "endColumnPages",
+          "contextPattern": "/Pessoa({key})/Cartao({key2})/Fatura({FaturaKey})"
+        },
+        "Pessoa_Cartao_Fatura_TransacoesObjectPage": {
+          "type": "Component",
+          "id": "Pessoa_Cartao_Fatura_TransacoesObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "navigation": {},
+              "contextPath": "/Pessoa/Cartao/Fatura/Transacoes"
+            }
+          },
+          "controlAggregation": "endColumnPages",
+          "contextPattern": "/Pessoa({key})/Cartao({key2})/Fatura({FaturaKey})/Transacoes({TransacoesKey})"
+        }
+      }
+    },
+    "extends": {
+      "extensions": {
+        "sap.ui.controllerExtensions": {
+          "sap.fe.templates.ObjectPage.ObjectPageController#apps.dflc.gestaogastos::CartaoObjectPage": {
+            "controllerName": "apps.dflc.gestaogastos.ext.controller.CartaoObjeto"
+          },
+          "sap.fe.templates.ObjectPage.ObjectPageController#apps.dflc.gestaogastos::PessoaObjectPage": {
+            "controllerName": "apps.dflc.gestaogastos.ext.controller.PessoaObjeto"
+          },
+          "sap.fe.templates.ListReport.ListReportController#apps.dflc.gestaogastos::PessoaList": {
+            "controllerName": "apps.dflc.gestaogastos.ext.controller.PessoaLista"
+          },
+          "sap.fe.templates.ObjectPage.ObjectPageController#apps.dflc.gestaogastos::Pessoa_Cartao_FaturaObjectPage": {
+            "controllerName": "apps.dflc.gestaogastos.ext.controller.FaturaObjeto"
+          }
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "sap.fe.templates.RootContainer.view.Fcl",
+      "type": "XML",
+      "async": true,
+      "id": "appRootView"
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "GestorDeGastos.service"
+  }
+}

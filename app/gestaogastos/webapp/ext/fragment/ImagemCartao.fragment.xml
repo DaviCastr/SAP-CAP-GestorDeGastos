@@ -1,0 +1,71 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    xmlns:cu="apps.dflc.gestaogastos.ext.control"
+>
+    <VBox
+        alignItems="Center"
+        justifyContent="Center"
+        width="100%"
+    >
+        <!-- Avatar para exibição da imagem -->
+        <Avatar
+            id="avatarImagemCartao"
+            displaySize="Custom"
+            customDisplaySize="250px"
+            src="{Imagem}"
+            initials="CT"
+            displayShape="Square"
+            backgroundColor="Accent6"
+            class="sapUiTinyMarginBottom"
+        />
+        <ProgressIndicator
+            id="uploadImagemCartao"
+            percentValue="0"
+            displayValue="0%"
+            state="Success"
+            width="100%"
+            visible="false"
+        />
+
+        <!-- Botões de Ação -->
+        <HBox
+            alignItems="Center"
+            justifyContent="Center"
+            width="auto"
+            core:require="{ handler: 'apps/dflc/gestaogastos/ext/fragment/ImagemCartao'}"
+        >
+            <!-- Botão de Upload -->
+            <cu:CustomFileUploader
+                id="FileUploadDetailsCartao"
+                fileType="png,jpg,jpeg"
+                change="handler.onUploadImage"
+                uploadComplete="handler.onUploadCompleto"
+                name="Carregar arquivo"
+                icon="sap-icon://upload"
+                tooltip="Carregar arquivo"
+                uploadOnChange="false"
+                buttonOnly="true"
+                iconOnly="true"
+                uploadProgress="handler.onUploadProgresso"
+                visible="{= ${ui>/isEditable} === true ? false:true}"
+                multiple="false"
+                sendXHR="true"
+                httpRequestMethod="Put"
+                style="Transparent"
+                useMultipart="false"
+            />
+
+            <!-- Botão de Remoção -->
+            <Button
+                id="deleteImageButtonCartao"
+                icon="sap-icon://delete"
+                text=""
+                tooltip="Remova a imagem atual"
+                type="Transparent"
+                press="handler.onDeleteImage"
+                visible="{= ${ui>/isEditable} === true ? false:false}"
+            />
+        </HBox>
+    </VBox>
+</core:FragmentDefinition>

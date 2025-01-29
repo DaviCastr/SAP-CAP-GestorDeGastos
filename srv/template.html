@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html style="margin: 0; padding: 0; width: 100%; height: 100%;">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Gestor de Gastos</title>
+</head>
+
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4; color: #555555;">
+    <table width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#f4f4f4">
+        <tr>
+            <td align="center" style="padding: 20px;">
+                <!-- Main container -->
+                <table width="600" cellspacing="0" cellpadding="0" border="0" bgcolor="#ffffff" style="max-width: 600px; width: 100%; border-collapse: collapse;">
+                    <!-- Header -->
+                    <tr bgcolor="#085caf">
+                        <td align="center" style="padding: 20px;">
+                            <table width="100%" cellspacing="0" cellpadding="0" border="0" style="border-collapse: collapse;">
+                                <tr>
+                                    <!-- Logotipo -->
+                                    <td align="left" style="width: 10%;">
+                                        <img src="cid:logo" alt="Logotipo" style="width: 7vh; height: auto; display: block;">
+                                    </td>
+                                    <!-- Título -->
+                                    <td align="left" style="width: 90%;">
+                                        <h1 style="color: #ffffff; font-size: 150%; margin: 0;">Gestor de Gastos</h1>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 20px; text-align: left; font-size: 16px; line-height: 24px; color: #555555;">
+                            <center>
+                                <img src="cid:imagemPessoa" alt="Foto do usuário" style="width: 120px; height: 120px; border-radius: 50%; display: block; margin-bottom: 20px;">
+                            </center>
+                            <p><strong>Olá, {{nome}}!</strong></p>
+                            <p>Este é um aviso para que você lembre-se da data de pagamento da sua fatura. Competência do mês 1, valor total da fatura {{valor}} {{moeda}}</p>
+                            <p><strong>Dados do Pagamento:</strong></p>
+                            <p><strong>Cartão:</strong> {{nomecartao}}</p>
+                            <p><strong>Ano:</strong> {{ano}}</p>
+                            <p><strong>Mês:</strong> {{mes}}</p>
+                            <p><strong>Valor da fatura:</strong> {{valor}} {{moeda}}</p>
+                            <p><strong>Data de Vencimento:</strong> {{datavencimento}}</p>
+                            <p><strong>Acesse o PDF anexo para verificar detalhes dos gastos.</strong></p>
+                            <p>Abraços,<br>Gestor de Gastos.</p>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr bgcolor="#085caf">
+                        <td align="center" style="padding: 20px; color: #ffffff; font-size: 14px;">
+                            <p style="margin: 0;">© {{ano}} Gestor de Gastos. Todos os direitos reservados.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+
+</html>

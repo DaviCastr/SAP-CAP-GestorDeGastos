@@ -1,0 +1,99 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+>
+    <Dialog
+        id="dialogMudarCategoria"
+        title="Mudar Categoria"
+        class="sapUiResponsivePadding"
+        core:require="{ controle: 'apps/dflc/gestaogastos/ext/fragment/MudarCategoria'}"
+    >
+        <content>
+            <VBox class="sapUiSmallMargin">
+                <!-- Campos de Exibição -->
+                <Label text="Descrição da Transação" />
+                <Input
+                    value="{TransacaoMudar>/Dados/Descricao}"
+                    enabled="false"
+                />
+
+                <Label text="Data da Transação" />
+                <Input
+                    value="{ path:'TransacaoMudar>/Dados/Data', formatter:'controle.formatter.formatDate'}"
+                    enabled="false"
+                />
+
+                <Label text="Total" />
+                <Input
+                    value="{TransacaoMudar>/Dados/ValorTotal} {TransacaoMudar>/Dados/Moeda_code}"
+                    enabled="false"
+                />
+
+                <Label text="Valor" />
+                <Input
+                    value="{TransacaoMudar>/Dados/Valor} {TransacaoMudar>/Dados/Moeda_code}"
+                    enabled="false"
+                />
+
+                <Label text="Parcela" />
+                <Input
+                    value="{=${TransacaoMudar>/Dados/Parcela} === undefined ? 1 : ${TransacaoMudar>/Dados/Parcela} }"
+                    enabled="false"
+                />
+
+                <Label text="Quantidade de Parcelas Totais" />
+                <Input
+                    value="{TransacaoMudar>/Dados/ParcelasTotais}"
+                    enabled="false"
+                />
+
+                <!-- Campos Invisíveis -->
+                <Input
+                    id="identificadorTransacaoParaMudanca"
+                    visible="false"
+                    value="{TransacaoMudar>/Dados/Identificador}"
+                    enabled="false"
+                />
+                <Input
+                    visible="false"
+                    value="{TransacaoMudar>/Dados/ID}"
+                    enabled="false"
+                />
+
+                <Label text="Categoria atual" />
+
+                <Input
+                    id="Categoria"
+                    value="{TransacaoMudar>/Dados/Categoria/Nome}"
+                    enabled="false"
+                />
+
+                <Label text="Nova Categoria" />
+                <Select
+                    id="categoriaNovaSelect"
+                    items="{
+                        path: 'TransacaoMudar>/Categorias' }"
+                    required="true"
+                >
+                    <core:Item
+                        key="{TransacaoMudar>ID}"
+                        text="{TransacaoMudar>Nome}"
+                    />
+                </Select>
+            </VBox>
+        </content>
+        <buttons>
+            <!-- Botão Cancelar -->
+            <Button
+                text="Cancelar"
+                press="controle.cancelarMudanca"
+            />
+            <!-- Botão Confirmar -->
+            <Button
+                text="Confirmar"
+                type="Emphasized"
+                press="controle.mudarCategoria"
+            />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

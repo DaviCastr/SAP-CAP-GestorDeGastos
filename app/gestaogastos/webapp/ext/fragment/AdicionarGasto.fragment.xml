@@ -1,0 +1,155 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    id="AdicionarGasto"
+>
+    <Dialog
+        id="_IDGenDialog1"
+        title="Adicionar Gasto"
+        class="sapUiResponsivePadding"
+        core:require="{ handler: 'apps/dflc/gestaogastos/ext/fragment/AdicionarGasto'}"
+    >
+        <content>
+            <VBox
+                id="_IDGenVBox"
+                class="sapUiSmallMargin"
+            >
+                <!-- Total de Parcelas -->
+                <Label
+                    id="_IDGenLabel7"
+                    text="Descrição"
+                    required="true"
+                />
+                <Input
+                    id="descricaoGastoInput"
+                    value=""
+                    type="Text"
+                    textAlign="End"
+                    required="true"
+                />
+                <!-- Valor do Gasto -->
+                <Label
+                    id="_IDGenLabel8"
+                    text="Valor do Gasto"
+                    required="true"
+                />
+                <HBox
+                    id="valorHBox"
+                    width="100%"
+                    class="sapUiNoMargin"
+                >
+                    <!-- Input para o valor -->
+                    <Input
+                        id="valorGastoInput"
+                        value="0.00"
+                        type="Number"
+                        textAlign="End"
+                        width="auto"
+                        class="sapUiTinyMarginEnd"
+                        required="true"
+                    />
+
+                    <Input
+                        id="moedaGastoInput"
+                        value="BRL"
+                        type="Text"
+                        textAlign="End"
+                        width="auto"
+                        class="sapUiTinyMarginEnd"
+                        required="true"
+                        showValueHelp="true"
+                        valueHelpRequest="handler.onValueHelpRequest"
+                    />
+                </HBox>
+
+                <!-- Data do Gasto -->
+                <Label
+                    id="_IDGenLabel9"
+                    text="Data do Gasto"
+                    required="true"
+                />
+                <DatePicker
+                    id="dataGastoPicker"
+                    displayFormat="dd/MM/yyyy"
+                    required="true"
+                />
+
+                <!-- Total de Parcelas -->
+                <Label
+                    id="_IDGenLabel10"
+                    text="Total de Parcelas"
+                    required="true"
+                />
+                <Input
+                    id="totalParcelasInput"
+                    value="1"
+                    type="Number"
+                    textAlign="End"
+                    required="true"
+                />
+
+                <VBox
+                    class="sapUiSmallMargin"
+                    alignItems="Center"
+                >
+                    <!-- Checkbox para Excluir Transações Relacionadas -->
+                    <CheckBox
+                        id="gastoFixoCheckBox"
+                        text="Gasto Fixo"
+                    />
+
+                    <!-- Seleção do Cartão -->
+                    <Label
+                        id="_IDGenLabel6"
+                        text="Selecionar Categoria"
+                        required="true"
+                    />
+                    <Select
+                        id="categoriaSelect"
+                        items="{
+                        path: 'Categoria' }"
+                        required="true"
+                    >
+                        <core:Item
+                            key="{ID}"
+                            text="{Nome}"
+                        />
+                    </Select>
+
+                    <!-- Seleção do Cartão -->
+                    <Label
+                        text="Selecionar Cartão"
+                        required="true"
+                    />
+                    <Select
+                        id="cartaoSelect"
+                        items="{
+                        path: 'Cartoes>/' }"
+                        required="true"
+                    >
+                        <core:Item
+                            id="_IDGenItem21"
+                            key="{Cartoes>ID}"
+                            text="{Cartoes>NomeCartao}"
+                        />
+                    </Select>
+                </VBox>
+            </VBox>
+        </content>
+        <buttons>
+            <!-- Botão Cancelar -->
+            <Button
+                id="_IDGenButton1"
+                text="Cancelar"
+                press="handler.onCancelarGasto"
+            />
+            <!-- Botão Adicionar -->
+            <Button
+                id="_IDGenButton2"
+                text="Adicionar"
+                type="Emphasized"
+                press="handler.onAdicionarGasto"
+            />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

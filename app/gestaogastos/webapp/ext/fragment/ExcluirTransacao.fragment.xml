@@ -1,0 +1,177 @@
+<coreSap:FragmentDefinition
+    xmlns:coreSap="sap.ui.core"
+    xmlns="sap.m"
+>
+    <Dialog
+        id="dialogExcluirTransacao"
+        title="Excluir Transação"
+        class="sapUiResponsivePadding"
+        coreSap:require="{ controle: 'apps/dflc/gestaogastos/ext/fragment/ExcluirTransacao'}"
+    >
+        <content>
+            <VBox
+                id="contentVBox"
+                class="sapUiSmallMargin"
+            >
+                <!-- Campos de Exibição -->
+                <Label
+                    id="_IDGenLabel111"
+                    text="Descrição da Transação"
+                />
+                <Input
+                    id="dataTransacao"
+                    value="{Transacao>/Dados/Descricao}"
+                    enabled="false"
+                />
+
+                <Label
+                    id="_IDGenLabel11"
+                    text="Data da Transação"
+                />
+                <Input
+                    id="nomeTransacao"
+                    value="{ path:'Transacao>/Dados/Data', formatter:'controle.formatter.formatDate'}"
+                    enabled="false"
+                />
+
+                <Label text="Total" />
+                <Input
+                    id="totalTransacao"
+                    value="{Transacao>/Dados/ValorTotal} {Transacao>/Dados/Moeda_code}"
+                    enabled="false"
+                />
+
+                <Label
+                    id="_IDGenLabel2"
+                    text="Valor"
+                />
+                <Input
+                    id="valorTransacao"
+                    value="{Transacao>/Dados/Valor} {Transacao>/Dados/Moeda_code}"
+                    enabled="false"
+                />
+
+                <Label
+                    id="_IDGenLabel13"
+                    text="Parcela"
+                />
+                <Input
+                    id="parcelaTransacao"
+                    value="{=${Transacao>/Dados/Parcela} === undefined ? 1 : ${Transacao>/Dados/Parcela} }"
+                    enabled="false"
+                />
+
+                <Label
+                    id="_IDGenLabel4"
+                    text="Quantidade de Parcelas Totais"
+                />
+                <Input
+                    id="quantidadeParcelas"
+                    value="{Transacao>/Dados/ParcelasTotais}"
+                    enabled="false"
+                />
+
+                <Label
+                    text="Observação"
+                    visible="{Transacao>/Fixo}"
+                />
+
+                <Input
+                    value="É um gasto fixo!"
+                    visible="{Transacao>/Fixo}"
+                    enabled="false"
+                />
+
+                <!-- Campos Invisíveis -->
+                <Input
+                    id="identificadorTransacao"
+                    visible="false"
+                    value="{Transacao>/Dados/Identificador}"
+                    enabled="false"
+                />
+                <Input
+                    id="idTransacao"
+                    visible="false"
+                    value="{Transacao>/Dados/ID}"
+                    enabled="false"
+                />
+
+                <!-- Lista de Transações Relacionadas -->
+                <Label
+                    id="_IDGenLabel5"
+                    text="Transações Relacionadas"
+                    visible="{= ${Transacao>/Relacionadas}.length > 0 }"
+                />
+                <Table
+                    id="listaTransacoesRelacionadas"
+                    items="{ path: 'Transacao>/Relacionadas' }"
+                    visible="{= ${Transacao>/Relacionadas}.length > 0 }"
+                    width="300px"
+                    growing="true"
+                    growingScrollToLoad="true"
+                >
+                    <columns>
+                        <Column
+                            id="_IDGenColumn"
+                            minScreenWidth="Small"
+                            demandPopin="true"
+                            width="50%"
+                        >
+                            <Text
+                                id="_IDGenText"
+                                text="Valor"
+                            />
+                        </Column>
+                        <Column
+                            id="_IDGenColumn1"
+                            minScreenWidth="Small"
+                            demandPopin="true"
+                            width="50%"
+                        >
+                            <Text
+                                id="_IDGenText1"
+                                text="Parcela"
+                            />
+                        </Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem id="_IDGenColumnListItem">
+                            <cells>
+                                <Text
+                                    id="_IDGenText2"
+                                    text="{Transacao>Valor}"
+                                />
+                                <Text
+                                    id="_IDGenText3"
+                                    text="{Transacao>Parcela}"
+                                />
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+
+                <!-- Checkbox para Excluir Transações Relacionadas -->
+                <CheckBox
+                    id="excluirTransacoesRelacionadas"
+                    text="Excluir transações relacionadas"
+                    visible="{= ${Transacao>/Relacionadas}.length > 0 }"
+                />
+            </VBox>
+        </content>
+        <buttons>
+            <!-- Botão Cancelar -->
+            <Button
+                id="botaoCancelar"
+                text="Cancelar"
+                press="controle.cancelarExclusao"
+            />
+            <!-- Botão Confirmar -->
+            <Button
+                id="botaoConfirmar"
+                text="Confirmar"
+                type="Emphasized"
+                press="controle.excluirTransacao"
+            />
+        </buttons>
+    </Dialog>
+</coreSap:FragmentDefinition>
