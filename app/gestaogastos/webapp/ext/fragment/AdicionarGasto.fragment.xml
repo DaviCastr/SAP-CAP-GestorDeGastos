@@ -1,11 +1,6 @@
 <core:FragmentDefinition
     xmlns:core="sap.ui.core"
     xmlns="sap.m"
-<<<<<<< HEAD
-=======
-    xmlns:layout="sap.ui.layout.form"
-    xmlns:VL="sap.ui.comp.valuehelpdialog"
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
     id="AdicionarGasto"
 >
     <Dialog
@@ -93,7 +88,6 @@
                     required="true"
                 />
 
-<<<<<<< HEAD
                 <VBox
                     class="sapUiSmallMargin"
                     alignItems="Center"
@@ -140,32 +134,6 @@
                         />
                     </Select>
                 </VBox>
-=======
-                <!-- Checkbox para Excluir Transações Relacionadas -->
-                <CheckBox
-                    id="gastoFixoCheckBox"
-                    text="Gasto Fixo"
-                />
-
-                <!-- Seleção do Cartão -->
-                <Label
-                    id="_IDGenLabel6"
-                    text="Selecionar Cartão"
-                    required="true"
-                />
-                <Select
-                    id="cartaoSelect"
-                    items="{
-                        path: 'Cartoes>/' }"
-                    required="true"
-                >
-                    <core:Item
-                        id="_IDGenItem21"
-                        key="{Cartoes>ID}"
-                        text="{Cartoes>NomeCartao}"
-                    />
-                </Select>
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
             </VBox>
         </content>
         <buttons>

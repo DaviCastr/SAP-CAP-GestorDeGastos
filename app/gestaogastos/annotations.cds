@@ -1,9 +1,6 @@
 using GestaoGastos as service from '../../srv/gestao_gastos_srv';
-<<<<<<< HEAD
 using from '../../db/entidades';
 
-=======
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 
 annotate service.Pessoa with @(
     UI.LineItem                    : [
@@ -12,10 +9,7 @@ annotate service.Pessoa with @(
             Value: Imagem,
             Label: ' ',
             ![@UI.Importance] : #High,
-<<<<<<< HEAD
             ![@UI.Hidden],
-=======
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
         },
         {
             $Type: 'UI.DataField',
@@ -43,11 +37,7 @@ annotate service.Pessoa with @(
         {
             $Type : 'UI.DataField',
             Value : TotalDoMesEmAberto,
-<<<<<<< HEAD
             Label : 'Total Em Aberto',
-=======
-            Label : 'TotalDoMesEmAberto',
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
             Criticality : CriticidadeEmAberto,
         },
         {
@@ -64,10 +54,6 @@ annotate service.Pessoa with @(
     UI.Facets                      : [
         {
             $Type : 'UI.CollectionFacet',
-<<<<<<< HEAD
-=======
-            Label : 'Dados',
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
             ID    : 'Dados',
             Facets: [
                 {
@@ -92,15 +78,12 @@ annotate service.Pessoa with @(
         },
         {
             $Type : 'UI.ReferenceFacet',
-<<<<<<< HEAD
             Label : 'Categorias',
             ID : 'Categorias1',
             Target : 'Categoria/@UI.LineItem#Categorias1',
         },
         {
             $Type : 'UI.ReferenceFacet',
-=======
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
             Label : '{i18n>Cartes}',
             ID    : 'i18nCartes',
             Target: 'Cartao/@UI.LineItem#i18nCartes',
@@ -128,10 +111,7 @@ annotate service.Pessoa with @(
                 $Type: 'UI.DataField',
                 Value: Imagem,
                 Label: '{i18n>Imagem}',
-<<<<<<< HEAD
                 ![@UI.Hidden],
-=======
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
             },
             {
                 $Type: 'UI.DataField',
@@ -224,7 +204,6 @@ annotate service.Pessoa with @(
         Title: 'Nome',
     },
     UI.HeaderInfo                  : {
-<<<<<<< HEAD
         TypeName      : 'Pessoa',
         TypeNamePlural: 'Pessoas',
         Title : {
@@ -236,11 +215,6 @@ annotate service.Pessoa with @(
             Value : Email,
         },
         TypeImageUrl : 'sap-icon://account',
-=======
-        ImageUrl      : Imagem,
-        TypeName      : '',
-        TypeNamePlural: '',
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
     },
     UI.FieldGroup #i18nEstatisticas: {
         $Type: 'UI.FieldGroupType',
@@ -290,10 +264,7 @@ annotate service.Cartao with @(
             Value: Imagem,
             Label: ' ',
             ![@UI.Importance] : #High,
-<<<<<<< HEAD
             ![@UI.Hidden],
-=======
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
         },
         {
             $Type: 'UI.DataField',
@@ -446,10 +417,7 @@ annotate service.Cartao with @(
                 $Type: 'UI.DataField',
                 Value: Imagem,
                 Label: '{i18n>Imagem}',
-<<<<<<< HEAD
                 ![@UI.Hidden],
-=======
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
             },
             {
                 $Type: 'UI.DataField',
@@ -469,7 +437,6 @@ annotate service.Cartao with @(
         ],
     },
     UI.HeaderInfo                     : {
-<<<<<<< HEAD
         TypeName      : 'Cartão',
         TypeNamePlural: 'Cartões',
         Title : {
@@ -526,32 +493,12 @@ annotate service.Fatura with @(
             ],
             FilterExpression: '',
             SelectOptions   : [{
-=======
-        ImageUrl      : Imagem,
-        TypeName      : '',
-        TypeNamePlural: '',
-    },
-);
-
-annotate service.Fatura with @UI: {
-    SelectionVariant #atual   : {
-        $Type           : 'UI.SelectionVariantType',
-        ID              : 'atual',
-        Text            : 'Atual',
-        Parameters      : [
-
-        ],
-        FilterExpression: '',
-        SelectOptions   : [
-            {
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                 $Type       : 'UI.SelectOptionType',
                 PropertyName: Ano,
                 Ranges      : [{
                     $Type : 'UI.SelectionRangeType',
                     Sign  : #I,
                     Option: #EQ,
-<<<<<<< HEAD
                     Low   : '2025',
                 }, ],
             }, ],
@@ -567,19 +514,10 @@ annotate service.Fatura with @UI: {
             SelectOptions   : [{
                 $Type       : 'UI.SelectOptionType',
                 PropertyName: Ano,
-=======
-                    Low   : '{i18n>Ano}',
-                }, ],
-            },
-            {
-                $Type       : 'UI.SelectOptionType',
-                PropertyName: Mes,
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                 Ranges      : [{
                     $Type : 'UI.SelectionRangeType',
                     Sign  : #I,
                     Option: #EQ,
-<<<<<<< HEAD
                     Low   : '2024',
                 }, ],
             }, ],
@@ -599,52 +537,6 @@ annotate service.Fatura with @UI: {
         TypeImageUrl : 'sap-icon://customer-financial-fact-sheet',
     },
 );
-=======
-                    Low   : '{DiaFechamento}',
-                }, ],
-            }
-        ],
-    },
-    SelectionVariant #futuras : {
-        $Type           : 'UI.SelectionVariantType',
-        ID              : 'futuras',
-        Text            : 'Futuras',
-        Parameters      : [
-
-        ],
-        FilterExpression: '',
-        SelectOptions   : [{
-            $Type       : 'UI.SelectOptionType',
-            PropertyName: Ano,
-            Ranges      : [{
-                $Type : 'UI.SelectionRangeType',
-                Sign  : #I,
-                Option: #EQ,
-                Low   : '2025',
-            }, ],
-        }, ],
-    },
-    SelectionVariant #passadas: {
-        $Type           : 'UI.SelectionVariantType',
-        ID              : 'passadas',
-        Text            : 'Passadas',
-        Parameters      : [
-
-        ],
-        FilterExpression: '',
-        SelectOptions   : [{
-            $Type       : 'UI.SelectOptionType',
-            PropertyName: Ano,
-            Ranges      : [{
-                $Type : 'UI.SelectionRangeType',
-                Sign  : #I,
-                Option: #EQ,
-                Low   : '2024',
-            }, ],
-        }, ],
-    }
-};
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 
 annotate service.Cartao with {
     LimiteDisponivel @Measures.ISOCurrency: Moeda_code
@@ -796,7 +688,6 @@ annotate service.Fatura with @(
 annotate service.Transacao with @(
     UI.LineItem #i18nTransaescompras  : [
         {
-<<<<<<< HEAD
             $Type : 'UI.DataField',
             Value : Categoria.Imagem,
             Label : ' ',
@@ -812,8 +703,6 @@ annotate service.Transacao with @(
             Label : 'Total',
         },
         {
-=======
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
             $Type: 'UI.DataField',
             Value: Valor,
             Label: '{i18n>Valor}',
@@ -875,15 +764,12 @@ annotate service.Transacao with @(
             ID    : 'i18nDadosDeControle',
             Target: '@UI.FieldGroup#i18nDadosDeControle',
         },
-<<<<<<< HEAD
         {
             $Type : 'UI.ReferenceFacet',
             Label : 'Categoria',
             ID : 'Categoria',
             Target : '@UI.FieldGroup#Categoria',
         },
-=======
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
     ],
     UI.FieldGroup #i18nDadosGerais    : {
         $Type: 'UI.FieldGroupType',
@@ -933,7 +819,6 @@ annotate service.Transacao with @(
     },
     UI.UpdateHidden                   : true,
     UI.DeleteHidden                   : true,
-<<<<<<< HEAD
     UI.HeaderInfo : {
         TypeName : 'Trasação',
         TypeNamePlural : 'Transações',
@@ -962,8 +847,6 @@ annotate service.Transacao with @(
             },
         ],
     },
-=======
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 );
 
 annotate service.Transacao with {
@@ -1019,7 +902,6 @@ annotate service.Fatura @(Common.SideEffects #ReactonItemCreationOrDeletion: {
 annotate service.Fatura with {
     Mes @Common.Text: Descricao
 };
-<<<<<<< HEAD
 annotate service.Categoria with @(
     UI.LineItem #Categorias : [
         {
@@ -1051,5 +933,3 @@ annotate service.Transacao with {
     ValorTotal @Measures.ISOCurrency : Moeda_code
 };
 
-=======
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a

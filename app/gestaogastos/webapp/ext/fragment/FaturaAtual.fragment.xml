@@ -2,14 +2,8 @@
     id="TESTE"
     xmlns:core="sap.ui.core"
     xmlns="sap.m"
-<<<<<<< HEAD
     xmlns:table="sap.ui.table"
     xmlns:form="sap.ui.layout.form"
-=======
-    xmlns:macros="sap.fe.macros"
-    xmlns:table="sap.ui.table"
-    xmlns:layout="sap.ui.layout.form"
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 >
     <VBox
         id="FaturaAtualVBox"
@@ -22,11 +16,7 @@
             width="100%"
         >
             <content>
-<<<<<<< HEAD
                 <form:SimpleForm
-=======
-                <layout:SimpleForm
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                     id="idFaturaForm"
                     editable="false"
                     layout="ResponsiveGridLayout"
@@ -73,7 +63,6 @@
                         number="{ValorTotal}"
                         unit="{Moeda_code}"
                     />
-<<<<<<< HEAD
 
                     <Label
                         visible="false"
@@ -84,9 +73,6 @@
                         text="{Cartao_ID}"
                     />
                 </form:SimpleForm>
-=======
-                </layout:SimpleForm>
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
             </content>
         </Panel>
 
@@ -105,19 +91,14 @@
                     growing="true"
                     growingScrollToLoad="true"
                     growingThreshold="10"
-<<<<<<< HEAD
                     width="auto"
                     items="{ path: 'Transacoes'}"
-=======
-                    items="{path: 'Transacoes'}"
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                 >
                     <headerToolbar>
                         <OverflowToolbar id="_IDGenOverflowToolbar1">
                             <SearchField
                                 id="_IDGenSearchField"
                                 search="handler.pesquisarTransacao"
-<<<<<<< HEAD
                                 width="auto"
                             />
                             <ToolbarSpacer id="_IDGenToolbarSpacer1" />
@@ -126,12 +107,6 @@
                                 press="handler.mudarCategoria"
                             />
                             <Button
-=======
-                                width="17.5rem"
-                            />
-                            <ToolbarSpacer id="_IDGenToolbarSpacer1" />
-                            <Button
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                                 id="_IDGenButton5"
                                 text="Excluir"
                                 press="handler.excluirTransacao"
@@ -139,14 +114,11 @@
                         </OverflowToolbar>
                     </headerToolbar>
                     <columns>
-<<<<<<< HEAD
                         <Column >
                             <Text
                                 text=""
                             />
                         </Column>
-=======
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                         <Column id="_IDGenColumn7">
                             <Text
                                 id="_IDGenText5"
@@ -175,10 +147,7 @@
                     <items>
                         <ColumnListItem id="_IDGenColumnListItem1">
                             <cells>
-<<<<<<< HEAD
                                 <Avatar src="{path:'Categoria/Imagem'}"  displaySize="XS" badgeTooltip="" />
-=======
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                                 <Text
                                     id="_IDGenText10"
                                     text="{Data}"
@@ -206,7 +175,6 @@
                                     text="{Identificador}"
                                     visible="false"
                                 />
-<<<<<<< HEAD
                                 <Text
                                     id="CategoriaTransacao"
                                     text="{Categoria_ID}"
@@ -217,8 +185,6 @@
                                     text="{ValorTotal}"
                                     visible="false"
                                 />
-=======
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                             </cells>
                         </ColumnListItem>
                     </items>

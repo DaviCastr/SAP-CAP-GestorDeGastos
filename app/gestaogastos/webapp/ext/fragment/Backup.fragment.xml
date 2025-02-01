@@ -1,15 +1,8 @@
 <core:FragmentDefinition
     xmlns:core="sap.ui.core"
-<<<<<<< HEAD
     xmlns:cu="apps.dflc.gestaogastos.ext.control"
     xmlns="sap.m"
     xmlns:layout="sap.ui.layout"
-=======
-    xmlns="sap.m"
-    xmlns:unified="sap.ui.unified"
-    xmlns:layout="sap.ui.layout"
->
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
     id="RealizarBackup"
 >
     <Dialog
@@ -26,7 +19,6 @@
                 class="sapUiContentPadding"
                 width="100%"
             >
-<<<<<<< HEAD
                 <!--Muultpart como false é importante para funcionar se não corrompe o arquivo-->
                 <cu:CustomFileUploader
                     id="fileUploader"
@@ -57,16 +49,6 @@
                     state="Success"
                     width="100%"
                     visible="false"
-=======
-                <unified:FileUploader
-                    id="fileUploader"
-                    name="file"
-                    width="100%"
-                    placeholder="Selecione um arquivo Excel para importar"
-                    fileType="xlsx"
-                    mimeType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    change="onFileChange"
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                 />
             </layout:VerticalLayout>
         </content>

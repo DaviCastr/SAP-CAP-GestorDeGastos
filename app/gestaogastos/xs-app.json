@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "welcomeFile": "/index.html",
   "authenticationMethod": "route",
   "routes": [
@@ -8,21 +7,11 @@
       "target": "/Gerenciamento/$1",
       "destination": "GestorDeGastos-srv-api",
       "csrfProtection": false,
-=======
-  "authenticationMethod": "route",
-  "routes": [
-    {
-      "source": "^/?odata/(.*)$",
-      "target": "/odata/$1",
-      "destination": "GestorDeGastos-srv-api",
-      "csrfProtection": true,
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
       "authenticationType": "xsuaa"
     },
     {
       "source": "^(.*)$",
       "target": "$1",
-<<<<<<< HEAD
       "service": "html5-apps-repo-rt",
       "authenticationType": "xsuaa"
     },
@@ -32,9 +21,6 @@
       "destination": "GestorDeGastos-srv-api",
       "authenticationType": "xsuaa",
       "csrfProtection": true
-=======
-      "service": "html5-apps-repo-rt"
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
     }
   ]
 }

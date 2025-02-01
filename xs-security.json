@@ -1,24 +1,6 @@
 {
   "xsappname": "GestorDeGastos-${org}-${space}",
-<<<<<<< HEAD
   "scopes": [],
   "attributes": [],
   "role-templates": []
-=======
-  "tenant-mode": "dedicated",
-  "scopes": [],
-  "attributes": [],
-  "role-templates": [],
-  "oauth2-configuration": {
-    "credential-types": [
-      "binding-secret",
-      "x509"
-    ],
-    "redirect-uris": [
-      "https://*.applicationstudio.cloud.sap/**",
-      "https://*.hana.ondemand.com/**",
-      "**"
-    ]
-  }
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 }

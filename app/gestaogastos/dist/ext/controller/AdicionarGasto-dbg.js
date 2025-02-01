@@ -1,21 +1,13 @@
 sap.ui.define([
-<<<<<<< HEAD
     "sap/ui/core/Fragment",
     "sap/ui/model/json/JSONModel",
 ], function (Fragment, JSONModel) {
-=======
-    "sap/m/MessageToast",
-    "sap/ui/core/Fragment",
-    "sap/ui/model/json/JSONModel"
-], function (MessageToast, Fragment, JSONModel) {
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
     'use strict';
 
     return {
 
         adicionarGasto: function (oEvent) {
 
-<<<<<<< HEAD
             try{
 
             const oView = this.editFlow.getView();
@@ -24,23 +16,11 @@ sap.ui.define([
             var securedExecution = function () {
 
                 return new Promise(function(resolve, reject)  {
-=======
-            const oView = this.editFlow.getView();
-            const oModel = oView.getModel();
-
-            var securedExecution = () => {
-
-                return new Promise((resolve, reject) => {
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 
                     try {
 
                         //Busca Moedas
-<<<<<<< HEAD
                         fetch(`${oModel.getServiceUrl()}Currencies`, {
-=======
-                        fetch(`/Gerenciamento/Currencies`, {
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                             method: "GET",
                             headers: {
                                 "Content-Type": "application/json",
@@ -69,11 +49,7 @@ sap.ui.define([
                             Pessoa_ID: this.getBindingContext().getObject().ID
                         };
         
-<<<<<<< HEAD
                         fetch(`${oModel.getServiceUrl()}Cartao?$filter=Pessoa_ID eq ${oPayload.Pessoa_ID}`, {
-=======
-                        fetch(`/Gerenciamento/Cartao?$filter=Pessoa_ID eq ${oPayload.Pessoa_ID}`, {
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                             method: "GET",
                             headers: {
                                 "Content-Type": "application/json",
@@ -125,15 +101,9 @@ sap.ui.define([
                         sap.m.MessageToast.show("Erro ao chamar serviço: " + oError.message);
                     }
 
-<<<<<<< HEAD
                 }.bind(this));
 
             }.bind(this)
-=======
-                });
-
-            }
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 
             let oParameters = {
                 busy: {
@@ -150,13 +120,10 @@ sap.ui.define([
                 console.log(final)
             });
 
-<<<<<<< HEAD
         } catch (erro) {
             sap.m.MessageToast.show("Erro:" + erro);
         }
 
-=======
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
         },
 
     };

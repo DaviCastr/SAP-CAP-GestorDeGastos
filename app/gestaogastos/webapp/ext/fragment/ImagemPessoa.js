@@ -113,6 +113,20 @@ sap.ui.define([
                                 oAvatarLista[0].setSrc(oBase64File);
                             }
 
+                            // try {
+
+                            //     let oAvatarHeader = this._view.getContent()[0].getHeaderContent()[0].getItems().filter(function (oControl) {
+                            //         return oControl.isA("sap.m.Avatar")
+                            //     });
+
+                            //     if (oAvatarHeader.length > 0) {
+                            //         oAvatarHeader[0].setSrc(oBase64File);
+                            //     }
+
+                            // } catch (erro) {
+
+                            // }
+
                             let oTabelaCartoes = sap.ui.core.Element.registry.filter(function (oControl) {
                                 return oControl.isA("sap.m.Table") && oControl.getId().includes("Cartes-innerTable");
                             });

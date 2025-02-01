@@ -1,15 +1,10 @@
 sap.ui.define([
     "sap/m/MessageToast",
     "sap/ui/core/Fragment",
-<<<<<<< HEAD
     "sap/ui/model/json/JSONModel",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator"
 ], function (MessageToast, Fragment, JSONModel, Filter, FilterOperator) {
-=======
-    "sap/ui/model/json/JSONModel"
-], function (MessageToast, Fragment, JSONModel) {
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
     'use strict';
 
     return {
@@ -65,7 +60,6 @@ sap.ui.define([
             let oTransacao = oSelectedItems[0].getBindingContext().getValue(); //oFaturaAtual.Transacoes[`${oPath[2]}`];
 
             const oView = this._view;
-<<<<<<< HEAD
             const oModel = this._view.getModel();
 
             sap.ui.getCore().oFatura = oFaturaAtual;
@@ -80,20 +74,6 @@ sap.ui.define([
                         try {
 
                             fetch(`${oModel.getServiceUrl()}Transacao?$filter=Identificador eq ${oTransacao.Identificador} and ID ne ${oTransacao.ID}`, {
-=======
-
-            sap.ui.getCore().oFatura = oFaturaAtual;
-
-            if (oTransacao.ParcelasTotais > 1) {
-
-                var securedExecution = () => {
-
-                    return new Promise((resolve, reject) => {
-
-                        try {
-
-                            fetch(`/Gerenciamento/Transacao?$filter=Identificador eq ${oTransacao.Identificador} and ID ne ${oTransacao.ID}`, {
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                                 method: "GET",
                                 headers: {
                                     "Content-Type": "application/json",
@@ -113,30 +93,18 @@ sap.ui.define([
 
                                 let oModelJson = {
                                     Dados: oTransacao,
-<<<<<<< HEAD
                                     Fixo: oTransacao.ParcelasTotais == 1 && oRelacionadas.length > 0 ? true : false,
-=======
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                                     Relacionadas: oRelacionadas
                                 }
 
                                 const oTransacoesRelacionadas = new JSONModel(oModelJson);
 
-<<<<<<< HEAD
                                 //oView.setModel(oTransacoesRelacionadas, "Transacao");
 
                                 // Carregar o fragmento do diálogo
                                 if (!sap.ui.getCore().pDialogExcluir) {
                                     sap.ui.getCore().pDialogExcluir = Fragment.load({
                                         id: "ExcluirTransacaoFragment",
-=======
-                                oView.setModel(oTransacoesRelacionadas, "Transacao");
-
-                                // Carregar o fragmento do diálogo
-                                if (!this.pDialog) {
-                                    this.pDialog = Fragment.load({
-                                        id: oView.getId(),
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                                         name: "apps.dflc.gestaogastos.ext.fragment.ExcluirTransacao",
                                         //controller: this
                                     }).then(function (oDialog) {
@@ -145,16 +113,10 @@ sap.ui.define([
                                     });
                                 }
 
-<<<<<<< HEAD
                                 sap.ui.getCore().pDialogExcluir.then(function (oDialog) {
                                     oDialog.open();
                                     oDialog.setModel(oTransacoesRelacionadas, "Transacao");
                                 }.bind(this));
-=======
-                                this.pDialog.then(function (oDialog) {
-                                    oDialog.open();
-                                });
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 
                                 resolve();
 
@@ -169,15 +131,9 @@ sap.ui.define([
                             sap.m.MessageToast.show("Erro ao chamar serviço: " + oError.message);
                         }
 
-<<<<<<< HEAD
                     }.bind(this));
 
                 }.bind(this)
-=======
-                    });
-
-                }
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 
                 let oParameters = {
                     busy: {
@@ -194,7 +150,6 @@ sap.ui.define([
                     console.log(final)
                 });
 
-<<<<<<< HEAD
             } 
             // else {
 
@@ -431,41 +386,11 @@ sap.ui.define([
             } catch (erro) {
                 MessageToast.show("Erro ao buscar categoria: " + erro);
                 sap.ui.core.BusyIndicator.hide();
-=======
-            } else {
-
-                let oModelJson = {
-                    Dados: oTransacao,
-                    Relacionadas: []
-                }
-
-                const oTransacoesRelacionadas = new JSONModel(oModelJson);
-
-                oView.setModel(oTransacoesRelacionadas, "Transacao");
-
-                // Carregar o fragmento do diálogo
-                if (!this.pDialog) {
-                    this.pDialog = Fragment.load({
-                        id: oView.getId(),
-                        name: "apps.dflc.gestaogastos.ext.fragment.ExcluirTransacao",
-                        //controller: this
-                    }).then(function (oDialog) {
-                        oView.addDependent(oDialog);
-                        return oDialog;
-                    });
-                }
-
-                this.pDialog.then(function (oDialog) {
-                    oDialog.open();
-                });
-
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
             }
 
         },
 
         pesquisarTransacao: function (oEvent) {
-<<<<<<< HEAD
             var oPesquisaTabela = [],
                 oPesquisa = oEvent.getParameter("query");
 
@@ -484,16 +409,6 @@ sap.ui.define([
                 oTabelaTransacoes.getBinding("items").filter(oPesquisaTabela, "Application");
             }
 
-=======
-            var oTableSearchState = [],
-                sQuery = oEvent.getParameter("query");
-
-            if (sQuery && sQuery.length > 0) {
-                oTableSearchState = [new Filter("Name", FilterOperator.Contains, sQuery)];
-            }
-
-            const oView = this._view.byId("transactionsTable").getBinding("items").filter(oTableSearchState, "Application");
->>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
         }
     };
 });

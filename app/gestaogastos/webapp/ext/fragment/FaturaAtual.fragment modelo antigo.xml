@@ -3,7 +3,7 @@
     xmlns:core="sap.ui.core"
     xmlns="sap.m"
     xmlns:table="sap.ui.table"
-    xmlns:form="sap.ui.layout.form"
+    xmlns:layout="sap.ui.layout.form"
 >
     <VBox
         id="FaturaAtualVBox"
@@ -16,7 +16,7 @@
             width="100%"
         >
             <content>
-                <form:SimpleForm
+                <layout:SimpleForm
                     id="idFaturaForm"
                     editable="false"
                     layout="ResponsiveGridLayout"
@@ -63,16 +63,7 @@
                         number="{ValorTotal}"
                         unit="{Moeda_code}"
                     />
-
-                    <Label
-                        visible="false"
-                        text="Cartao_ID"
-                    />
-                    <Text
-                         visible="false"
-                        text="{Cartao_ID}"
-                    />
-                </form:SimpleForm>
+                </layout:SimpleForm>
             </content>
         </Panel>
 
@@ -91,21 +82,16 @@
                     growing="true"
                     growingScrollToLoad="true"
                     growingThreshold="10"
-                    width="auto"
-                    items="{ path: 'Transacoes'}"
+                    items="{path: 'Transacoes'}"
                 >
                     <headerToolbar>
                         <OverflowToolbar id="_IDGenOverflowToolbar1">
                             <SearchField
                                 id="_IDGenSearchField"
                                 search="handler.pesquisarTransacao"
-                                width="auto"
+                                width="17.5rem"
                             />
                             <ToolbarSpacer id="_IDGenToolbarSpacer1" />
-                            <Button
-                                text="Mudar Categoria"
-                                press="handler.mudarCategoria"
-                            />
                             <Button
                                 id="_IDGenButton5"
                                 text="Excluir"
@@ -114,11 +100,6 @@
                         </OverflowToolbar>
                     </headerToolbar>
                     <columns>
-                        <Column >
-                            <Text
-                                text=""
-                            />
-                        </Column>
                         <Column id="_IDGenColumn7">
                             <Text
                                 id="_IDGenText5"
@@ -147,7 +128,6 @@
                     <items>
                         <ColumnListItem id="_IDGenColumnListItem1">
                             <cells>
-                                <Avatar src="{path:'Categoria/Imagem'}"  displaySize="XS" badgeTooltip="" />
                                 <Text
                                     id="_IDGenText10"
                                     text="{Data}"
@@ -173,16 +153,6 @@
                                 <Text
                                     id="IdentificadorTransacao"
                                     text="{Identificador}"
-                                    visible="false"
-                                />
-                                <Text
-                                    id="CategoriaTransacao"
-                                    text="{Categoria_ID}"
-                                    visible="false"
-                                />
-
-                                <Text
-                                    text="{ValorTotal}"
                                     visible="false"
                                 />
                             </cells>
