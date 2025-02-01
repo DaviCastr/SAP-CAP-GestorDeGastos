@@ -10,7 +10,10 @@
     "@sap/cds": "^8",
     "@sap/cds-common-content": "^2.1.0",
     "@sap/xssec": "^4",
+<<<<<<< HEAD
     "adm-zip": "^0.5.16",
+=======
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
     "archiver": "^7.0.1",
     "axios": "^1.7.9",
     "dayjs": "^1.11.13",
@@ -18,6 +21,7 @@
     "express": "^4",
     "fast-csv": "^5.0.2",
     "fs": "^0.0.1-security",
+<<<<<<< HEAD
     "handlebars": "^4.7.8",
     "jszip": "^3.10.1",
     "nodemailer": "^6.9.16",
@@ -25,6 +29,12 @@
     "pdfkit": "^0.16.0",
     "saxes": "^6.0.0",
     "stream": "^0.0.3",
+=======
+    "jszip": "^3.10.1",
+    "nodemailer": "^6.9.16",
+    "path": "^0.12.7",
+    "saxes": "^6.0.0",
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
     "tmp": "^0.2.3",
     "unzipper": "^0.12.3",
     "uuid": "^11.0.4"
@@ -32,6 +42,7 @@
   "devDependencies": {
     "@cap-js/cds-types": "^0.6",
     "@cap-js/sqlite": "^1",
+<<<<<<< HEAD
     "@sap/cds-dk": "^8",
     "mbt": "^1.2.29",
     "rimraf": "^5.0.5"
@@ -58,6 +69,20 @@
           "kind": "hana"
         }
       }
+=======
+    "@sap/cds-dk": "^8"
+  },
+  "scripts": {
+    "start": "cds-serve",
+    "watch-gestaogastos": "cds watch --profile hybrid --open gestaogastos/webapp/index.html?sap-ui-xx-viewCache=false"
+  },
+  "cds": {
+    "requires": {
+      "auth": "xsuaa",
+      "destinations": true,
+      "html5-repo": true,
+      "workzone": true
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
     },
     "sql": {
       "native_hana_associations": false

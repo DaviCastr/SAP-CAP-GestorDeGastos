@@ -17,7 +17,11 @@
         },
         "dataSources": {
             "mainService": {
+<<<<<<< HEAD
                 "uri": "Gerenciamento/",
+=======
+                "uri": "../Gerenciamento/",
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                 "type": "OData",
                 "settings": {
                     "annotations": [],
@@ -61,8 +65,12 @@
                 "sap.m": {},
                 "sap.ui.core": {},
                 "sap.fe.templates": {},
+<<<<<<< HEAD
                 "sap.f": {},
                 "sap.suite.ui.microchart": {}
+=======
+                "sap.f": {}
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
             }
         },
         "contentDensities": {
@@ -92,9 +100,13 @@
             "Variantes": {}
         },
         "resources": {
+<<<<<<< HEAD
             "css": [
                 "css/style.css"
             ]
+=======
+            "css": []
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
         },
         "routing": {
             "config": {
@@ -170,6 +182,7 @@
                                         "quickVariantSelection": {
                                             "hideTableTitle": true
                                         }
+<<<<<<< HEAD
                                     },
                                     "columns": {
                                         "ImagemPessoaLista": {
@@ -182,6 +195,8 @@
                                             "availability": "Default",
                                             "width": "80px"
                                         }
+=======
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                                     }
                                 }
                             },
@@ -228,6 +243,7 @@
                                                     "title": "{i18n>filtrarPrevisoDeGasto}"
                                                 }
                                             }
+<<<<<<< HEAD
                                         },
                                         "ImagemPessoa": {
                                             "template": "apps.dflc.gestaogastos.ext.fragment.ImagemPessoa",
@@ -244,6 +260,8 @@
                                                 "anchor": "Dados"
                                             },
                                             "title": "Análise de gastos por categoria"
+=======
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                                         }
                                     }
                                 },
@@ -263,6 +281,7 @@
                                 "Cartao/@com.sap.vocabularies.UI.v1.LineItem#i18nCartes": {
                                     "tableSettings": {
                                         "creationMode": {
+<<<<<<< HEAD
                                             "name": "NewPage"
                                         },
                                         "type": "ResponsiveTable",
@@ -286,6 +305,11 @@
                                                 "Imagem"
                                             ]
                                         }
+=======
+                                            "name": "Inline"
+                                        },
+                                        "type": "ResponsiveTable"
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                                     }
                                 }
                             }
@@ -319,6 +343,7 @@
                                                 "anchor": "i18nDados"
                                             },
                                             "title": "{i18n>faturaAtual}"
+<<<<<<< HEAD
                                         },
                                         "ImagemCartao": {
                                             "template": "apps.dflc.gestaogastos.ext.fragment.ImagemCartao",
@@ -335,6 +360,8 @@
                                                 "anchor": "FaturaAtual"
                                             },
                                             "title": "Categorias dessa fatura"
+=======
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                                         }
                                     }
                                 }
@@ -362,6 +389,7 @@
                             "content": {
                                 "header": {
                                     "actions": {}
+<<<<<<< HEAD
                                 },
                                 "body": {
                                     "sections": {
@@ -374,6 +402,8 @@
                                             "title": "Categorias"
                                         }
                                     }
+=======
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                                 }
                             },
                             "controlConfiguration": {
@@ -385,6 +415,7 @@
                                             "enabled": true,
                                             "requiresSelection": true,
                                             "text": "{i18n>excluirTransao}"
+<<<<<<< HEAD
                                         },
                                         "MudarCategoria": {
                                             "press": "apps.dflc.gestaogastos.ext.controller.MudarCategoria.mudarCategoria",
@@ -396,11 +427,14 @@
                                                 "placement": "Before",
                                                 "anchor": "ExcluirTransacaoo"
                                             }
+=======
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                                         }
                                     },
                                     "tableSettings": {
                                         "selectAll": false,
                                         "selectionMode": "Single"
+<<<<<<< HEAD
                                     },
                                     "columns": {
                                         "DataField::Categoria::Imagem": {
@@ -410,6 +444,11 @@
                                 }
                             },
                             "editableHeaderContent": false
+=======
+                                    }
+                                }
+                            }
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                         }
                     },
                     "controlAggregation": "endColumnPages",
@@ -438,12 +477,15 @@
                     },
                     "sap.fe.templates.ObjectPage.ObjectPageController#apps.dflc.gestaogastos::PessoaObjectPage": {
                         "controllerName": "apps.dflc.gestaogastos.ext.controller.PessoaObjeto"
+<<<<<<< HEAD
                     },
                     "sap.fe.templates.ListReport.ListReportController#apps.dflc.gestaogastos::PessoaList": {
                         "controllerName": "apps.dflc.gestaogastos.ext.controller.PessoaLista"
                     },
                     "sap.fe.templates.ObjectPage.ObjectPageController#apps.dflc.gestaogastos::Pessoa_Cartao_FaturaObjectPage": {
                         "controllerName": "apps.dflc.gestaogastos.ext.controller.FaturaObjeto"
+=======
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                     }
                 }
             }

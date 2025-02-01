@@ -1,6 +1,13 @@
 sap.ui.define([
+<<<<<<< HEAD
 	"sap/ui/core/Fragment"
 ], function (Fragment) {
+=======
+	"sap/m/MessageToast",
+	"sap/ui/core/Fragment",
+	"sap/ui/model/json/JSONModel"
+], function (MessageToast, Fragment, JSONModel) {
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 	'use strict';
 
 	return {

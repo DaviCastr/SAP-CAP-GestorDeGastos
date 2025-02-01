@@ -1,4 +1,8 @@
 {
+<<<<<<< HEAD
     "SAP HANA Project Explorer.bind.confirm automatic undeployment": false,
     "SAP HANA Database Explorer.ShowXsAdvancedConnections": true
+=======
+    "SAP HANA Project Explorer.bind.confirm automatic undeployment": false
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 }

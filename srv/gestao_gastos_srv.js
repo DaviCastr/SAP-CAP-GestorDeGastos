@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
 const nodemailer = require("nodemailer");
+<<<<<<< HEAD
 const handlebars = require("handlebars");
 const PDFDocument = require("pdfkit");
 const { PassThrough } = require('stream');
@@ -138,12 +139,87 @@ class GestaoGastos extends cds.ApplicationService {
         } catch (erro) {
             console.error("Erro ao filtrar registros:", error);
             context.error(400, "Erro ao processar a consulta:" + erro);
+=======
+
+class GestaoGastos extends cds.ApplicationService {
+
+    init() {
+
+        const { Pessoa, Cartao, Transacao } = this.entities;
+
+        this.after("READ", Pessoa, this.afterReadPessoa);
+
+        this.before("UPDATE", Pessoa.drafts, this.beforeUpdatePessoa);
+
+        this.before("UPDATE", Cartao.drafts, this.beforeUpdateCartao);
+
+        this.after("READ", Cartao, this.afterReadCartao);
+
+        this.before("CREATE", Transacao, this.beforeCreateUpdateDeleteTransacao);
+
+        this.on("DELETE", Transacao.drafts, this.beforeCreateUpdateDeleteTransacao);
+
+        this.after("UPDATE", Transacao.drafts, this.beforeCreateUpdateDeleteTransacao);
+
+        this.on("simulaPorMesAno", this.simulaPorMesAno);
+
+        this.on("adicionarGasto", this.adicionarGasto);
+
+        this.on("excluirTransacao", this.excluirTransacao);
+
+        this.on("exportarBackup", this.exportarBackup);
+
+        // Importar Backup
+        this.on("importarBackup", this.importarBackup);
+
+        return super.init();
+    }
+
+    async afterReadPessoa(data) {
+
+        const pessoas = Array.isArray(data) ? data : [data];
+
+        for (const pessoa of pessoas) {
+
+            const oGastos = await this.selecionaGastosPorPessoa(pessoa.ID);
+
+            pessoa.TotalDeGastos = oGastos.totalDeGastos;
+            pessoa.TotalDeGastos = parseFloat((Math.round((pessoa.TotalDeGastos + Number.EPSILON) * 100) / 100));
+            pessoa.TotalDoMes = oGastos.totalDoMes;
+            pessoa.TotalDoMes = parseFloat((Math.round((pessoa.TotalDoMes + Number.EPSILON) * 100) / 100));
+            pessoa.ValorAEconomizar = pessoa.TotalDoMes - pessoa.ObjetivoDeGasto;
+            pessoa.ValorAEconomizar = parseFloat((Math.round((pessoa.ValorAEconomizar + Number.EPSILON) * 100) / 100));
+            pessoa.TotalDoMesEmAberto = oGastos.totalDoMesEmAberto;
+            pessoa.TotalDoMesEmAberto = parseFloat((Math.round((pessoa.TotalDoMesEmAberto + Number.EPSILON) * 100) / 100));
+            pessoa.TotalDoMesFechado = oGastos.totalDoMesFechado;
+            pessoa.TotalDoMesFechado = parseFloat((Math.round((pessoa.TotalDoMesFechado + Number.EPSILON) * 100) / 100));
+            pessoa.TotalDoMesPago = oGastos.totalDoMesPago;
+            pessoa.TotalDoMesPago = parseFloat((Math.round((pessoa.TotalDoMesPago + Number.EPSILON) * 100) / 100));
+
+            if (pessoa.TotalDoMes > pessoa.ObjetivoDeGasto) {
+                pessoa.CriticidadeDoMes = 1;
+            } else {
+                pessoa.CriticidadeDoMes = 3;
+            }
+
+            if (pessoa.TotalDoMesEmAberto > pessoa.ObjetivoDeGasto) {
+                pessoa.CriticidadeEmAberto = 1;
+            } else {
+                pessoa.CriticidadeEmAberto = 3;
+            }
+
+            this.enviarAviso(pessoa);
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
         }
 
     }
 
 
+<<<<<<< HEAD
     async beforeUpdatePessoa(req, context) {
+=======
+    async beforeUpdatePessoa(req) {
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 
         const { Pessoa } = this.entities
 
@@ -156,6 +232,7 @@ class GestaoGastos extends cds.ApplicationService {
             }
         }
 
+<<<<<<< HEAD
         if (req.data.Email) {
 
             const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -176,6 +253,8 @@ class GestaoGastos extends cds.ApplicationService {
 
         }
 
+=======
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
         if (req.data.Renda) {
             if (req.data.Renda < 0) {
                 req.reject(400, `O valor da renda não pode ser negativo.`, 'Renda')
@@ -192,6 +271,7 @@ class GestaoGastos extends cds.ApplicationService {
 
     async beforeUpdateCartao(req) {
 
+<<<<<<< HEAD
         try {
 
             const { Pessoa, Cartao } = this.entities
@@ -224,6 +304,33 @@ class GestaoGastos extends cds.ApplicationService {
         } catch (erro) {
             console.error("Erro ao filtrar registros:", erro);
             req.error(400, "Erro ao processar a consulta:" + erro);
+=======
+        const { Pessoa, Cartao } = this.entities
+
+        let oCartao = await SELECT.one.from(Cartao).where({ ID: req.data.ID });
+
+        if (oCartao) {
+            let oPessoa = await SELECT.one.from(Pessoa).where({ ID: oCartao.Pessoa_ID });
+
+            if (oPessoa && req.data.Moeda_code) {
+
+                if (oPessoa.Moeda_code != req.data.Moeda_code) {
+                    req.reject(400, `O valor do campo Moeda não pode ser mudado/diferente da moeda da pessoa.`, 'Moeda_code')
+                }
+            }
+        }
+
+        if (req.data.Limite) {
+            if (req.data.Limite < 0) {
+                req.reject(400, `O valor da renda não pode ser negativo.`, 'Limite')
+            }
+        }
+
+        if (req.data.DiaFechamento && req.data.DiaVencimento) {
+            if (req.data.DiaVencimento - req.data.DiaVencimento < 2) {
+                req.reject(400, `O valor do dia de vencimento tem que ter diferença maior de 1 dia da fatura.`, 'DiaVencimento');
+            }
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
         }
 
     }
@@ -248,6 +355,7 @@ class GestaoGastos extends cds.ApplicationService {
         oMes = Number(oMes);
         oAno = Number(oAno);
 
+<<<<<<< HEAD
         for (let cartao of dadosCartoes) {
 
             let oMesFatura = oMes;
@@ -294,6 +402,27 @@ class GestaoGastos extends cds.ApplicationService {
                 if (fatura.Ano == oAnoFatura && fatura.Mes >= oMesFatura || fatura.Ano > oAnoFatura) {
                     oTotalDeGastos += Number(fatura.ValorTotal)
                     if (fatura.Mes == oMesFatura && fatura.Ano == oAnoFatura) {
+=======
+        let oMesSeguinte = oMes;
+        let oAnoSeguinte = oAno;
+
+        if (oMes < 12) {
+            oMesSeguinte += 1;
+        } else {
+            oMesSeguinte = 1
+            oAnoSeguinte += 1
+        }
+
+        for (const cartao of dadosCartoes) {
+
+            const faturas = await this.selecionaFaturasPorCartao(cartao.ID, oAno);
+
+            faturas.forEach(fatura => {
+
+                if (fatura.Ano == oAno && fatura.Mes >= oMes || fatura.Ano > oAno) {
+                    oTotalDeGastos += Number(fatura.ValorTotal)
+                    if (fatura.Mes == oMes && fatura.Ano == oAno) {
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                         oTotalDoMes += Number(fatura.ValorTotal);
                         if (cartao.DiaFechamento > oDia)
                             oTotalDoMesEmAberto += Number(fatura.ValorTotal)
@@ -333,6 +462,7 @@ class GestaoGastos extends cds.ApplicationService {
 
     }
 
+<<<<<<< HEAD
     async afterReadCartao(req, context) {
 
         try {
@@ -539,6 +669,64 @@ class GestaoGastos extends cds.ApplicationService {
         } catch (erro) {
             console.error("Erro ao filtrar registros:", erro);
             context.error(400, "Erro ao processar a consulta:" + erro);
+=======
+    async afterReadCartao(data) {
+
+        const cartoes = Array.isArray(data) ? data : [data];
+
+        let oDate = new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
+        oDate = oDate.replaceAll(",", " ");
+        let [oDia, oMes, oAno] = oDate.split(" ")[0].split("/");
+
+        oDia = Number(oDia);
+        oMes = Number(oMes);
+        oAno = Number(oAno);
+
+        let oMesSeguinte = oMes;
+        let oAnoSeguinte = oAno;
+
+        if (oMes < 12) {
+            oMesSeguinte += 1;
+        } else {
+            oMesSeguinte = 1
+            oAnoSeguinte += 1
+        }
+
+        for (const cartao of cartoes) {
+
+            let oTotalDeGastos = 0.0;
+            let oTotalDoMes = 0.0;
+            let oTotalDoMesEmAberto = 0.0;
+            let oTotalDoMesFechado = 0.0;
+
+            const faturas = await this.selecionaFaturasPorCartao(cartao.ID, oAno);
+
+            faturas.forEach(fatura => {
+
+                if (fatura.Ano == oAno && fatura.Mes >= oMes || fatura.Ano > oAno) {
+                    oTotalDeGastos += Number(fatura.ValorTotal)
+                    if (fatura.Mes == oMes && fatura.Ano == oAno) {
+                        oTotalDoMes += Number(fatura.ValorTotal);
+                        if (cartao.DiaFechamento > oDia) {
+                            oTotalDoMesEmAberto += Number(fatura.ValorTotal)
+                        } else if (cartao.DiaVencimento >= oDia) {
+                            oTotalDoMesFechado += Number(fatura.ValorTotal)
+                        }
+                    } else if (fatura.Ano == oAnoSeguinte && fatura.Mes == oMesSeguinte && cartao.DiaFechamento <= oDia) {
+                        oTotalDoMesEmAberto += Number(fatura.ValorTotal)
+                    }
+                }
+
+            });
+
+            cartao.LimiteDisponivel = (Math.round(((cartao.Limite - oTotalDeGastos) + Number.EPSILON) * 100) / 100);
+            cartao.ValorFaturaEmAberto = oTotalDoMesEmAberto;
+            if (cartao.DiaFechamento > oDia)
+                cartao.ValorFaturaParaPagamento = cartao.ValorFaturaEmAberto
+            else
+                cartao.ValorFaturaParaPagamento = oTotalDoMesFechado
+
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
         }
 
     }
@@ -605,6 +793,7 @@ class GestaoGastos extends cds.ApplicationService {
 
     }
 
+<<<<<<< HEAD
     async beforeUpdateBackup(data) {
 
         try {
@@ -645,6 +834,8 @@ class GestaoGastos extends cds.ApplicationService {
 
     }
 
+=======
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
     async simulaPorMesAno(IDPessoa, Mes, Ano) {
 
         const { Cartao, Pessoa } = this.entities;
@@ -690,6 +881,7 @@ class GestaoGastos extends cds.ApplicationService {
         }
     }
 
+<<<<<<< HEAD
     validarData(data) {
         const d = new Date(data);
         return !isNaN(d.getTime());  // Retorna true se a data for válida, false se não for
@@ -729,6 +921,15 @@ class GestaoGastos extends cds.ApplicationService {
         const oDataGasto = new Date(`${data}T00:00:00`);
         const oAnoGasto = oDataGasto.getFullYear();       // Retorna 2025
         const oMesGasto = Number(String(oDataGasto.getMonth() + 1).padStart(2, "0")); // Retorna 01 (mês é zero-based)
+=======
+    async adicionarGasto(pessoa, descricao, valor, moeda, data, parcelas, gastofixo, cartao) {
+
+        const { Pessoa, Fatura, Transacao, Cartao } = this.entities
+
+        const oDataGasto = new Date(`${data}T00:00:00`);
+        const oAnoGasto = oDataGasto.getFullYear();      
+        const oMesGasto = Number(String(oDataGasto.getMonth() + 1).padStart(2, "0")); 
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
         const oDiaGasto = Number(String(oDataGasto.getDate()).padStart(2, "0"));
 
         let oAnoFatura = oAnoGasto;
@@ -760,6 +961,7 @@ class GestaoGastos extends cds.ApplicationService {
 
         }
 
+<<<<<<< HEAD
         if (oCartao.DiaFechamento > oCartao.DiaVencimento) {
 
             if (oMesFatura == 12) {
@@ -783,6 +985,9 @@ class GestaoGastos extends cds.ApplicationService {
         } catch (erro) {
 
         }
+=======
+        let oParcelaGastoFixo = 1;
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 
         if (oCartao.DiaFechamento <= oDiaGasto) {
 
@@ -795,8 +1000,11 @@ class GestaoGastos extends cds.ApplicationService {
 
         }
 
+<<<<<<< HEAD
         let oParcelaGastoFixo = 1;
 
+=======
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
         if (gastofixo) {
 
             oParcelaGastoFixo = (12 - oMesFatura) + 1;
@@ -809,7 +1017,11 @@ class GestaoGastos extends cds.ApplicationService {
             let oValor = (Math.round(((valor / parcelas) + Number.EPSILON) * 100) / 100);
             let oDiferenca = (oValor * parcelas) - valor;
             let oValorPrimeiraParcela = (Math.round(((oValor - oDiferenca) + Number.EPSILON) * 100) / 100);
+<<<<<<< HEAD
             let oIdentificadorGasto = this.gerarUUID();
+=======
+            let oIdentificadorGasto = this.generateUUID();
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
             let oFatura = await this.recuperaFatura(oAnoFatura, oMesFatura, oValorPrimeiraParcela, oPessoa.Moeda_code, cartao);
 
             do {
@@ -839,13 +1051,19 @@ class GestaoGastos extends cds.ApplicationService {
                 let oNovaTransacao = {
                     Identificador: oIdentificadorGasto,
                     Data: data,
+<<<<<<< HEAD
                     ValorTotal: valor,
+=======
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                     Valor: oValorParcela,
                     Moeda_code: oPessoa.Moeda_code,
                     ParcelasTotais: parcelas,
                     Parcela: oParcelaTransacao,
                     Descricao: descricao,
+<<<<<<< HEAD
                     Categoria_ID: categoria,
+=======
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                     Fatura_ID: oFatura.ID,
                 }
 
@@ -966,7 +1184,11 @@ class GestaoGastos extends cds.ApplicationService {
 
         const oSoma = await SELECT.one`coalesce (sum (Valor),0) as Valor`.from(Transacao).where({ Fatura_ID: Fatura_ID });
 
+<<<<<<< HEAD
         const oValorTotal = parseFloat((Math.round((oSoma.Valor + Number.EPSILON) * 100) / 100));//.toFixed(2)
+=======
+        const oValorTotal = parseFloat((Math.round((oSoma.Valor + Number.EPSILON) * 100) / 100));
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 
         await UPDATE(Fatura, Fatura_ID).with({ ValorTotal: oValorTotal })
 
@@ -1007,6 +1229,7 @@ class GestaoGastos extends cds.ApplicationService {
 
     }
 
+<<<<<<< HEAD
     async exportarBackupPrincipal(req, context) {
         const { Pessoa, Categoria, Cartao, Fatura, Transacao, Backup } = this.entities;
         const { ID } = req.data;
@@ -1167,11 +1390,45 @@ class GestaoGastos extends cds.ApplicationService {
 
         return {
             "erro": "Erro ao exportar Backup" 
+=======
+    async exportarBackup(req) {
+
+        const tx = cds.transaction(req);
+        const workbook = new excel.Workbook();
+
+        // Adicionar tabelas no Excel
+        const tables = ['Pessoa', 'Cartao', 'Fatura', 'Transacao'];
+        for (const table of tables) {
+            const sheet = workbook.addWorksheet(table);
+
+            // Usar SELECT direto com CDS
+            const data = await tx.run(SELECT.from(`app.entidades.${table}`));
+
+            if (data.length > 0) {
+                sheet.columns = Object.keys(data[0]).map((key) => ({ header: key, key }));
+                sheet.addRows(data);
+            }
+        }
+
+        // Salvar arquivo temporário
+        const filePath = path.join(__dirname, 'backup.xlsx');
+        await workbook.xlsx.writeFile(filePath);
+        const fileContent = fs.readFileSync(filePath);
+        fs.unlinkSync(filePath); 
+
+        return {
+            headers: {
+                'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Content-Disposition': 'attachment; filename=backup.xlsx'
+            },
+            body: fileContent
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
         };
     }
 
     async importarBackup(req) {
 
+<<<<<<< HEAD
         const tx = cds.transaction(req); // Iniciar transação
 
         const zipBuffer = req;
@@ -1206,6 +1463,19 @@ class GestaoGastos extends cds.ApplicationService {
 
         const tables = ['Pessoa', 'Categoria', 'Cartao', 'Fatura', 'Transacao'];
 
+=======
+        const tx = cds.transaction(req); // Usar transação
+        const fileBuffer = req;
+
+        const workbook = new excel.Workbook();
+        await workbook.xlsx.load(fileBuffer);
+
+        let oFaturas = [];
+        let oTransacoesTotais = []
+        let oTransacoesInseridas = []
+
+        const tables = ['Pessoa', 'Cartao', 'Fatura', 'Transacao'];
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
         for (const table of tables) {
             const sheet = workbook.getWorksheet(table);
             if (!sheet) continue;
@@ -1213,10 +1483,14 @@ class GestaoGastos extends cds.ApplicationService {
             const rows = [];
             let rowHeader = {};
             sheet.eachRow((row, rowNumber) => {
+<<<<<<< HEAD
                 if (rowNumber === 1) {
                     rowHeader = row; // Cabeçalhos
                     return;
                 }
+=======
+                if (rowNumber === 1) { rowHeader = row; return }; // Ignorar cabeçalhos
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                 const rowData = {};
                 sheet.columns.forEach((col, i) => {
                     rowData[rowHeader.getCell(i + 1).value] = row.getCell(i + 1).value;
@@ -1226,11 +1500,15 @@ class GestaoGastos extends cds.ApplicationService {
 
             // Processar cada linha da tabela
             for (const row of rows) {
+<<<<<<< HEAD
                 // Verificar se o registro já existe no banco
+=======
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                 const exists = await tx.run(
                     SELECT.from(`app.entidades.${table}`).where({ ID: row.ID })
                 );
 
+<<<<<<< HEAD
                 if (table === 'Transacao') {
                     oTransacoesTotais.push(row.ID);
                 }
@@ -1288,10 +1566,19 @@ class GestaoGastos extends cds.ApplicationService {
                     }
 
                     // Inserir no banco se não existir
+=======
+                if (table == 'Transacao') {
+                    oTransacoesTotais.push(row.ID)
+                }
+
+                if (exists.length === 0) {
+                    // Inserir se não existir
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                     await tx.run(
                         INSERT.into(`app.entidades.${table}`).entries(row)
                     );
 
+<<<<<<< HEAD
                     if (table === 'Transacao') {
                         oTransacoesInseridas.push(row.ID);
                         oFaturas.push(row.Fatura_ID);
@@ -1299,20 +1586,41 @@ class GestaoGastos extends cds.ApplicationService {
                 } else {
                     let teste = 1;
                 }
+=======
+                    if (table == 'Transacao') {
+                        oTransacoesInseridas.push(row.ID);
+                        oFaturas.push(row.Fatura_ID);
+                    }
+
+                } 
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
             }
         }
 
         await tx.commit();
 
+<<<<<<< HEAD
         // Atualizar valores das faturas, se necessário
+=======
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
         if (oTransacoesTotais.length > oTransacoesInseridas.length) {
             let oFaturasParaAtualizarValor = [...new Set(oFaturas)];
 
             for (const oFatura of oFaturasParaAtualizarValor) {
+<<<<<<< HEAD
                 await this.atualizaValorFatura(oFatura);
             }
         }
 
+=======
+
+                await this.atualizaValorFatura(oFatura)
+
+            }
+        }
+
+        return 'Backup importado com sucesso!';
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
     }
 
     async atualizaAvisoEnviadoFatura(Fatura_ID) {
@@ -1323,11 +1631,15 @@ class GestaoGastos extends cds.ApplicationService {
 
     }
 
+<<<<<<< HEAD
     async enviarAviso(req) {
 
         if (!process.env.SMTPAddres) {
             return
         }
+=======
+    async enviarAviso(pessoa) {
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 
         let oDate = new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
         oDate = oDate.replaceAll(",", " ");
@@ -1337,6 +1649,7 @@ class GestaoGastos extends cds.ApplicationService {
         oMes = Number(oMes);
         oAno = Number(oAno);
 
+<<<<<<< HEAD
         try {
 
             const { Pessoa, Cartao, Fatura, Transacao } = this.entities
@@ -1440,6 +1753,79 @@ class GestaoGastos extends cds.ApplicationService {
 
                             }
 
+=======
+        const { Pessoa, Cartao, Fatura } = this.entities
+
+        const oPessoa = await SELECT.one.from(Pessoa).where({ ID: pessoa.ID });
+
+        if (oPessoa.Email == null) {
+            return;
+        }
+
+        const oCartoes = await SELECT.from(Cartao).where({ Pessoa_ID: oPessoa.ID });
+
+        if (!oCartoes) {
+            return;
+        }
+
+        const oFaturas = await SELECT.from(Fatura).where({
+            Ano: oAno,
+            Mes: oMes
+        });
+
+        if (!oFaturas) {
+            return;
+        }
+
+        for (const oCartao of oCartoes) {
+
+            let oFatura = oFaturas.filter(fatura => fatura.Cartao_ID === oCartao.ID);
+
+            if (oFatura.length > 0) {
+
+                oFatura = oFatura[0];
+
+                if (oFatura.AvisoEnviado == false || oFatura.AvisoEnviado == null) {
+
+                    if (oCartao.DiaVencimento - oDia >= 0) {
+
+                        try {
+                            // Configuração do transporte
+                            let oEmail = nodemailer.createTransport({
+                                host: process.env.SMTPHost,
+                                port: 587, // TLS
+                                secure: false, // Use false para TLS
+                                auth: {
+                                    user: process.env.SMTPAddres,
+                                    pass: process.env.SMTPKey
+                                }
+                            });
+
+                            // Detalhes do e-mail
+                            let oOpcoesEmail = {
+                                from: '"Gestor de gastos" <no.reply@gmail.com>',
+                                to: `${oPessoa.Email}`,
+                                subject: `Olá ${oPessoa.Nome}, Sua Fatura do Cartão ${oCartao.NomeCartao} está prestes a vencer.`,
+                                text: `Olá ${oPessoa.Nome}! Este é um aviso para que você lembre-se da data de pagamento da sua fatura do cartão ${oCartao.NomeCartao}.
+                                   Competência do mês ${oFatura.Mes}, valor total da fatura <b>${oFatura.ValorTotal} ${oFatura.Moeda_code}</b>.
+                                   Este e-mail é somente um aviso, caso já tenha pago desconsiderar.`,
+                                html: `<b>Olá ${oPessoa.Nome}!</b><br />Olá! Este é um aviso para que você lembre-se da data de pagamento da sua fatura do cartão ${oCartao.NomeCartao}.
+                                     <br /> Competência do mês ${oFatura.Mes}, valor total da fatura ${oFatura.ValorTotal} ${oFatura.Moeda_code}.
+                                     <i>Este e-mail é somente um aviso, caso já tenha pago desconsiderar.</i>`
+                            };
+
+                            if (process.env.SMTPHost) {
+
+                                await this.atualizaAvisoEnviadoFatura(oFatura.ID);
+
+                                await this.enviarEmail(oEmail, oOpcoesEmail);
+
+                            }
+
+                            console.log("E-mail enviado com sucesso");
+                        } catch (error) {
+                            console.error("Erro ao enviar o e-mail:", error);
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                         }
 
                     }
@@ -1448,13 +1834,17 @@ class GestaoGastos extends cds.ApplicationService {
 
             }
 
+<<<<<<< HEAD
         } catch (erro) {
             console.log("Erro:" + erro)
             return erro;
+=======
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
         }
 
     }
 
+<<<<<<< HEAD
     async mudarCategoriaTransacaoPrincipal(req, context) {
 
         try {
@@ -1561,10 +1951,22 @@ class GestaoGastos extends cds.ApplicationService {
         } catch (error) {
             console.error("Erro ao enviar e-mail:", error);
             return error;
+=======
+    async enviarEmail(oEmail, oOpcoesEmail) {
+
+        try {
+            // Envia o e-mail
+            await oEmail.sendMail(oOpcoesEmail);
+            console.log("E-mail enviado com sucesso:", info.messageId);
+
+        } catch (error) {
+            console.error("Erro ao enviar o e-mail:", error);
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
         }
 
     }
 
+<<<<<<< HEAD
     async processaEnviarEmail(conteudo, fatura) {
 
         if (!process.EmailAviso) {
@@ -2362,6 +2764,9 @@ class GestaoGastos extends cds.ApplicationService {
     }
 
     gerarUUID() {
+=======
+    generateUUID() {
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
         return cds.utils.uuid();
     }
 }

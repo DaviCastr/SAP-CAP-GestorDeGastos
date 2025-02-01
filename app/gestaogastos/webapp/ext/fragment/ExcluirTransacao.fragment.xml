@@ -1,12 +1,24 @@
+<<<<<<< HEAD
 <coreSap:FragmentDefinition
     xmlns:coreSap="sap.ui.core"
     xmlns="sap.m"
+=======
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    xmlns:layout="sap.ui.layout.form"
+    id="ExcluirTransacao"
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 >
     <Dialog
         id="dialogExcluirTransacao"
         title="Excluir Transação"
         class="sapUiResponsivePadding"
+<<<<<<< HEAD
         coreSap:require="{ controle: 'apps/dflc/gestaogastos/ext/fragment/ExcluirTransacao'}"
+=======
+        core:require="{ handler: 'apps/dflc/gestaogastos/ext/fragment/ExcluirTransacao'}"
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
     >
         <content>
             <VBox
@@ -30,6 +42,7 @@
                 />
                 <Input
                     id="nomeTransacao"
+<<<<<<< HEAD
                     value="{ path:'Transacao>/Dados/Data', formatter:'controle.formatter.formatDate'}"
                     enabled="false"
                 />
@@ -38,6 +51,9 @@
                 <Input
                     id="totalTransacao"
                     value="{Transacao>/Dados/ValorTotal} {Transacao>/Dados/Moeda_code}"
+=======
+                    value="{Transacao>/Dados/Data}"
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                     enabled="false"
                 />
 
@@ -47,7 +63,11 @@
                 />
                 <Input
                     id="valorTransacao"
+<<<<<<< HEAD
                     value="{Transacao>/Dados/Valor} {Transacao>/Dados/Moeda_code}"
+=======
+                    value="{Transacao>/Dados/Valor}"
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                     enabled="false"
                 />
 
@@ -71,6 +91,7 @@
                     enabled="false"
                 />
 
+<<<<<<< HEAD
                 <Label
                     text="Observação"
                     visible="{Transacao>/Fixo}"
@@ -82,6 +103,8 @@
                     enabled="false"
                 />
 
+=======
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                 <!-- Campos Invisíveis -->
                 <Input
                     id="identificadorTransacao"
@@ -163,15 +186,27 @@
             <Button
                 id="botaoCancelar"
                 text="Cancelar"
+<<<<<<< HEAD
                 press="controle.cancelarExclusao"
+=======
+                press="handler.cancelarExclusao"
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
             />
             <!-- Botão Confirmar -->
             <Button
                 id="botaoConfirmar"
                 text="Confirmar"
                 type="Emphasized"
+<<<<<<< HEAD
                 press="controle.excluirTransacao"
             />
         </buttons>
     </Dialog>
 </coreSap:FragmentDefinition>
+=======
+                press="handler.excluirTransacao"
+            />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a

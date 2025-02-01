@@ -1,11 +1,19 @@
 <core:FragmentDefinition
     xmlns:core="sap.ui.core"
     xmlns="sap.m"
+<<<<<<< HEAD
     xmlns:form="sap.ui.layout.form"
     xmlns:layout="sap.ui.layout"
 >
     <VBox
         id="_IDGenVBox2"
+=======
+    xmlns:macros="sap.fe.macros"
+    xmlns:layout="sap.ui.layout.form"
+>
+    <VBox id="_IDGenVBox2"
+        
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
         core:require="{ handler: 'apps/dflc/gestaogastos/ext/fragment/PrevisaoDeGasto'}"
     >
         <HBox
@@ -19,6 +27,13 @@
                 class="sapUiTinyMarginEnd"
             >
                 <core:Item
+<<<<<<< HEAD
+=======
+                    id="_IDGenItem"
+                    text="2024"
+                />
+                <core:Item
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                     id="_IDGenItem1"
                     text="2025"
                 />
@@ -102,7 +117,11 @@
                 press="handler.onBuscarSimulação"
             />
         </HBox>
+<<<<<<< HEAD
         <form:SimpleForm
+=======
+        <layout:SimpleForm
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
             id="form"
             layout="ResponsiveGridLayout"
             editable="true"
@@ -110,10 +129,14 @@
             width="300px"
         >
             <!-- Total Do Mês -->
+<<<<<<< HEAD
             <Label
                 id="_IDGenLabel16"
                 text="Total Do Mês"
             />
+=======
+            <Label id="_IDGenLabel16"  text="Total Do Mês" />
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 
             <ObjectNumber
                 id="TotalDoMes"
@@ -122,8 +145,12 @@
             />
 
             <!-- Total De Gastos -->
+<<<<<<< HEAD
             <Label
                 id="_IDGenLabel17"
+=======
+            <Label id="_IDGenLabel17"
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                 text="Total De Gastos"
             />
 
@@ -134,8 +161,12 @@
             />
 
             <!-- Valor à Economizar -->
+<<<<<<< HEAD
             <Label
                 id="_IDGenLabel12"
+=======
+            <Label id="_IDGenLabel12"
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                 text="Valor à Economizar"
             />
 
@@ -144,6 +175,7 @@
                 number=""
                 unit=""
             />
+<<<<<<< HEAD
         </form:SimpleForm>
 
         <layout:FixFlex >
@@ -185,5 +217,9 @@
                 </Panel>
             </layout:fixContent>
         </layout:FixFlex>
+=======
+            
+        </layout:SimpleForm>
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
     </VBox>
 </core:FragmentDefinition>

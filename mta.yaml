@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+---
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 _schema-version: 3.3.0
 ID: GestorDeGastos
 version: 1.0.0
@@ -47,11 +51,14 @@ modules:
       - name: GestorDeGastos-auth
       - name: GestorDeGastos-destination
       - name: GestorDeGastos-html5-runtime
+<<<<<<< HEAD
     provides:
       - name: app-api
         properties:
           app-protocol: ${protocol}
           app-uri: ${default-uri}
+=======
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 
   - name: GestorDeGastos-db-deployer
     type: hdb
@@ -119,6 +126,7 @@ modules:
               ServiceInstanceName: GestorDeGastos-auth
               ServiceKeyName: GestorDeGastos-auth-key
               sap.cloud.service: GestorDeGastos.service
+<<<<<<< HEAD
         subaccount:
           existing_destinations_policy: update
           destinations:
@@ -135,6 +143,8 @@ modules:
               WebIDEEnabled: true
               MobileEnabled: true
               AppgyverEnabled: true
+=======
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 
 resources:
   - name: GestorDeGastos-auth
@@ -144,12 +154,15 @@ resources:
       service-plan: application
       path: ./xs-security.json
       config:
+<<<<<<< HEAD
         oauth2-configuration:
           redirect-uris:
             - https://*.${default-domain}/login/*
           credential-types:
             - binding-secret
             - x509
+=======
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
         xsappname: GestorDeGastos-${org}-${space}
         tenant-mode: dedicated
   - name: GestorDeGastos-destination

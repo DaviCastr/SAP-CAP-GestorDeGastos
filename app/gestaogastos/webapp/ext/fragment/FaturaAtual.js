@@ -1,10 +1,15 @@
 sap.ui.define([
     "sap/m/MessageToast",
     "sap/ui/core/Fragment",
+<<<<<<< HEAD
     "sap/ui/model/json/JSONModel",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator"
 ], function (MessageToast, Fragment, JSONModel, Filter, FilterOperator) {
+=======
+    "sap/ui/model/json/JSONModel"
+], function (MessageToast, Fragment, JSONModel) {
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
     'use strict';
 
     return {
@@ -21,7 +26,11 @@ sap.ui.define([
                 }
                 const oDate = new Date(`${sDate}T00:00:00`);
                 const dd = String(oDate.getDate()).padStart(2, '0');
+<<<<<<< HEAD
                 const mm = String(oDate.getMonth() + 1).padStart(2, '0'); // Janeiro é 0
+=======
+                const mm = String(oDate.getMonth() + 1).padStart(2, '0');
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                 const yyyy = oDate.getFullYear();
 
                 return `${dd}/${mm}/${yyyy}`; // Ou use '-' em vez de '/'
@@ -56,6 +65,7 @@ sap.ui.define([
 
             let oFaturaAtual = oFormularioFatura.getBindingContext().getValue();
 
+<<<<<<< HEAD
             let oTransacao = oSelectedItems[0].getBindingContext().getValue();
 
             const oView = this._view;
@@ -72,6 +82,23 @@ sap.ui.define([
                         try {
 
                             fetch(`${oModel.getServiceUrl()}Transacao?$filter=Identificador eq ${oTransacao.Identificador} and ID ne ${oTransacao.ID}`, {
+=======
+            let oTransacao = oSelectedItems[0].getBindingContext().getValue(); 
+
+            const oView = this._view;
+
+            sap.ui.getCore().oFatura = oFaturaAtual;
+
+            if (oTransacao.ParcelasTotais > 1) {
+
+                var securedExecution = () => {
+
+                    return new Promise((resolve, reject) => {
+
+                        try {
+
+                            fetch(`/Gerenciamento/Transacao?$filter=Identificador eq ${oTransacao.Identificador} and ID ne ${oTransacao.ID}`, {
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                                 method: "GET",
                                 headers: {
                                     "Content-Type": "application/json",
@@ -91,28 +118,47 @@ sap.ui.define([
 
                                 let oModelJson = {
                                     Dados: oTransacao,
+<<<<<<< HEAD
                                     Fixo: oTransacao.ParcelasTotais == 1 && oRelacionadas.length > 0 ? true : false,
+=======
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                                     Relacionadas: oRelacionadas
                                 }
 
                                 const oTransacoesRelacionadas = new JSONModel(oModelJson);
 
+<<<<<<< HEAD
                                 // Carregar o fragmento do diálogo
                                 if (!sap.ui.getCore().pDialogExcluir) {
                                     sap.ui.getCore().pDialogExcluir = Fragment.load({
                                         id: "ExcluirTransacaoFragment",
                                         name: "apps.dflc.gestaogastos.ext.fragment.ExcluirTransacao",
                                         //controller: this
+=======
+                                oView.setModel(oTransacoesRelacionadas, "Transacao");
+
+                                // Carregar o fragmento do diálogo
+                                if (!this.pDialog) {
+                                    this.pDialog = Fragment.load({
+                                        id: oView.getId(),
+                                        name: "apps.dflc.gestaogastos.ext.fragment.ExcluirTransacao"
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
                                     }).then(function (oDialog) {
                                         oView.addDependent(oDialog);
                                         return oDialog;
                                     });
                                 }
 
+<<<<<<< HEAD
                                 sap.ui.getCore().pDialogExcluir.then(function (oDialog) {
                                     oDialog.open();
                                     oDialog.setModel(oTransacoesRelacionadas, "Transacao");
                                 }.bind(this));
+=======
+                                this.pDialog.then(function (oDialog) {
+                                    oDialog.open();
+                                });
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 
                                 resolve();
 
@@ -127,9 +173,15 @@ sap.ui.define([
                             sap.m.MessageToast.show("Erro ao chamar serviço: " + oError.message);
                         }
 
+<<<<<<< HEAD
                     }.bind(this));
 
                 }.bind(this)
+=======
+                    });
+
+                }
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 
                 let oParameters = {
                     busy: {
@@ -146,6 +198,7 @@ sap.ui.define([
                     console.log(final)
                 });
 
+<<<<<<< HEAD
             } 
         
         },
@@ -349,6 +402,34 @@ sap.ui.define([
             } catch (erro) {
                 MessageToast.show("Erro ao buscar categoria: " + erro);
                 sap.ui.core.BusyIndicator.hide();
+=======
+            } else {
+
+                let oModelJson = {
+                    Dados: oTransacao,
+                    Relacionadas: []
+                }
+
+                const oTransacoesRelacionadas = new JSONModel(oModelJson);
+
+                oView.setModel(oTransacoesRelacionadas, "Transacao");
+
+                // Carregar o fragmento do diálogo
+                if (!this.pDialog) {
+                    this.pDialog = Fragment.load({
+                        id: oView.getId(),
+                        name: "apps.dflc.gestaogastos.ext.fragment.ExcluirTransacao"
+                    }).then(function (oDialog) {
+                        oView.addDependent(oDialog);
+                        return oDialog;
+                    });
+                }
+
+                this.pDialog.then(function (oDialog) {
+                    oDialog.open();
+                });
+
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
             }
 
         },
@@ -358,7 +439,11 @@ sap.ui.define([
                 oPesquisa = oEvent.getParameter("query");
 
             if (oPesquisa && oPesquisa.length > 0) {
+<<<<<<< HEAD
                 oPesquisaTabela = [new Filter({ filters: [new Filter("Descricao", FilterOperator.Contains, oPesquisa)] })];
+=======
+                oPesquisaTabela = [new Filter({ filters: [new Filter("Descricao", FilterOperator.Contains, oPesquisa)]})];
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
             }
 
             //Pesquisa tabelas da tela para manipulação
@@ -371,7 +456,10 @@ sap.ui.define([
             if (oTabelaTransacoes) {
                 oTabelaTransacoes.getBinding("items").filter(oPesquisaTabela, "Application");
             }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
         }
     };
 });

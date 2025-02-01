@@ -1,5 +1,10 @@
 # Getting Started
 
+<<<<<<< HEAD
+=======
+See the demostration at https://www.linkedin.com/posts/davi-castr_buscando-me-aprimorar-nos-desenvolvimentos-activity-7282420396803420160-ArFy?utm_source=share&utm_medium=member_desktop
+
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 Welcome to your new project.
 
 It contains these folders and files, following our recommended project layout:

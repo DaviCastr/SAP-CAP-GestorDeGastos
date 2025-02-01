@@ -3,6 +3,10 @@ _out
 *.db
 *.sqlite
 connection.properties
+<<<<<<< HEAD
+=======
+default-*.json
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 .cdsrc-private.json
 gen/
 node_modules/

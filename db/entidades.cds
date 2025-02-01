@@ -7,6 +7,7 @@ using {
 } from '@sap/cds/common';
 
 entity Pessoa : cuid, managed {
+<<<<<<< HEAD
     Nome                        : String(100)  @mandatory;
 
     @Core.MediaType               : TipoImagem
@@ -65,11 +66,58 @@ entity Categoria : cuid, managed {
 
     Transacoes : Association to many Transacao
                      on Transacoes.Categoria = $self;
+=======
+    Nome                       : String(100)  @mandatory;
+
+    @Core.MediaType               : TipoImagem
+    Imagem                     : LargeBinary @UI: {IsImage: true}  @mandatory;
+
+    @Core.IsMediaType             : true
+    TipoImagem                 : String;
+
+    @Semantics.amount.currencyCode: 'Moeda'
+    Renda                      : Decimal  @mandatory;
+    Moeda                      : Currency  @mandatory;
+    Email                      : String(100) @mandatory;
+    Telefone                   : String(20) @mandatory;
+
+    @Semantics.amount.currencyCode: 'Moeda'
+    ObjetivoDeGasto            : Decimal  @mandatory;
+
+    @Semantics.amount.currencyCode: 'Moeda'
+    virtual ValorAEconomizar   : Decimal;
+
+    @Semantics.amount.currencyCode: 'Moeda'
+    virtual TotalDeGastos      : Decimal;
+
+    @Semantics.amount.currencyCode: 'Moeda'
+    virtual TotalDoMes         : Decimal;
+
+    @Semantics.amount.currencyCode: 'Moeda'
+    virtual TotalDoMesPago     : Decimal;
+
+    @Semantics.amount.currencyCode: 'Moeda'
+    virtual TotalDoMesEmAberto : Decimal;
+
+    @Semantics.amount.currencyCode: 'Moeda'
+    virtual TotalDoMesFechado  : Decimal;
+
+    virtual CriticidadeDoMes: Integer;
+
+    virtual CriticidadeEmAberto: Integer;
+
+    Cartao                     : Composition of many Cartao
+                                     on Cartao.Pessoa = $self
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 }
 
 entity Cartao : cuid, managed {
 
+<<<<<<< HEAD
     NomeCartao                       : String(50)            @mandatory;
+=======
+    NomeCartao                       : String(50) @mandatory;
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 
     @Core.MediaType               : TipoImagem
     @UI                           : {IsImage: true}
@@ -79,6 +127,7 @@ entity Cartao : cuid, managed {
     TipoImagem                       : String;
 
     @Semantics.amount.currencyCode: 'Moeda'
+<<<<<<< HEAD
     Limite                           : Decimal               @mandatory;
     Moeda                            : Currency              @mandatory;
 
@@ -86,6 +135,15 @@ entity Cartao : cuid, managed {
     virtual LimiteDisponivel         : Decimal;
     DiaVencimento                    : Integer               @mandatory; // Dia do vencimento
     DiaFechamento                    : Integer               @mandatory; // Dia do fechamento da fatura
+=======
+    Limite                           : Decimal  @mandatory;
+    Moeda                            : Currency  @mandatory;
+
+    @Semantics.amount.currencyCode: 'Moeda'
+    virtual LimiteDisponivel         : Decimal;
+    DiaVencimento                    : Integer  @mandatory; // Dia do vencimento
+    DiaFechamento                    : Integer  @mandatory; // Dia do fechamento da fatura
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 
     @Semantics.amount.currencyCode: 'Moeda'
     virtual ValorFaturaParaPagamento : Decimal;
@@ -104,6 +162,7 @@ entity Fatura : cuid, managed {
         Ano: 'desc',
         Mes: 'desc'
     }
+<<<<<<< HEAD
     Ano          : Integer;
     Mes          : Integer;
     Descricao    : String(255);
@@ -115,10 +174,24 @@ entity Fatura : cuid, managed {
     Cartao       : Association to Cartao @mandatory; //@assert.target
     Transacoes   : Composition of many Transacao
                        on Transacoes.Fatura = $self
+=======
+    Ano        : Integer;
+    Mes        : Integer;
+    Descricao  : String(255);
+
+    @Semantics.amount.currencyCode: 'Moeda'
+    ValorTotal : Decimal;
+    Moeda      : Currency;
+    AvisoEnviado: Boolean;
+    Cartao     : Association to Cartao @mandatory; //@assert.target
+    Transacoes : Composition of many Transacao
+                     on Transacoes.Fatura = $self
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 }
 
 
 entity Transacao : cuid, managed {
+<<<<<<< HEAD
     Identificador  : UUID;
     Data           : Date;
     @Semantics.amount.currencyCode: 'Moeda'
@@ -139,6 +212,19 @@ entity Backup : cuid, managed {
 
     @Core.IsMediaType: true
     TipoBackup : String;
+=======
+    Identificador                : UUID;
+    Data                         : Date;
+
+    @Semantics.amount.currencyCode: 'Moeda'
+    Valor                        : Decimal;
+    Moeda                        : Currency;
+    ParcelasTotais               : Integer;
+    Parcela                      : Integer;
+    Descricao                    : String(255);
+
+    Fatura                       : Association to Fatura @mandatory; //@assert.target
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 }
 
 //Anotações
@@ -160,10 +246,13 @@ annotate Transacao with {
     modifiedAt @odata.etag
 }
 
+<<<<<<< HEAD
 annotate Backup with {
     modifiedAt @odata.etag
 }
 
+=======
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
 type retornoSimulacao {
     TotalDeGastos    : Decimal;
     TotalDoMes       : Decimal;
@@ -176,6 +265,7 @@ type Moeda : String;
 type retornoBooleano {
     sucesso : Boolean
 }
+<<<<<<< HEAD
 
 type recuperaCategorias {
     pessoa : UUID;
@@ -230,3 +320,5 @@ type TransacoesTipo {
     Parcela        : Integer;
     Descricao      : String(255);
 }
+=======
+>>>>>>> 7f01fe1936688df1011ce89337a57e281209142a
