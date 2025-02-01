@@ -1,0 +1,2 @@
+sap.ui.define(["sap/ui/core/Fragment"],function(t){"use strict";return{backup:function(){const i=this.editFlow.getView();if(!this._backupDialog){this._backupDialog=t.load({id:"Backup",name:"apps.dflc.gestaogastos.ext.fragment.Backup"}).then(function(t){i.addDependent(t);return t}.bind(this))}this._backupDialog.then(function(t){t.open()})}}});
+//# sourceMappingURL=Backup.js.map

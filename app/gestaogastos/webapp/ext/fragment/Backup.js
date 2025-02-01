@@ -46,36 +46,63 @@ sap.ui.define([
                         let oContext = oFuncao.getBoundContext();
                         let oFile = oContext.getValue("value")
 
-                        oDialog.close();
+                        if (oFile.backup) {
 
-                        if (oFile.body) {
+                            // Fazendo a consulta
+                            let oFiltros = [
+                                new sap.ui.model.Filter("ID", sap.ui.model.FilterOperator.EQ, oFile.backup)
+                            ];
 
-                            const fileContent = new Uint8Array(oFile.body.data);
-                            File.save(fileContent, "backup-gestor-de-gastos", "zip", "application/zip");
-                            MessageToast.show("Backup exportado com sucesso!");
+                            let oBackup = await oView.getModel().bindList(`/Backup`, null, null, oFiltros).requestContexts();
+                            
+                            if (oBackup.length > 0) {
+                                let sUrl = `${oView.getModel().getServiceUrl()}Backup(ID=${oFile.backup})/Backup`;
+
+                                $.ajax({
+                                    url: sUrl,
+                                    method: "GET",
+                                    headers: {
+                                        "Accept": "application/x-zip-compressed"
+                                    },
+                                    xhrFields: {
+                                        responseType: "blob"
+                                    },
+                                    success: async function (oData, sStatus, oXHR) {
+
+                                        const fileContent = new Uint8Array(await oData.arrayBuffer());
+                                        File.save(fileContent, "backup-gestor-de-gastos", "zip", "application/zip");
+                                        MessageToast.show("Backup exportado com sucesso!");
+
+                                        for (let backup of oBackup) {
+                                            await backup.delete();
+                                        }
+
+                                        oDialog.close();
+
+                                    },
+                                    error: async function (oXHR, sStatus, sError) {
+
+                                        for (let backup of oBackup) {
+                                            await backup.delete();
+                                        }
+
+                                        MessageToast.show("Erro ao baixar o backup:"+sError);
+
+                                        oDialog.close();
+                                    }
+                                });
+
+                            }else{
+
+                                oDialog.close();
+                                MessageToast.show("Erro ao baixar o backup");
+
+                            }
 
                         } else {
-                            MessageToast.show("Erro ao exportar backup:"+oFile);
+                            MessageToast.show("Erro ao exportar backup:" + oFile.erro);
+                            oDialog.close();
                         }
-
-                        // fetch("/Gerenciamento/exportarBackup", {
-                        //     method: "POST",
-                        //     headers: {
-                        //         "Accept": "application/octet-stream"
-                        //     }
-                        // })
-                        //     .then(response => {
-                        //         return response.oBackupCreate()
-                        //     })
-                        //     .then(blob => {
-                        //         oDialog.close();
-                        //         const fileContent = new Uint8Array(blob.value.body.data);
-                        //         File.save(fileContent, "backup-gestor-de-gastos", "xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-                        //         MessageToast.show("Backup exportado com sucesso!");
-                        //     })
-                        //     .catch(err => {
-                        //         MessageToast.show("Erro ao exportar backup!");
-                        //     });
 
                     } else {
                         MessageToast.show("É necessário ter pelo menos um cadastro de pessoa");
@@ -101,9 +128,10 @@ sap.ui.define([
             try {
 
                 const oView = this.getParent().getParent();
+                const oModel = oView.getModel();
                 const oDialog = this.getParent();
                 const oFileUploader = Fragment.byId("Backup", "fileUploader");
-                const oUrlBaseUpload = "/Gerenciamento/Backup";
+                const oUrlBaseUpload = `${oModel.getServiceUrl()}Backup`;
                 const aFiles = oFileUploader.oFileUpload.files;
 
                 sap.ui.core.BusyIndicator.show();
@@ -123,12 +151,10 @@ sap.ui.define([
                     });
                 }
 
-                // const oReader = new FileReader();
-
                 let getSecurityToken = async function () {
-                    return await new Promise((resolve, reject) => {
+                    return await new Promise(function (resolve, reject) {
 
-                        fetch("/Gerenciamento", {
+                        fetch(oModel.getServiceUrl(), {
                             method: "GET",
                             headers: {
                                 "X-CSRF-Token": "Fetch"
@@ -144,119 +170,8 @@ sap.ui.define([
                                 const csrfToken = response.headers.get("X-CSRF-Token");
                                 return csrfToken;
                             }.bind(this)).then(function (csrfToken) { resolve(csrfToken) }).catch((erro) => { reject(erro) });
-                    });
-                }
-
-                // oReader.onload = async (oEvent) => {
-                //     const oBase64File = oEvent.target.result//.split(",")[1]; // Captura o conteúdo base64 do arquivo
-
-                //     let oNomeFuncao = 'importarBackup';
-                //     let oFuncao = oView.getModel().bindContext(`/${oNomeFuncao}(...)`);
-                //     oFuncao.setParameter("file", oBase64File);
-                //     await oFuncao.execute();
-
-                //     let oContext = oFuncao.getBoundContext();
-                //     let oRetorno = oContext.getValue("value")
-
-                //     sap.ui.core.BusyIndicator.hide();
-                //     oDialog.setBusy(false);
-
-                //     oDialog.close();
-
-                //     if (oRetorno) {
-
-                //         const oModel = oView.getModel();
-                //         oModel.refresh();
-
-                //         let oTabelasCartoes = sap.ui.core.Element.registry.filter(function (oControl) {
-                //             return oControl.isA("sap.m.Table") && oControl.getId().includes("innerTable");
-                //         });
-
-                //         let oCartoes = oTabelasCartoes[0];
-                //         oCartoes.refreshItems()
-
-                //         let oVBoxsFaturaAtual = sap.ui.core.Element.registry.filter(function (oControl) {
-                //             return oControl.isA("sap.m.VBox") && oControl.getId().includes("FaturaAtualVBox");
-                //         });
-
-                //         if (oVBoxsFaturaAtual.length) {
-
-                //             let oVBoxFaturaAtual = oVBoxsFaturaAtual[0];
-
-                //             oVBoxFaturaAtual.getBindingContext().refresh();
-
-                //         }
-
-                //         MessageToast.show(oRetorno);
-
-                //     } else {
-                //         MessageToast.show("Erro ao importar backup!");
-                //     }
-
-                // };
-
-                // oReader.readAsArrayBuffer(oFile); // Lê o arquivo em Base64
-
-                // const performAjaxRequest = (url, oBackupCreateData) => {
-                //     return new Promise((resolve, reject) => {
-                //         jQuery.ajax({
-                //             type: "POST",
-                //             contentType: 'application/oBackupCreate; charset=utf-8',
-                //             url: url,
-                //             data: oBackupCreate.stringify(oBackupCreateData),
-                //             dataType: "oBackupCreate",
-                //             success: function (data, textStatus, xhr) {
-                //                 console.log("Success - data:", data, "xhr:", xhr);
-                //                 resolve({ data, textStatus, xhr });
-                //             },
-                //             error: function (xhr, textStatus, errorThrown) {
-                //                 console.error("Erro na requisição:", textStatus, errorThrown);
-                //                 reject({ xhr, textStatus, errorThrown });
-                //             }
-                //         });
-                //     });
-                // };
-
-                // this.uuid = uuidv4();
-
-                // // Função principal para chamar o AJAX e gerenciar o FileUploader
-                // const uploadFile = async function () {
-
-                //     try {
-
-                //         sap.ui.core.BusyIndicator.show();;
-
-                //         var oNovoBackup = {
-                //             "ID": this.uuid,
-                //             "TipoBackup": oFile.type
-                //         };
-
-                //         const response = await performAjaxRequest(oUrlBaseUpload, oNovoBackup);
-
-                //         // Verifica se o UUID está definido antes de configurar o FileUploader
-                //         if (this.uuid) {
-                //             oFileUploader.setUploadUrl(`${oUrlBaseUpload}(ID=${this.uuid})/content`);
-                //             oFileUploader.setSendXHR(true);
-
-                //             // Realiza o upload
-                //             oFileUploader.upload();
-                //         } else {
-                //             MessageToast.show("Erro: UUID não definido.");
-                //         }
-
-                //         MessageToast.show("Arquivo enviado com sucesso!");
-
-                //     } catch (error) {
-                //         console.error("Erro ao realizar o upload:", error);
-                //         MessageToast.show(`Erro ao importar: ${error.textStatus || "desconhecido"}`);
-                //     } finally {
-                //         sap.ui.core.BusyIndicator.hide();
-                //     }
-
-                // }.bind(this);
-
-                // // Chamada da função
-                // uploadFile();
+                    }.bind(this));
+                }.bind(this)
 
                 var oBackupCreate = {
                     "ID": uuidv4()

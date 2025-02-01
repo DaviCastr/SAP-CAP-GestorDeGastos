@@ -1,0 +1,6 @@
+.customAvatar2 {
+    width: 10rem !important; 
+    height: 48px !important; 
+    border-radius: 50%;      
+    object-fit: cover;      
+}

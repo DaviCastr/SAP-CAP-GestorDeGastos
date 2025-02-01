@@ -9,7 +9,7 @@ const PDFDocument = require("pdfkit");
 const { PassThrough } = require('stream');
 const AdmZip = require('adm-zip');
 
-// Ajuste o limite de tamanho de arquivo permitido (por exemplo, para 50MB)
+ 
 
 
 class GestaoGastos extends cds.ApplicationService {
@@ -696,7 +696,10 @@ class GestaoGastos extends cds.ApplicationService {
     }
 
     ultimoDiaDoMes(ano, mes) {
-        
+        // O mês no JavaScript é zero-indexado, ou seja, janeiro é 0, fevereiro é 1, etc.
+        // Então, se queremos o último dia de janeiro, passamos 0 para o mês.
+
+        // Criar uma data no primeiro dia do próximo mês
         const data = new Date(ano, mes, 0);
 
         // Retorna o último dia do mês
@@ -1005,7 +1008,7 @@ class GestaoGastos extends cds.ApplicationService {
     }
 
     async exportarBackupPrincipal(req, context) {
-        const { Pessoa, Categoria, Cartao, Fatura, Transacao } = this.entities;
+        const { Pessoa, Categoria, Cartao, Fatura, Transacao, Backup } = this.entities;
         const { ID } = req.data;
         const tx = cds.transaction();
         const zip = new AdmZip();
@@ -1144,12 +1147,26 @@ class GestaoGastos extends cds.ApplicationService {
         // Gerar o ZIP final com todos os arquivos de pessoas
         const zipBuffer = zip.toBuffer();
 
+        if(zipBuffer){
+
+            let oId = this.gerarUUID();
+         
+            let novoBackup = {
+                ID: oId,
+                Backup: zipBuffer,
+                TipoBackup: "application/x-zip-compressed"
+            }
+    
+            const oBackupCreate = await INSERT.into(Backup).entries([novoBackup]);
+        
+            return {
+                "backup": oId,
+            };
+
+        }
+
         return {
-            headers: {
-                'Content-Type': 'application/zip',
-                'Content-Disposition': 'attachment; filename=backup.zip',
-            },
-            body: zipBuffer,
+            "erro": "Erro ao exportar Backup" 
         };
     }
 

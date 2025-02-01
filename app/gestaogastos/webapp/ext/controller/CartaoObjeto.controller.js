@@ -6,6 +6,8 @@ sap.ui.define([
 		'use strict';
 
 		return ControllerExtension.extend('apps.dflc.gestaogastos.ext.controller.CartaoObjeto', {
+			// this section allows to extend lifecycle hooks or hooks provided by Fiori elements
+
 			defineModeloFaturaAtual: async function (oBindingContext) {
 
 				//Pesquisa formulário da fatura
@@ -48,7 +50,7 @@ sap.ui.define([
 						if (oBindingContext) {
 
 							oCartao = await oBindingContext.requestObject(oBindingContext.getPath());
-
+			
 						} else if (sap.ui.getCore().oCartao) {
 
 							oCartao = sap.ui.getCore().oCartao;
@@ -140,7 +142,7 @@ sap.ui.define([
 										painel.setVisible(true);
 									});
 								}
-								
+
 								oVBoxFaturaAtual.setBusy(false);
 
 							} else {

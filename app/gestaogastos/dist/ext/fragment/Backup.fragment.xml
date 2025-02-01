@@ -1,0 +1,77 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns:cu="apps.dflc.gestaogastos.ext.control"
+    xmlns="sap.m"
+    xmlns:layout="sap.ui.layout"
+    id="RealizarBackup"
+>
+    <Dialog
+        id="dialogBackup"
+        title="Backup"
+        class="sapUiResponsivePadding"
+        contentWidth="100px"
+        contentHeight="auto"
+        core:require="{ handler: 'apps/dflc/gestaogastos/ext/fragment/Backup'}"
+    >
+        <content>
+            <layout:VerticalLayout
+                id="_IDGenVerticalLayout1"
+                class="sapUiContentPadding"
+                width="100%"
+            >
+                <!--Muultpart como false é importante para funcionar se não corrompe o arquivo-->
+                <cu:CustomFileUploader
+                    id="fileUploader"
+                    name="file"
+                    width="100%"
+                    fileType="zip"
+                    placeholder="Selecione um arquivo Excel para importar"
+                    uploadComplete="handler.onUploadCompleto"
+                    uploadAborted="handler.onUploadAbortado"
+                    uploadOnChange="false"
+                    change="handler.onModificaArquivo"
+                    uploadProgress="handler.onUploadProgresso"
+                    sameFilenameAllowed="true"
+                    multiple="false"
+                    sendXHR="true"
+                    httpRequestMethod="Put"
+                    style="Transparent"
+                    buttonOnly="false"
+                    useMultipart="false"
+                    icon="sap-icon://upload"
+                    iconOnly="true"
+                    tooltip="Upload de Backup"
+                />
+                <ProgressIndicator
+                    id="uploadProgresso"
+                    percentValue="0"
+                    displayValue="0%"
+                    state="Success"
+                    width="100%"
+                    visible="false"
+                />
+            </layout:VerticalLayout>
+        </content>
+        <buttons>
+            <Button
+                id="_IDGenButton6"
+                icon="sap-icon://download-from-cloud"
+                press="handler.exportarBackup"
+                type="Success"
+            />
+
+            <Button
+                id="_IDGenButton3"
+                icon="sap-icon://upload-to-cloud"
+                type="Success"
+                press="handler.importarBackup"
+            />
+            <Button
+                id="_IDGenButton8"
+                type="Negative"
+                icon="sap-icon://decline"
+                press="handler.cancelarBackup"
+            />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

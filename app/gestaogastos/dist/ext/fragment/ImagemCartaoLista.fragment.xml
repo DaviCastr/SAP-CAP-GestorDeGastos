@@ -1,0 +1,14 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+>
+    <Avatar
+        badgeTooltip="{ID}"
+        displayShape="Square"
+        displaySize="S"
+        src="{Imagem}"
+        initials="CT"
+        backgroundColor="Accent6"
+        class="sapUiTinyMarginBottom"
+    />
+</core:FragmentDefinition>

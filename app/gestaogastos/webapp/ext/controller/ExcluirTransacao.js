@@ -22,17 +22,18 @@ sap.ui.define([
                 sap.ui.getCore().oFatura = oFatura;
 
                 const oView = this.editFlow.getView();
+                const oModel = oView.getModel();
 
                 if (oTransacao.ID){
 
-                    var securedExecution = () => {
+                    var securedExecution = function ()  {
 
-                        return new Promise((resolve, reject) => {
+                        return new Promise(function (resolve, reject) {
 
                             try {
 
                                 //Busca Moedas
-                                fetch(`/Gerenciamento/Transacao?$filter=ID eq ${oTransacao.ID}`, {
+                                fetch(`${oModel.getServiceUrl()}Transacao?$filter=ID eq ${oTransacao.ID}`, {
                                     method: "GET",
                                     headers: {
                                         "Content-Type": "application/json",
@@ -54,7 +55,7 @@ sap.ui.define([
 
                                     oTransacao = oTransacoes[0];
 
-                                    fetch(`/Gerenciamento/Transacao?$filter=Identificador eq ${oTransacao.Identificador} and ID ne ${oTransacao.ID}`, {
+                                    fetch(`${oModel.getServiceUrl()}Transacao?$filter=Identificador eq ${oTransacao.Identificador} and ID ne ${oTransacao.ID}`, {
                                         method: "GET",
                                         headers: {
                                             "Content-Type": "application/json",
@@ -115,9 +116,9 @@ sap.ui.define([
                                 sap.m.MessageToast.show("Erro ao chamar serviço: " + oError.message);
                             }
 
-                        });
+                        }.bind(this));
 
-                    }
+                    }.bind(this)
 
                     let oParameters = {
                         busy: {
@@ -135,7 +136,7 @@ sap.ui.define([
                     });
 
                 } 
-                
+             
             } catch (erro) {
                 sap.m.MessageToast.show("Erro:" + erro);
             }

@@ -20,12 +20,6 @@ sap.ui.define([
                         oModel.refresh();
                     }
 
-                    // let oBindingContext = oView?.getBindingContext() || null;
-
-                    // if (oBindingContext) {
-                    //     oBindingContext.refresh();
-                    // }
-
                 } catch (erro) { }
 
                 //Tabelas da tela
@@ -61,14 +55,8 @@ sap.ui.define([
                     try {
                         let oVBoxFaturaAtual = oVBoxsFaturaAtual[0];
 
-                        //let oBindingContext = oVBoxFaturaAtual?.getBindingContext() || null;
-
                         let oModel = oVBoxFaturaAtual?.getModel() || null;
-
-                        // if (oBindingContext) {
-                        //     oBindingContext.refresh();
-                        // }
-
+                        
                         if (oModel) {
                             oModel.refresh();
                         }

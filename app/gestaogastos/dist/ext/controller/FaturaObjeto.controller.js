@@ -1,0 +1,2 @@
+sap.ui.define(["sap/ui/core/mvc/ControllerExtension","apps/dflc/gestaogastos/ext/fragment/AnaliseCategoriaFatura"],function(e,t){"use strict";return e.extend("apps.dflc.gestaogastos.ext.controller.FaturaObjeto",{defineGraficoCategorias:async function(e){t.defineGraficoCategorias(this,e)},override:{onInit:function(){var e=this.base.getExtensionAPI().getModel()},routing:{onAfterBinding:async function(e){this.defineGraficoCategorias(e)}}}})});
+//# sourceMappingURL=FaturaObjeto.controller.js.map

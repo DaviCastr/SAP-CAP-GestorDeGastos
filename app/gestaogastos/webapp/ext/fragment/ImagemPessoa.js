@@ -9,13 +9,14 @@ sap.ui.define([
             const oFileUploader = this.byId("FileUploadDetails");
             const oPath = this._view.getBindingContext().getPath();
             const oPessoa = this._view.getBindingContext().getObject();
+            const oModel = this._view.getModel();
             const aFiles = oFileUploader.oFileUpload.files;
             const oFile = aFiles[0];
 
             let getSecurityToken = async function () {
                 return await new Promise((resolve, reject) => {
 
-                    fetch("/Gerenciamento", {
+                    fetch(oModel.getServiceUrl(), {
                         method: "GET",
                         headers: {
                             "X-CSRF-Token": "Fetch"
@@ -57,8 +58,8 @@ sap.ui.define([
 
             oFileUploader.insertHeaderParameter(oContentType);
 
-            const oUrlBaseUpload = "/Gerenciamento";
-            oFileUploader.setUploadUrl(`${oUrlBaseUpload}${oPath}/Imagem`);
+            const oUrlBaseUpload = oModel.getServiceUrl();
+            oFileUploader.setUploadUrl(`${oUrlBaseUpload}${oPath.replace("/", "")}/Imagem`);
             oFileUploader.setSendXHR(true);
 
             const uploadPromise = new Promise((resolve, reject) => {

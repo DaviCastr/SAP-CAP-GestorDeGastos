@@ -1,0 +1,31 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+	xmlns:layout="sap.ui.layout"
+>
+    <VBox
+        core:require="{ handler: 'apps/dflc/gestaogastos/ext/fragment/AnaliseCategoriaFatura'}"
+    >
+        <layout:FixFlex>
+            <!-- Painel para Exibição das Categorias -->
+            <layout:fixContent>
+                <Panel
+                    expandable="true"
+                    expanded="true"
+                    headerText="Categorias"
+                    width="auto"
+                >
+                    <content>
+                        <!-- Para cada Categoria, renderize um micro gráfico -->
+                        <FlexBox
+                            id="categoryFatura"
+                            alignItems="Center"
+                            justifyContent="Start"
+                            busy="true"
+                        />
+                    </content>
+                </Panel>
+            </layout:fixContent>
+        </layout:FixFlex>
+    </VBox>
+</core:FragmentDefinition>

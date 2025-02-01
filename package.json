@@ -46,11 +46,9 @@
   "cds": {
     "requires": {
       "db": {
-        "kind": "sqlite",
-        "credentials": {
-          "url": "db/gestordegastos.sqlite"
-        }
+        "kind": "hana"
       },
+      "auth": "xsuaa",
       "[production]": {
         "auth": "xsuaa",
         "destinations": true,

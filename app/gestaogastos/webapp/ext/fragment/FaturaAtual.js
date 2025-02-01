@@ -56,21 +56,22 @@ sap.ui.define([
 
             let oFaturaAtual = oFormularioFatura.getBindingContext().getValue();
 
-            let oTransacao = oSelectedItems[0].getBindingContext().getValue(); 
+            let oTransacao = oSelectedItems[0].getBindingContext().getValue();
 
             const oView = this._view;
+            const oModel = this._view.getModel();
 
             sap.ui.getCore().oFatura = oFaturaAtual;
 
             if (oTransacao.ID){
 
-                var securedExecution = () => {
+                var securedExecution = function (){
 
-                    return new Promise((resolve, reject) => {
+                    return new Promise(function (resolve, reject) {
 
                         try {
 
-                            fetch(`/Gerenciamento/Transacao?$filter=Identificador eq ${oTransacao.Identificador} and ID ne ${oTransacao.ID}`, {
+                            fetch(`${oModel.getServiceUrl()}Transacao?$filter=Identificador eq ${oTransacao.Identificador} and ID ne ${oTransacao.ID}`, {
                                 method: "GET",
                                 headers: {
                                     "Content-Type": "application/json",
@@ -126,9 +127,9 @@ sap.ui.define([
                             sap.m.MessageToast.show("Erro ao chamar serviço: " + oError.message);
                         }
 
-                    });
+                    }.bind(this));
 
-                }
+                }.bind(this)
 
                 let oParameters = {
                     busy: {
@@ -146,7 +147,7 @@ sap.ui.define([
                 });
 
             } 
-
+        
         },
 
         mudarCategoria: async function (oEvent) {
@@ -182,7 +183,7 @@ sap.ui.define([
 
                 sap.ui.getCore().oFatura = oFaturaAtual;
 
-                let oTransacao = oSelectedItems[0].getBindingContext().getValue(); //oFaturaAtual.Transacoes[`${oPath[2]}`];
+                let oTransacao = oSelectedItems[0].getBindingContext().getValue(); 
 
                 const oView = this._view,
                     oModel = oView.getModel();
@@ -248,8 +249,6 @@ sap.ui.define([
                                 }
 
                                 const oTransacaoModelo = new JSONModel(oModelJson);
-
-                                //oView.setModel(oTransacaoModelo, "TransacaoMudar");
 
                                 // Carregar o fragmento do diálogo
                                 if (!sap.ui.getCore().pMudar) {

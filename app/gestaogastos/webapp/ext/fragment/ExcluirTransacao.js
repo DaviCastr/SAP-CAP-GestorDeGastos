@@ -53,11 +53,11 @@ sap.ui.define([
 
             oDialog.setBusy(true);
 
-            var securedExecution = () => {
+            var securedExecution = function () {
 
-                return new Promise((resolve, reject) => {
+                return new Promise(function (resolve, reject) {
 
-                    fetch("/Gerenciamento", {
+                    fetch(oModel.getServiceUrl(), {
                         method: "GET",
                         headers: {
                             "X-CSRF-Token": "Fetch"
@@ -74,7 +74,7 @@ sap.ui.define([
                             return csrfToken;
                         }.bind(this)).then(function (csrfToken) {
 
-                            fetch("/Gerenciamento/excluirTransacao", {
+                            fetch(`${oModel.getServiceUrl()}excluirTransacao`, {
                                 method: "POST",
                                 headers: {
                                     "Content-Type": "application/json",
@@ -110,8 +110,8 @@ sap.ui.define([
 
                         });
 
-                })
-            }
+                }.bind(this))
+            }.bind(this)
 
             let oParameters = {
                 busy: {

@@ -119,6 +119,22 @@ modules:
               ServiceInstanceName: GestorDeGastos-auth
               ServiceKeyName: GestorDeGastos-auth-key
               sap.cloud.service: GestorDeGastos.service
+        subaccount:
+          existing_destinations_policy: update
+          destinations:
+            - Authentication: OAuth2UserTokenExchange
+              Name: GestorDeGastos-GestorDeGastosService
+              TokenServiceInstanceName: GestorDeGastos-auth
+              TokenServiceKeyName: GestorDeGastos-auth-key
+              URL: ~{srv-api/srv-url}/Gerenciamento
+              sap.cloud.service: GestorDeGastos.service
+              sap.applicationdevelopment.actions.enabled: true
+              sap.build.usage: CAP
+              sap.processautomation.enabled: true
+              HTML5.DynamicDestination: true
+              WebIDEEnabled: true
+              MobileEnabled: true
+              AppgyverEnabled: true
 
 resources:
   - name: GestorDeGastos-auth
@@ -128,6 +144,12 @@ resources:
       service-plan: application
       path: ./xs-security.json
       config:
+        oauth2-configuration:
+          redirect-uris:
+            - https://*.${default-domain}/login/*
+          credential-types:
+            - binding-secret
+            - x509
         xsappname: GestorDeGastos-${org}-${space}
         tenant-mode: dedicated
   - name: GestorDeGastos-destination

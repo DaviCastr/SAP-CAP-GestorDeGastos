@@ -1,0 +1,46 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    xmlns:layout="sap.ui.layout"
+>
+    <VBox
+    >
+        <layout:FixFlex>
+            <!-- Painel para Exibição das Categorias -->
+            <layout:fixContent>
+                <Panel
+                    expandable="true"
+                    expanded="true"
+                    headerText="Análise por gasto total"
+                    width="auto"
+                >
+                    <content>
+                        <!-- Para cada Categoria, renderize um micro gráfico -->
+                        <FlexBox
+                            id="TotalGastosCharts"
+                            alignItems="Center"
+                            justifyContent="Start"
+                            busy="true"
+                        />
+                    </content>
+                </Panel>
+                <Panel
+                    expandable="true"
+                    expanded="true"
+                    headerText="Análise desse mês"
+                    width="auto"
+                >
+                    <content>
+                        <!-- Para cada Categoria, renderize um micro gráfico -->
+                        <FlexBox
+                            id="MensalCharts"
+                            alignItems="Center"
+                            justifyContent="Start"
+                            busy="true"
+                        />
+                    </content>
+                </Panel>
+            </layout:fixContent>
+        </layout:FixFlex>
+    </VBox>
+</core:FragmentDefinition>
