@@ -400,7 +400,18 @@
                   },
                   "tableSettings": {
                     "selectAll": false,
-                    "selectionMode": "Single"
+                    "selectionMode": "Single",
+                    "personalization": {
+                      "sort": true
+                    },
+                    "quickVariantSelection": {
+                      "paths": [
+                        {
+                          "annotationPath": "Sorting"
+                        }
+                      ],
+                      "showCounts": true
+                    }
                   },
                   "columns": {
                     "DataField::Categoria::Imagem": {

@@ -20,6 +20,7 @@ entity Pessoa : cuid, managed {
     Moeda                       : Currency     @mandatory;
     Email                       : String(100)  @mandatory;
     Telefone                    : String(20);
+    PartilharCom                : String(100);
 
     @Semantics.amount.currencyCode: 'Moeda'
     ObjetivoDeGasto             : Decimal      @mandatory;
@@ -121,8 +122,10 @@ entity Fatura : cuid, managed {
 entity Transacao : cuid, managed {
     Identificador  : UUID;
     Data           : Date;
+
     @Semantics.amount.currencyCode: 'Moeda'
     ValorTotal     : Decimal;
+
     @Semantics.amount.currencyCode: 'Moeda'
     Valor          : Decimal;
     Moeda          : Currency;

@@ -61,15 +61,31 @@ sap.ui.define([
             oFileUploader.setUploadUrl(`${oUrlBaseUpload}${oPath.replace('/', '')}/Imagem`);
             oFileUploader.setSendXHR(true);
 
+            let oParameters = {
+                busy: {
+                    set: true,
+                    check: true
+                },
+                dataloss: {
+                    popup: true,
+                    navigation: false
+                }
+            }
+
             const uploadPromise = new Promise((resolve, reject) => {
                 this.uploadPromises = this.uploadPromises || {};
                 this.uploadPromises[oFileUploader.getId()] = {
                     resolve: resolve,
                     reject: reject
                 };
+                
                 oFileUploader.upload();
+                resolve();
             });
-            this.editFlow.syncTask(uploadPromise);
+
+            this.editFlow.securedExecution(uploadPromise, oParameters).finally((final) => {
+                console.log(final)
+            });
 
         },
 

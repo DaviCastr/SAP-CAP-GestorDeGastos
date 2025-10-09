@@ -139,7 +139,7 @@ sap.ui.define([
                 const oDescricao = oView.byId("descricaoGastoInput").getValue();
                 const oValor = oView.byId("valorGastoInput").getValue();
                 const oMoeda = oView.byId("moedaGastoInput").getValue();
-                const sData = oView.byId("dataGastoPicker").getValue();
+                const sData = oView.byId("dataGastoPicker").getDOMValue();
                 const oParcelas = oView.byId("totalParcelasInput").getValue();
                 const oGastoFixo = oView.byId("gastoFixoCheckBox").getSelected();
                 const oCartao = oView.byId("cartaoSelect").getSelectedKey();
@@ -184,6 +184,8 @@ sap.ui.define([
                 oFunction.setParameter("gastofixo", oPayload.gastofixo);
                 oFunction.setParameter("categoria", oPayload.categoria);
                 oFunction.setParameter("cartao", oPayload.cartao);
+
+                this.oDialog = oDialog;
 
                 await oFunction.execute()
 
@@ -331,7 +333,11 @@ sap.ui.define([
                 // });
 
             } catch (erro) {
-                console.log("Erro:" + erro);
+
+                if(this.oDialog){
+                    this.oDialog.setBusy(false);
+                }
+                sap.m.MessageToast.show(erro);
             }
 
         },

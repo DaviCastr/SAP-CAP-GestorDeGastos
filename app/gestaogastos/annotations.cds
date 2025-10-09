@@ -128,6 +128,11 @@ annotate service.Pessoa with @(
                 Value: Telefone,
                 Label: '{i18n>Telefone}',
             },
+            {
+                $Type : 'UI.DataField',
+                Value : PartilharCom,
+                Label : 'Partilhar Com',
+            },
         ],
     },
     UI.FieldGroup #DadosFinanceiros: {
@@ -610,7 +615,7 @@ annotate service.Fatura with @(
             $Type : 'UI.ReferenceFacet',
             Label : '{i18n>Transaescompras}',
             ID    : 'i18nTransaescompras',
-            Target: 'Transacoes/@UI.LineItem#i18nTransaescompras',
+            Target: 'Transacoes/@UI.SelectionPresentationVariant#i18nTransaescompras',
         },
     ],
     UI.FieldGroup #i18nValores                  : {
@@ -775,6 +780,11 @@ annotate service.Transacao with @(
         $Type: 'UI.FieldGroupType',
         Data : [
             {
+                $Type : 'UI.DataField',
+                Value : ValorTotal,
+                Label : 'ValorTotal',
+            },
+            {
                 $Type: 'UI.DataField',
                 Value: Valor,
                 Label: '{i18n>Valor}',
@@ -846,6 +856,27 @@ annotate service.Transacao with @(
                 Label : 'Nome',
             },
         ],
+    },
+    UI.SelectionPresentationVariant #i18nTransaescompras : {
+        $Type : 'UI.SelectionPresentationVariantType',
+        PresentationVariant : {
+            $Type : 'UI.PresentationVariantType',
+            Visualizations : [
+                '@UI.LineItem#i18nTransaescompras',
+            ],
+            SortOrder : [
+                {
+                    $Type : 'Common.SortOrderType',
+                    Property : Data,
+                    Descending : false,
+                },
+            ],
+        },
+        SelectionVariant : {
+            $Type : 'UI.SelectionVariantType',
+            SelectOptions : [
+            ],
+        },
     },
 );
 

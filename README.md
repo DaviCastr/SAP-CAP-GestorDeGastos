@@ -1,6 +1,3 @@
-#Demonstration
-[Video](https://www.linkedin.com/posts/davi-castr_btp-sapcap-activity-7282420396803420160-zEGH?utm_source=share&utm_medium=member_desktop&rcm=ACoAAC4n0BEBKOmtd_2Sm-7fXYvcpFnSTAk6RTI)
-
 # Getting Started
 
 Welcome to your new project.
@@ -20,7 +17,7 @@ File or Folder | Purpose
 
 - Open a new terminal and run `cds watch`
 - (in VS Code simply choose _**Terminal** > Run Task > cds watch_)
-- Start adding content, for example, a [db/schema.cds](db/schema.cds).
+- Start adding content, for example, a [../my-bookshop/db/schema.cds](../my-bookshop/db/schema.cds).
 
 
 ## Learn More

@@ -83,7 +83,7 @@ sap.ui.define([
                                 body: JSON.stringify(oPayload)
                             }).then(function (response) {
                                 if (!response.ok) {
-                                    throw new Error("Erro ao excluir transação.");
+                                    throw new Error("Erro ao excluir transação ou você não tem permissão para excluir.");
                                 }
                                 return response.json();
                             }).then(async function (data) {

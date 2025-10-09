@@ -53,6 +53,8 @@ sap.ui.define([
                 oFuncao.setParameter("identificador", oIdentificador);
                 oFuncao.setParameter("categoria", oSelectNovaCategoria);
 
+                this.oDialog = oDialog;
+
                 await oFuncao.execute();
 
                 let oContext = oFuncao.getBoundContext();
@@ -71,8 +73,8 @@ sap.ui.define([
                 }
 
             } catch (erro) {
-                sap.m.MessageToast.show("Erro ao atualizar categoria.");
-                oDialog.setBusy(false);
+                sap.m.MessageToast.show(erro);
+                this.oDialog.setBusy(false);
             }
 
         },

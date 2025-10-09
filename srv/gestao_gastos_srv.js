@@ -26,7 +26,21 @@ class GestaoGastos extends cds.ApplicationService {
 
             this.before("UPDATE", Pessoa.drafts, this.beforeUpdatePessoa);
 
+            this.before("UPDATE", Pessoa, this.beforeUpdatePessoa);
+
+            this.before("UPDATE", Categoria.drafts, this.beforeUpdateCategoria);
+
             this.before("UPDATE", Cartao.drafts, this.beforeUpdateCartao);
+
+            this.before("CREATE", Categoria.drafts, this.beforeCreateCategoria);
+
+            this.before("CREATE", Cartao.drafts, this.beforeCreateCartao);
+
+            this.before("DELETE", Pessoa, this.beforeDeletePessoa);
+
+            this.before("DELETE", Categoria.drafts, this.beforeUpdateCategoria);
+
+            this.before("DELETE", Cartao.drafts, this.beforeDeleteCartao);
 
             this.after("READ", Cartao, async (req, context) => { return await this.afterReadCartao(req, context) });
 
@@ -44,17 +58,40 @@ class GestaoGastos extends cds.ApplicationService {
 
             this.before("DELETE", Categoria.drafts, this.beforeDeleteCategoria);
 
+            //Ações utilizados no ui5/fiori
             this.on("simulaPorMesAno", this.simulaPorMesAno);
 
-            this.on("adicionarGasto", this.adicionarGasto);
+            this.on("adicionarGasto", async (req, context) => { return await this.adicionarGastoPrincipal(req, context) });
 
-            this.on("excluirTransacao", this.excluirTransacao);
+            this.on("excluirTransacao", async (req, context) => { return await this.excluirTransacaoPrincipal(req, context) });
 
             this.on("exportarBackup", async (req, context) => { return await this.exportarBackupPrincipal(req, context) });
 
             this.on("enviarAviso", this.enviarAviso);
 
             this.on("mudarCategoriaTransacao", async (req, context) => { return await this.mudarCategoriaTransacaoPrincipal(req, context) });
+
+            //Ações utilizadas no sapbuildapps
+            this.on("simulaPorMesAnoSB", this.simulaPorMesAno);
+
+            this.on("adicionarGastoSB", async (req, context) => { return await this.adicionarGastoPrincipal(req, context) });
+
+            this.on("excluirTransacaoSB", async (req, context) => { return await this.excluirTransacaoPrincipal(req, context) });
+
+            this.on("exportarBackupSB", async (req, context) => { return await this.exportarBackupPrincipal(req, context) });
+
+            this.on("enviarAvisoSB", this.enviarAviso);
+
+            this.on("mudarCategoriaTransacaoSB", async (req, context) => { return await this.mudarCategoriaTransacaoPrincipal(req, context) });
+
+            //Ações utilizadas em app ui5 e sapbuild apps
+            this.on("inserirCategoria", async (req, next) => await this.inserirCategoriaPrincipal(req, next));
+
+            this.on("modificarCategoria", async (req, context) => await this.modificarCategoriaPrincipal(req, context));
+
+            this.on("inserirCartao", async (req, next) => await this.inserirCartaoPrincipal(req, next));
+
+            this.on("modificarCartao", async (req, context) => await this.modificarCartaoPrincipal(req, context));
 
             this.on("recuperaCategoriasParaGastoTotal", async (req, next) => await this.recuperaCategoriasParaGastoTotalPrincipal(req, next));
 
@@ -72,7 +109,7 @@ class GestaoGastos extends cds.ApplicationService {
     async beforeReadPessoa(req, context) {
         try {
             // Verifica se o usuário está autenticado
-            if (req.user && req.user.id !== "anonymous") {
+            if (req.user && req.user.id && req.user.id.includes('@')) {
                 // Se não houver um filtro de where, cria um
                 if (!Array.isArray(req.query.SELECT.where)) {
                     req.query.SELECT.where = [];
@@ -81,7 +118,21 @@ class GestaoGastos extends cds.ApplicationService {
                     req.query.SELECT.where.push(
                         { ref: ['createdBy'] },
                         '=',
-                        { val: req.user.attr.logonName }
+                        {
+                            //val: req.user.id//attr.logonName
+                            val: req.user.id//attr.logonName
+
+                        }
+                    );
+
+                    req.query.SELECT.where.push(
+                        'OR',
+                        { ref: ['PartilharCom'] },
+                        '=',
+                        {
+                            //val: req.user.id//attr.logonName
+                            val: req.user.id
+                        }
                     );
 
                 }
@@ -105,7 +156,7 @@ class GestaoGastos extends cds.ApplicationService {
                 if (!pessoa.Imagem) {
 
                     const oGastos = await this.selecionaGastosPorPessoa(pessoa.ID);
-
+                    //pessoa.ImagemUrl = context.headers.origin + Gere
                     pessoa.TotalDeGastos = oGastos.totalDeGastos;
                     pessoa.TotalDeGastos = parseFloat((Math.round((pessoa.TotalDeGastos + Number.EPSILON) * 100) / 100));
                     pessoa.TotalDoMes = oGastos.totalDoMes;
@@ -149,6 +200,14 @@ class GestaoGastos extends cds.ApplicationService {
 
         let oPessoa = await SELECT.one.from(Pessoa).where({ ID: req.data.ID });
 
+        if (oPessoa) {
+            if (req.user && req.user.id) {
+                if (oPessoa.createdBy !== req.user.id) {
+                    req.reject(400, `Não é possível editar algo que você tem acesso apenas compartilhado`);
+                }
+            }
+        }
+
         if (oPessoa && req.data.Moeda_code) {
 
             if (oPessoa.Moeda_code != req.data.Moeda_code) {
@@ -190,6 +249,29 @@ class GestaoGastos extends cds.ApplicationService {
 
     }
 
+    async beforeUpdateCategoria(req) {
+
+        try {
+
+            const { Categoria } = this.entities
+
+            let oCategoria = await SELECT.one.from(Categoria).where({ ID: req.data.ID });
+
+            if (oCategoria) {
+                if (req.user && req.user.id) {
+                    if (oCategoria.createdBy !== req.user.id) {
+                        req.reject(400, `Não é possível editar algo que você tem acesso apenas compartilhado`);
+                    }
+                }
+            }
+
+        } catch (erro) {
+            console.error("Erro ao filtrar registros:", erro);
+            req.error(400, "Erro ao processar a consulta:" + erro);
+        }
+
+    }
+
     async beforeUpdateCartao(req) {
 
         try {
@@ -197,6 +279,14 @@ class GestaoGastos extends cds.ApplicationService {
             const { Pessoa, Cartao } = this.entities
 
             let oCartao = await SELECT.one.from(Cartao).where({ ID: req.data.ID });
+
+            if (oCartao) {
+                if (req.user && req.user.id) {
+                    if (oCartao.createdBy !== req.user.id) {
+                        req.reject(400, `Não é possível editar algo que você tem acesso apenas compartilhado`);
+                    }
+                }
+            }
 
             if (oCartao) {
                 let oPessoa = await SELECT.one.from(Pessoa).where({ ID: oCartao.Pessoa_ID });
@@ -219,6 +309,68 @@ class GestaoGastos extends cds.ApplicationService {
                 if (req.data.DiaVencimento - req.data.DiaVencimento < 2) {
                     req.reject(400, `O valor do dia de vencimento tem que ter diferença maior de 1 dia da fatura.`, 'DiaVencimento');
                 }
+            }
+
+        } catch (erro) {
+            console.error("Erro ao filtrar registros:", erro);
+            req.error(400, "Erro ao processar a consulta:" + erro);
+        }
+
+    }
+
+    async beforeCreateCartao(req) {
+
+        try {
+
+            const { Pessoa } = this.entities;
+            const { data } = req;
+
+            if (data) {
+
+                let oPessoa = await SELECT.one.from(Pessoa).where({ ID: data.Pessoa_ID });
+
+                if (oPessoa) {
+                    if (req.user && req.user.id) {
+                        if (oPessoa.createdBy !== req.user.id) {
+
+                            req.reject(400, `Não é possível editar algo que você tem acesso apenas compartilhado`);
+
+                        }
+                    }
+
+                }
+
+            }
+
+        } catch (erro) {
+            console.error("Erro ao filtrar registros:", erro);
+            req.error(400, "Erro ao processar a consulta:" + erro);
+        }
+
+    }
+
+    async beforeCreateCategoria(req) {
+
+        try {
+
+            const { Pessoa } = this.entities;
+            const { data } = req;
+
+            if (data) {
+
+                let oPessoa = await SELECT.one.from(Pessoa).where({ ID: data.Pessoa_ID });
+
+                if (oPessoa) {
+                    if (req.user && req.user.id) {
+                        if (oPessoa.createdBy !== req.user.id) {
+
+                            req.reject(400, `Não é possível editar algo que você tem acesso apenas compartilhado`);
+
+                        }
+                    }
+
+                }
+
             }
 
         } catch (erro) {
@@ -625,13 +777,51 @@ class GestaoGastos extends cds.ApplicationService {
 
     }
 
+    async beforeDeletePessoa(data, req) {
+
+        const pessoas = Array.isArray(data.data) ? data.data : [data.data];
+
+        const { Pessoa } = this.entities;
+
+        for (const pessoa of pessoas) {
+
+            let oPessoa = await SELECT.one.columns("createdBy").from(Pessoa).where({ ID: pessoa.ID });
+
+            if (oPessoa) {
+                if (data.user && data.user.id) {
+                    if (oPessoa.createdBy !== data.user.id) {
+
+                        data.error(400, `Não é possível editar algo que você tem acesso apenas compartilhado`);
+
+                    }
+
+                }
+            }
+
+        }
+
+    }
+
     async beforeDeleteCategoria(data, req) {
 
         const categorias = Array.isArray(data.data) ? data.data : [data.data];
 
-        const { Transacao } = this.entities;
+        const { Categoria, Pessoa, Transacao } = this.entities;
 
         for (const categoria of categorias) {
+
+            let oCategoria = await SELECT.one.columns("createdBy").from(Categoria).where({ ID: categoria.ID });
+
+            if (oCategoria) {
+                if (data.user && data.user.id) {
+                    if (oCategoria.createdBy !== data.user.id) {
+
+                        data.error(400, `Não é possível editar algo que você tem acesso apenas compartilhado`);
+
+                    }
+
+                }
+            }
 
             let oTransacoes = await SELECT.columns('ID').from(Transacao).where({ Categoria_ID: categoria.ID })
 
@@ -639,6 +829,30 @@ class GestaoGastos extends cds.ApplicationService {
 
                 data.error('Não pode excluir uma categoria que possua gasto cadastrado');
 
+            }
+
+        }
+
+    }
+
+    async beforeDeleteCartao(data, req) {
+
+        const cartoes = Array.isArray(data.data) ? data.data : [data.data];
+
+        const { Cartao } = this.entities;
+
+        for (const cartao of cartoes) {
+
+            let oCartao = await SELECT.one.columns("createdBy").from(Cartao).where({ ID: cartao.ID });
+
+            if (oCartao) {
+                if (data.user && data.user.id) {
+                    if (oCartao.createdBy !== data.user.id) {
+
+                        data.error(400, `Não é possível editar algo que você tem acesso apenas compartilhado`);
+
+                    }
+                }
             }
 
         }
@@ -706,14 +920,16 @@ class GestaoGastos extends cds.ApplicationService {
         return data.getDate();
     }
 
-    async adicionarGasto(pessoa, descricao, valor, moeda, data, parcelas, gastofixo, categoria, cartao) {
+    async adicionarGastoPrincipal(req, context) {
 
         const { Pessoa, Fatura, Transacao, Cartao } = this.entities
+
+        const { pessoa, descricao, valor, moeda, data, parcelas, gastofixo, categoria, cartao } = req.data
 
         if (!this.validarData(data)) {
 
             return {
-                erro: "Data inválida"
+                erro: `Data inválida ${data}`
             }
 
         }
@@ -738,6 +954,14 @@ class GestaoGastos extends cds.ApplicationService {
 
         if (!oPessoa) {
             return;
+        }
+
+        if (req.user && req.user.id) {
+            if (oPessoa.createdBy !== req.user.id) {
+
+                req.reject(400, `Não é possível editar algo que você tem acesso apenas compartilhado`);
+
+            }
         }
 
         //Realiza cálculo de cotação se necessário
@@ -972,11 +1196,23 @@ class GestaoGastos extends cds.ApplicationService {
 
     }
 
-    async excluirTransacao(fatura, transacao, identificador, excluirRelacionadas) {
+    async excluirTransacaoPrincipal(req, context) {
 
         const { Transacao, Fatura } = this.entities
 
+        const { fatura, transacao, identificador, excluirRelacionadas } = req.data;
+
         try {
+
+            let oTransacao = await SELECT.one.columns("createdBy").from(Transacao).where({ ID: transacao });
+
+            if (req.user && req.user.id) {
+                if (oTransacao.createdBy !== req.user.id) {
+
+                    req.reject(400, `Não é possível editar algo que você tem acesso apenas compartilhado`);
+
+                }
+            }
 
             if (!excluirRelacionadas) {
 
@@ -1107,7 +1343,7 @@ class GestaoGastos extends cds.ApplicationService {
             const oCriador = await SELECT.one.columns("createdBy").from(Pessoa).where({ ID: ID });
 
             // Buscar todas as pessoas
-            const pessoas = await tx.run(SELECT.from(Pessoa).columns('ID', 'Nome', 'Renda', 'Moeda_code', 'Email', 'Telefone', 'ObjetivoDeGasto', 'TipoImagem').where({ createdBy: oCriador.createdBy }));
+            const pessoas = await tx.run(SELECT.from(Pessoa).columns('ID', 'Nome', 'Renda', 'Moeda_code', 'Email', 'Telefone', 'ObjetivoDeGasto', 'TipoImagem', 'PartilharCom').where({ createdBy: oCriador.createdBy }));
 
             for (const pessoa of pessoas) {
                 const pessoaZip = new AdmZip(); // Cria um ZIP específico para a pessoa
@@ -1236,18 +1472,18 @@ class GestaoGastos extends cds.ApplicationService {
         // Gerar o ZIP final com todos os arquivos de pessoas
         const zipBuffer = zip.toBuffer();
 
-        if(zipBuffer){
+        if (zipBuffer) {
 
             let oId = this.gerarUUID();
-         
+
             let novoBackup = {
                 ID: oId,
                 Backup: zipBuffer,
                 TipoBackup: "application/x-zip-compressed"
             }
-    
+
             const oBackupCreate = await INSERT.into(Backup).entries([novoBackup]);
-        
+
             return {
                 "backup": oId,
             };
@@ -1255,7 +1491,7 @@ class GestaoGastos extends cds.ApplicationService {
         }
 
         return {
-            "erro": "Erro ao exportar Backup" 
+            "erro": "Erro ao exportar Backup"
         };
     }
 
@@ -1632,13 +1868,229 @@ class GestaoGastos extends cds.ApplicationService {
             const { Transacao } = this.entities;
             const { identificador, categoria } = req.data;
 
-            let oTransacoes = await SELECT.columns("ID").from(Transacao).where({ Identificador: identificador });
+            let oTransacoes = await SELECT.columns("ID", "createdBy").from(Transacao).where({ Identificador: identificador });
 
             for (const transacao of oTransacoes) {
+
+                if (req.user && req.user.id) {
+                    if (transacao.createdBy !== req.user.id) {
+
+                        req.reject(400, `Não é possível editar algo que você tem acesso apenas compartilhado`);
+
+                    }
+                }
 
                 await UPDATE(Transacao, transacao.ID).with({ Categoria_ID: categoria })
 
             }
+
+            return {
+                sucesso: true
+            }
+
+        } catch (erro) {
+            return {
+                "erro": erro
+            }
+        }
+
+    }
+
+
+    async inserirCategoriaPrincipal(req, next) {
+
+        try {
+            const { Pessoa, Categoria } = this.entities;
+            const { ID, Pessoa_ID, Nome, Usuario } = req.data;
+
+            if (!Usuario) {
+                req.reject(400, `Campo [Usuario] é necessário`);
+            }
+
+            let oPessoa = await SELECT.one.columns("ID", "createdBy").from(Pessoa).where({ ID: Pessoa_ID });
+
+            // Verifica se a pessoa existe
+            if (!oPessoa) {
+                req.reject(400, `Pessoa não encontrada.`);
+            }
+
+            //Verifica se o usuário está autenticado e se ele é o criador da pessoa
+            if (oPessoa.createdBy !== Usuario) {
+                req.reject(400, `Não é possível editar algo que você tem acesso apenas compartilhado`);
+            }
+
+            // Cria um novo cartão com os dados fornecidos
+            const novaCategoria = {
+                ID: ID,
+                Pessoa_ID: Pessoa_ID,
+                Nome: Nome,
+            };
+
+            // Insere o novo cartão no banco de dados
+            await INSERT.into(Categoria).entries([novaCategoria]);
+
+            return {
+                sucesso: true
+            }
+
+        } catch (erro) {
+            return {
+                "erro": erro
+            }
+        }
+
+    }
+
+
+    async modificarCategoriaPrincipal(req, next) {
+
+        try {
+            const { Categoria } = this.entities;
+            const { ID, Nome, Usuario } = req.data;
+
+            if (!Usuario) {
+                req.reject(400, `Campo [Usuario] é necessário`);
+            }
+
+            let oCategoria = await SELECT.one.columns("ID", "createdBy").from(Categoria).where({ ID: ID });
+
+            // Verifica se a pessoa existe
+            if (!oCategoria) {
+                // Reject the request with a 400 status code and an error message indicating that the category was not found.
+                req.reject(400, `Categoria não encontrada.`);
+
+            };
+
+            if (oCategoria.createdBy !== Usuario) {
+                req.reject(400, `Não é possível editar algo que você tem acesso apenas compartilhado`);
+            }
+
+            const ajusteCategoria = {
+                ID: ID,
+                Nome: Nome,
+            };
+
+            // Insere o novo cartão no banco de dados
+            await UPDATE(Categoria, ajusteCategoria.ID).with(ajusteCategoria);
+
+            return {
+                sucesso: true
+            }
+
+        } catch (erro) {
+            return {
+                "erro": erro
+            }
+        }
+
+    }
+
+
+    async inserirCartaoPrincipal(req, next) {
+
+        try {
+            const { Pessoa, Cartao } = this.entities;
+            const { ID, Pessoa_ID, NomeCartao, Limite, Moeda, DiaVencimento, DiaFechamento, Usuario } = req.data;
+
+            if (!Usuario) {
+                req.reject(400, `Campo [Usuario] é necessário`);
+            }
+
+            let oPessoa = await SELECT.one.columns("ID", "createdBy", "Moeda_code").from(Pessoa).where({ ID: Pessoa_ID });
+
+            // Verifica se a pessoa existe
+            if (!oPessoa) {
+                req.reject(400, `Pessoa não encontrada.`);
+            }
+
+            //Verifica se o usuário está autenticado e se ele é o criador da pessoa
+            if (oPessoa.createdBy !== Usuario) {
+                req.reject(400, `Não é possível editar algo que você tem acesso apenas compartilhado`);
+            }
+
+            // Valida se o limite do cartão é maior que zero
+            if (Limite <= 0) {
+                req.reject(400, `O limite do cartão deve ser maior que zero.`);
+            }
+
+            // Verifica se a moeda do cartão é diferente da moeda fornecida
+            // Se for diferente, rejeita a requisição com um erro informando que a moeda não pode ser modificada
+            if (oPessoa.Moeda_code != Moeda) {
+                req.reject(400, `Moeda não pode ser diferente da moeda definida em pessoa.`);
+            }
+
+            // Cria um novo cartão com os dados fornecidos
+            const novoCartao = {
+                ID: ID,
+                Pessoa_ID: Pessoa_ID,
+                NomeCartao: NomeCartao,
+                Limite: Limite,
+                Moeda_code: Moeda,
+                DiaVencimento: DiaVencimento,
+                DiaFechamento: DiaFechamento,
+            };
+
+            // Insere o novo cartão no banco de dados
+            await INSERT.into(Cartao).entries([novoCartao]);
+
+            return {
+                sucesso: true
+            }
+
+        } catch (erro) {
+            return {
+                "erro": erro
+            }
+        }
+
+    }
+
+    async modificarCartaoPrincipal(req, context) {
+
+        try {
+            // Removed the try block and added error handling directly in the function
+            const { Cartao } = this.entities;
+            const { ID, NomeCartao, Limite, Moeda, DiaVencimento, DiaFechamento, Usuario } = req.data;
+
+            let oCartao = await SELECT.one.columns("ID", "createdBy", "Moeda_code").from(Cartao).where({ ID: ID });
+
+            if (!Usuario) {
+                req.reject(400, `Campo [Usuario] é necessário`);
+            }
+
+            // Verifica se a pessoa existe
+            if (!oCartao) {
+                req.reject(400, `Cartão não encontrada.`);
+            }
+
+            // Verifica se o usuário está autenticado e se ele é o criador da pessoa
+            if (oCartao.createdBy !== Usuario) {
+                req.reject(400, `Não é possível editar algo que você tem acesso apenas compartilhado`);
+            }
+
+            // Valida se o limite do cartão é maior que zero
+            if (Limite <= 0) {
+                req.reject(400, `O limite do cartão deve ser maior que zero.`);
+            }
+
+            // Verifica se a moeda do cartão é diferente da moeda fornecida
+            // Se for diferente, rejeita a requisição com um erro informando que a moeda não pode ser modificada
+            if (oCartao.Moeda_code != Moeda) {
+                req.reject(400, `Moeda não pode ser modificada.`);
+            }
+
+            // Cria um novo cartão com os dados fornecidos
+            const ajusteCartao = {
+                ID: ID,
+                NomeCartao: NomeCartao,
+                Limite: Limite,
+                Moeda_code: Moeda,
+                DiaVencimento: DiaVencimento,
+                DiaFechamento: DiaFechamento,
+            };
+
+            // Insere o novo cartão no banco de dados
+            await UPDATE(Cartao, ajusteCartao.ID).with(ajusteCartao);
 
             return {
                 sucesso: true
@@ -2097,7 +2549,7 @@ class GestaoGastos extends cds.ApplicationService {
             oMes = Number(oMes);
             oAno = Number(oAno);
 
-            if(ano){
+            if (ano) {
                 oAno = Number(ano);
                 oMes = Number(mes)
             }

@@ -62,15 +62,33 @@ sap.ui.define([
             oFileUploader.setUploadUrl(`${oUrlBaseUpload}${oPath.replace("/", "")}/Imagem`);
             oFileUploader.setSendXHR(true);
 
+            let oParameters = {
+                busy: {
+                    set: true,
+                    check: true
+                },
+                dataloss: {
+                    popup: true,
+                    navigation: false
+                }
+            }
+
             const uploadPromise = new Promise((resolve, reject) => {
                 this.uploadPromises = this.uploadPromises || {};
                 this.uploadPromises[oFileUploader.getId()] = {
                     resolve: resolve,
                     reject: reject
                 };
+                
                 oFileUploader.upload();
+                resolve();
             });
-            this.editFlow.syncTask(uploadPromise);
+
+            this.editFlow.securedExecution(uploadPromise, oParameters).finally((final) => {
+                console.log(final)
+            });
+
+            //this.editFlow.syncTask(uploadPromise);
 
         },
 
@@ -131,7 +149,7 @@ sap.ui.define([
                                 return oControl.isA("sap.m.Table") && oControl.getId().includes("Cartes-innerTable");
                             });
 
-                            if(oTabelaCartoes.lehngth>0){
+                            if (oTabelaCartoes.lehngth > 0) {
                                 oTabelaCartoes[0].getModel().refreash()
                             }
 
