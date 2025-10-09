@@ -34,16 +34,16 @@ service GestaoGastos @(path: '/Gerenciamento') {
     action   enviarAviso();
     action   mudarCategoriaTransacao(identificador : UUID, categoria : UUID);
     //Ações utilizadas no sapbuildapps
-    function simulaPorMesAnoSB(pessoa : UUID, mes : Integer, ano : Integer)                                                                                                                returns db.retornoSimulacao;
-    function adicionarGastoSB(pessoa : UUID, descricao : String, valor : Decimal, moeda : db.Moeda, data : Date, parcelas : Integer, gastofixo : Boolean, categoria : UUID, cartao : UUID) returns db.retornoBooleano;
-    function excluirTransacaoSB(fatura : UUID, transacao : UUID, identificador : UUID, excluirRelacionadas : Boolean)                                                                      returns db.retornoBooleano;
-    function exportarBackupSB(ID : UUID)                                                                                                                                                   returns String;
-    function enviarAvisoSB()                                                                                                                                                               returns db.retornoBooleano;
-    function mudarCategoriaTransacaoSB(identificador : UUID, categoria : UUID)                                                                                                             returns db.retornoBooleano;
-    function inserirCategoria(ID : UUID, Pessoa_ID : UUID, Nome : String, Usuario : String)                                                                                                returns db.retornoBooleano;
-    function modificarCategoria(ID : UUID, Nome : String, Usuario : String)                                                                                                                returns db.retornoBooleano;
-    function inserirCartao(ID : UUID, Pessoa_ID : UUID, NomeCartao : String, Limite : Decimal, Moeda : String, DiaVencimento : Integer, DiaFechamento : Integer, Usuario : String)         returns db.retornoBooleano;
-    function modificarCartao(ID : UUID, Pessoa_ID : UUID, NomeCartao : String, Limite : Decimal, Moeda : String, DiaVencimento : Integer, DiaFechamento : Integer, Usuario : String)       returns db.retornoBooleano;
+    // function simulaPorMesAnoSB(pessoa : UUID, mes : Integer, ano : Integer)                                                                                                                returns db.retornoSimulacao;
+    // function adicionarGastoSB(pessoa : UUID, descricao : String, valor : Decimal, moeda : db.Moeda, data : Date, parcelas : Integer, gastofixo : Boolean, categoria : UUID, cartao : UUID) returns db.retornoBooleano;
+    // function excluirTransacaoSB(fatura : UUID, transacao : UUID, identificador : UUID, excluirRelacionadas : Boolean)                                                                      returns db.retornoBooleano;
+    // function exportarBackupSB(ID : UUID)                                                                                                                                                   returns String;
+    // function enviarAvisoSB()                                                                                                                                                               returns db.retornoBooleano;
+    // function mudarCategoriaTransacaoSB(identificador : UUID, categoria : UUID)                                                                                                             returns db.retornoBooleano;
+    // function inserirCategoria(ID : UUID, Pessoa_ID : UUID, Nome : String, Usuario : String)                                                                                                returns db.retornoBooleano;
+    // function modificarCategoria(ID : UUID, Nome : String, Usuario : String)                                                                                                                returns db.retornoBooleano;
+    // function inserirCartao(ID : UUID, Pessoa_ID : UUID, NomeCartao : String, Limite : Decimal, Moeda : String, DiaVencimento : Integer, DiaFechamento : Integer, Usuario : String)         returns db.retornoBooleano;
+    // function modificarCartao(ID : UUID, Pessoa_ID : UUID, NomeCartao : String, Limite : Decimal, Moeda : String, DiaVencimento : Integer, DiaFechamento : Integer, Usuario : String)       returns db.retornoBooleano;
     //Ações utilizadas em ambos
     function recuperaCategoriasParaGastoTotal(pessoa : UUID)                                                                                                                               returns db.retornoCategorias;
     function recuperaCategorias(pessoa : UUID, cartao : UUID, fatura : UUID, mes : Integer, ano : Integer)                                                                                 returns db.retornoCategorias;

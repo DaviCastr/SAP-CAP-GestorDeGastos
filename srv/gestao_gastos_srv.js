@@ -1722,10 +1722,6 @@ class GestaoGastos extends cds.ApplicationService {
 
     async enviarAviso(req) {
 
-        // process.env.SMTPAddres = 'gestordegastosdflc@gmail.com';
-        // process.env.SMTPHost = 'smtp.gmail.com';
-        // process.env.SMTPKey = 'sxjx mpju urbe mdzk';
-
         if (!process.env.SMTPAddres) {
             return
         }

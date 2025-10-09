@@ -9,6 +9,7 @@
     "@cap-js/hana": "^1",
     "@sap/cds": "^8",
     "@sap/cds-common-content": "^2.1.0",
+    "@sap/hdi-deploy": "^5.5.1",
     "@sap/xssec": "^4",
     "adm-zip": "^0.5.16",
     "archiver": "^7.0.1",
@@ -19,6 +20,7 @@
     "fast-csv": "^5.0.2",
     "fs": "^0.0.1-security",
     "handlebars": "^4.7.8",
+    "hdb": "^2.26.1",
     "jszip": "^3.10.1",
     "nodemailer": "^6.9.16",
     "path": "^0.12.7",
@@ -39,6 +41,7 @@
   "scripts": {
     "start": "cds-serve",
     "cds-watch-gestaogastos": "cds watch --open gestaogastos/webapp/index.html?sap-ui-xx-viewCache=false",
+    "cds-watch-hydrib": "cds watch --profile hybrid",
     "undeploy": "cf undeploy GestorDeGastos --delete-services --delete-service-keys --delete-service-brokers",
     "build": "rimraf resources mta_archives && mbt build --mtar archive",
     "deploy": "cf deploy mta_archives/archive.mtar --retries 1"
