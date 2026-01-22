@@ -69,6 +69,8 @@ class GestaoGastos extends cds.ApplicationService {
 
             this.on("enviarAviso", this.enviarAviso);
 
+            this.on("enviarPrevisaoDetalhada", this.enviarPrevisaoDetalhadaPrincipal);
+
             this.on("mudarCategoriaTransacao", async (req, context) => { return await this.mudarCategoriaTransacaoPrincipal(req, context) });
 
             //Ações utilizadas no sapbuildapps
@@ -104,6 +106,10 @@ class GestaoGastos extends cds.ApplicationService {
         } catch (erro) {
             req.error(400, "Erro ao processar a consulta:" + erro);
         }
+    }
+
+    async sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     async beforeReadPessoa(req, context) {
@@ -1835,7 +1841,8 @@ class GestaoGastos extends cds.ApplicationService {
                                     console.log("erro: " + error);
                                 }
 
-                                let erro = await this.enviarEmail(oPessoa, oCartao, oFatura, oTransacoes);
+                                let erro = await this.enviarEmail(oPessoa, oCartao, oFatura, oTransacoes, true);
+
 
                                 if (erro) {
                                     return erro;
@@ -1843,6 +1850,132 @@ class GestaoGastos extends cds.ApplicationService {
 
                             }
 
+                        }
+
+                    }
+
+                }
+
+            }
+
+        } catch (erro) {
+            console.log("Erro:" + erro)
+            return erro;
+        }
+
+    }
+
+    async enviarPrevisaoDetalhadaPrincipal(req) {
+
+        const { pessoa, mes, ano } = req.data;
+
+        process.env.SMTPAddres = 'gestordegastosdflc@gmail.com';
+        process.env.SMTPHost = 'smtp.gmail.com';
+        process.env.SMTPKey = 'sxjx mpju urbe mdzk';
+
+        if (!process.env.SMTPAddres) {
+            return
+        }
+
+        try {
+
+            const { Pessoa, Cartao, Fatura, Transacao } = this.entities
+
+            const oPessoa = await SELECT.one.from(Pessoa).columns('ID', 'Nome', 'Email').where({
+                Email: { '!=': null },
+                ID: pessoa
+            });
+
+            if (!oPessoa) {
+                return;
+            }
+
+            const oCartoes = await SELECT.from(Cartao).columns('ID', 'NomeCartao', 'DiaVencimento', 'Pessoa_ID').where({
+                Pessoa_ID: pessoa
+            });
+
+            if (!oCartoes) {
+                return;
+            }
+
+            const oCartoesIds = oCartoes.map((oCartao) => oCartao.ID);
+
+            let oFaturas = await SELECT.from(Fatura).where({
+                Ano: ano,
+                Mes: mes,
+                Cartao_ID: oCartoesIds
+            });
+
+            if (!oFaturas.length > 0) {
+                return;
+            }
+
+
+            let oCartoesDaPessoa = oCartoes.filter(cartao => cartao.Pessoa_ID == oPessoa.ID);
+
+            for (let oCartao of oCartoesDaPessoa) {
+
+                let oFaturasCartao = oFaturas.filter(fatura => fatura.Cartao_ID == oCartao.ID);
+
+                for (let oFatura of oFaturasCartao) {
+
+                    oCartao.DiaVencimento = Number(oCartao.DiaVencimento);
+
+                    let oTransacoes = await SELECT.from(Transacao).where({ Fatura_ID: oFatura.ID });
+
+                    if (oTransacoes.length > 0) {
+
+                        try {
+
+                            if (!oPessoa.Imagem) {
+
+                                const tx = cds.transaction();
+
+                                let oImagemPessoa = await tx.run(SELECT.one.from(Pessoa).columns('Imagem', 'TipoImagem').where({
+                                    ID: oPessoa.ID
+                                }));
+
+                                if (oImagemPessoa.Imagem) {
+
+                                    let oImagemBuffer = await this.ReadableParaBuffer(oImagemPessoa.Imagem);
+
+                                    const oExtensao = oImagemPessoa.TipoImagem.split("/")[1];
+                                    oPessoa.Imagem = oImagemBuffer;
+                                    oPessoa.ExtensaoImagem = oExtensao;
+
+                                }
+
+                            }
+
+                        } catch (error) {
+                            console.log("erro: " + error);
+                            return error;
+                        }
+
+                        try {
+
+                            const tx = cds.transaction();
+
+                            let oImagemCartao = await tx.run(SELECT.one.from(Cartao).columns('Imagem', 'TipoImagem').where({
+                                ID: oCartao.ID
+                            }));
+
+                            if (oImagemCartao.Imagem) {
+
+                                let oImagemBuffer = await this.ReadableParaBuffer(oImagemCartao.Imagem);
+
+                                oCartao.Imagem = oImagemBuffer;
+
+                            }
+
+                        } catch (error) {
+                            console.log("erro: " + error);
+                        }
+
+                        let erro = await this.enviarEmail(oPessoa, oCartao, oFatura, oTransacoes, false);
+
+                        if (erro) {
+                            return erro;
                         }
 
                     }
@@ -1868,13 +2001,13 @@ class GestaoGastos extends cds.ApplicationService {
 
             for (const transacao of oTransacoes) {
 
-                if (req.user && req.user.id) {
-                    if (transacao.createdBy !== req.user.id) {
+                // if (req.user && req.user.id) {
+                //     if (transacao.createdBy !== req.user.id) {
 
-                        req.reject(400, `Não é possível editar algo que você tem acesso apenas compartilhado`);
+                //         req.reject(400, `Não é possível editar algo que você tem acesso apenas compartilhado`);
 
-                    }
-                }
+                //     }
+                // }
 
                 await UPDATE(Transacao, transacao.ID).with({ Categoria_ID: categoria })
 
@@ -2114,11 +2247,18 @@ class GestaoGastos extends cds.ApplicationService {
 
     }
 
-    async enviarEmail(pessoa, cartao, fatura, transacoes) {
+    async enviarEmail(pessoa, cartao, fatura, transacoes, atualizaFatura) {
 
         try {
 
-            const oCaminhoHTML = path.join(__dirname, 'template.html');
+            let oCaminhoHTML;
+
+            if (atualizaFatura) {
+                oCaminhoHTML = path.join(__dirname, 'template.html');
+            } else {
+                oCaminhoHTML = path.join(__dirname, 'templatePrevisao.html');
+            }
+
             const oHtmlTemplate = fs.readFileSync(oCaminhoHTML, "utf-8");
 
             const oLogoCaminho = path.join(__dirname, 'logo.png');
@@ -2160,17 +2300,25 @@ class GestaoGastos extends cds.ApplicationService {
                     cid: arquivo.cid
                 }));
 
+            let oSubject;
+
+            if (atualizaFatura) {
+                oSubject = `Fatura do Cartão ${cartao.NomeCartao} - ${this.adicionarZeroEsquerda(fatura.Mes)}/${fatura.Ano}`;
+            } else {
+                oSubject = `Previsão/Detalhamento da fatura do Cartão ${cartao.NomeCartao} - ${this.adicionarZeroEsquerda(fatura.Mes)}/${fatura.Ano}`
+            }
+
             const oOpcoesEmail = {
                 from: `"Gestor de Gastos" <${process.env.SMTPAddres}>`,
                 to: pessoa.Email,
-                subject: `Fatura do Cartão ${cartao.NomeCartao} - ${this.adicionarZeroEsquerda(fatura.Mes)}/${fatura.Ano}`,
+                subject: oSubject,
                 html: oConteudohtml,
                 attachments: oArquivos
             };
 
             try {
 
-                await this.processaEnviarEmail(oOpcoesEmail, fatura.ID);
+                await this.processaEnviarEmail(oOpcoesEmail, fatura.ID, atualizaFatura);
 
             } catch (error) {
                 console.log("Erro" + error)
@@ -2184,24 +2332,38 @@ class GestaoGastos extends cds.ApplicationService {
 
     }
 
-    async processaEnviarEmail(conteudo, fatura) {
+    async processaEnviarEmail(conteudo, fatura, atualizaFatura) {
 
-        if (!process.EmailAviso) {
-            process.EmailAviso = this.criarInstanciaEmail();
-            await process.EmailAviso.verify();
-            console.log('Conexão com o servidor SMTP bem-sucedida.');
+        try {
+
+            if (!process.EmailAviso) {
+                process.EmailAviso = this.criarInstanciaEmail();
+                await process.EmailAviso.verify();
+                console.log('Conexão com o servidor SMTP bem-sucedida.');
+            }
+
+            return new Promise((resolve, reject) => {
+                process.EmailAviso.sendMail(conteudo).then(async function (ok) {
+                    console.log('Email enviado com sucesso:');
+
+                    if (atualizaFatura) {
+                        await this.atualizaAvisoEnviadoFatura(fatura);
+                    }
+
+                    await this.sleep(5000);
+
+                    resolve(ok)
+                }.bind(this)).catch(function (erro) {
+                    console.log('Erro ao enviar email:' + erro);
+                    reject(erro)
+                }.bind(this));
+            });
+
+        } catch (erro) {
+
+            console.log('Erro ao enviar email:' + erro);
+
         }
-
-        return new Promise((resolve, reject) => {
-            process.EmailAviso.sendMail(conteudo).then(async function (ok) {
-                console.log('Email enviado com sucesso:');
-                await this.atualizaAvisoEnviadoFatura(fatura);
-                resolve(ok)
-            }.bind(this)).catch(function (erro) {
-                console.log('Erro ao enviar email:' + erro);
-                reject(erro)
-            }.bind(this));
-        });
     }
 
     async gerarPDF(logo, pessoa, fatura, cartao, transacoes, categoriasDescricao) {

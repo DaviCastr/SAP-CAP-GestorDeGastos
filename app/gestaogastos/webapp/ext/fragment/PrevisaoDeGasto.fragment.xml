@@ -101,6 +101,13 @@
                 text="Buscar"
                 press="handler.onBuscarSimulação"
             />
+
+            <Button
+                id="_IDGenButtonprevdet"
+                text="Enviar Previsão Detalhada "
+                press="handler.onEnviarPrevisaoDetalhada"
+            />
+
         </HBox>
         <form:SimpleForm
             id="form"

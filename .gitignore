@@ -12,6 +12,8 @@ target/
 .che/
 .gen/
 
+app/gestaogastos/dist/
+
 # MTA
 *_mta_build_tmp
 *.mtar

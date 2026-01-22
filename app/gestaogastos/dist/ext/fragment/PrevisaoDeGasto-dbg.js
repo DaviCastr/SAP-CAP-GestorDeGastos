@@ -17,7 +17,7 @@ sap.ui.define([
 
                 var securedExecution = function () {
 
-                    return new Promise( function (resolve, reject) {
+                    return new Promise(function (resolve, reject) {
 
                         let oAno = this.byId("ListaAno").getSelectedItem().getText();
                         let oMes = this.byId("ListaMes").getSelectedItem().getText()
@@ -210,6 +210,84 @@ sap.ui.define([
                 sap.m.MessageToast.show("Erro ao buscar dados" + erro);
             }
 
+        },
+
+        onEnviarPrevisaoDetalhada: function (oEvent) {
+
+            try {
+
+                let oModel = this.getModel();
+
+                var securedExecution = function () {
+
+                    return new Promise(async function (resolve, reject) {
+
+                        let oAno = this.byId("ListaAno").getSelectedItem().getText();
+                        let oMes = this.byId("ListaMes").getSelectedItem().getText()
+
+                        const oPayload = {
+                            pessoa: this.getBindingContext().getObject().ID,
+                            mes: oMes,
+                            ano: oAno
+                        };
+
+                        try {
+
+                            const oFunctionName = "enviarPrevisaoDetalhada",
+                                oFunction = oModel.bindContext(`/${oFunctionName}(...)`);
+
+                            oFunction.setParameter("pessoa", oPayload.pessoa);
+                            oFunction.setParameter("mes", oPayload.mes);
+                            oFunction.setParameter("ano", oPayload.ano);
+
+                            setTimeout(async function () {
+
+                                oFunction.execute().then((retorno) => {
+
+                                    const oContext = oFunction.getBoundContext();
+                                    console.log(oContext);
+
+                                    if(oContext.getValue()){
+                                        sap.m.MessageToast.show("Detalhamento enviado");
+                                    }
+
+                                });
+
+                                sap.m.MessageToast.show("O Envio está ocorrendo internamente, aguarde.");
+
+                                resolve();
+
+                            }.bind(this), 1000);
+
+
+                        } catch (oError) {
+                            sap.m.MessageToast.show("Erro ao chamar serviço: " + oError.message);
+                        }
+
+                    }.bind(this));
+
+                }.bind(this)
+
+                let oParameters = {
+                    busy: {
+                        set: true,
+                        check: true
+                    },
+                    dataloss: {
+                        popup: true,
+                        navigation: false
+                    }
+                }
+
+                this.editFlow.securedExecution(securedExecution, oParameters).finally((final) => {
+                    console.log(final)
+                });
+
+            } catch (erro) {
+                sap.m.MessageToast.show("Erro ao buscar dados" + erro);
+            }
+
         }
+
     };
 });
