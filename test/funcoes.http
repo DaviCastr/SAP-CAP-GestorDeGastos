@@ -1,0 +1,14 @@
+@server = http://localhost:4004
+@auth = Authorization: Basic no_user_found_for_roles_authenticated-user:
+
+### enviarPrevisaoDetalhada
+# @name enviarPrevisaoDetalhada_POST
+GET {{server}}/Gerenciamento/recuperaFaturaCompleta
+Content-Type: application/json
+//{{auth}}
+
+{
+  "pessoa": "e2bc77f0-578c-4f2f-ae0d-36e86e8c4b1b",
+  "mes": 2,
+  "ano": 2025
+}

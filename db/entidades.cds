@@ -233,3 +233,25 @@ type TransacoesTipo {
     Parcela        : Integer;
     Descricao      : String(255);
 }
+
+type retornoFaturaCompleta {
+    Ano: Integer;
+    Mes: Integer;
+    DescricaoFatura: String;
+    ValorTotal: Decimal;
+    Moeda_code: String;
+    Transacoes: many TrasacoesFaturaCompleta;
+}
+
+type TrasacoesFaturaCompleta {
+    ID             : UUID;
+    Cartao_ID      : UUID;
+    NomeCartao     : String(50);
+    Data           : Date;
+    Valor          : Decimal;
+    ValorTotal     : Decimal;
+    Moeda_code          : String;
+    Parcela        : Integer;
+    ParcelasTotais : Integer;
+    Descricao      : String(255);
+}

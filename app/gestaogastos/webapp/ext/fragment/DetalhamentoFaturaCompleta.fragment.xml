@@ -1,23 +1,25 @@
 <core:FragmentDefinition
-    id="TESTE"
     xmlns:core="sap.ui.core"
     xmlns="sap.m"
+    xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+    xmlns:macros="sap.fe.macros"
     xmlns:table="sap.ui.table"
     xmlns:form="sap.ui.layout.form"
 >
     <VBox
-        id="FaturaAtualVBox"
-        core:require="{ handler: 'apps/dflc/gestaogastos/ext/fragment/FaturaAtual'}"
+        id="FaturaCompletaVBoxPessoa"
+        fitContainer="true"
+        core:require="{ handler: 'apps/dflc/gestaogastos/ext/fragment/DetalhamentoFaturaCompleta'}"
     >
         <!-- Painel para Detalhes da Fatura -->
         <Panel
-            id="PainelFatura"
+            id="PainelFaturaPessoa"
             headerText="Detalhes da Fatura"
             width="100%"
         >
             <content>
                 <form:SimpleForm
-                    id="idFaturaForm"
+                    id="idFaturaFormPessoa"
                     editable="false"
                     layout="ResponsiveGridLayout"
                     labelSpanL="4"
@@ -27,50 +29,19 @@
                     columnsL="1"
                     columnsM="1"
                 >
-                    <Label
-                        id="_IDGenLabel"
-                        text="Ano"
-                    />
-                    <Text
-                        id="_IDGenText13"
-                        text="{Ano}"
-                    />
+                    <Label text="Ano" />
+                    <Text text="{/Ano}" />
 
-                    <Label
-                        id="_IDGenLabel1"
-                        text="Mês"
-                    />
-                    <Text
-                        id="_IDGenText14"
-                        text="{Mes}"
-                    />
+                    <Label text="Mês" />
+                    <Text text="{/Mes}" />
 
-                    <Label
-                        id="_IDGenLabel14"
-                        text="Descrição"
-                    />
-                    <Text
-                        id="_IDGenText15"
-                        text="{Descricao}"
-                    />
+                    <Label text="Descrição" />
+                    <Text text="{/DescricaoFatura}" />
 
-                    <Label
-                        id="_IDGenLabel3"
-                        text="Valor Total"
-                    />
+                    <Label text="Valor Total" />
                     <ObjectNumber
-                        id="_IDGenObjectNumber"
-                        number="{ValorTotal}"
-                        unit="{Moeda_code}"
-                    />
-
-                    <Label
-                        visible="false"
-                        text="Cartao_ID"
-                    />
-                    <Text
-                        visible="false"
-                        text="{Cartao_ID}"
+                        number="{/ValorTotal}"
+                        unit="{/Moeda_code}"
                     />
                 </form:SimpleForm>
             </content>
@@ -78,13 +49,13 @@
 
         <!-- Painel para Tabela de Transações -->
         <Panel
-            id="PainelTransacoes"
+            id="PainelTransacoesPessoa"
             headerText="Transações da Fatura"
             width="100%"
         >
             <content>
                 <Table
-                    id="transactionsTable"
+                    id="transactionsDetailsTablePessoa"
                     inset="false"
                     mode="SingleSelect"
                     noDataText="Nenhuma transação encontrada"
@@ -92,16 +63,15 @@
                     growingScrollToLoad="false"
                     growingThreshold="10"
                     width="auto"
-                    items="{ path: 'Transacoes'}"
+                    items="{ path: '/Transacoes'}"
                 >
                     <headerToolbar>
-                        <OverflowToolbar id="_IDGenOverflowToolbar1">
+                        <OverflowToolbar>
                             <SearchField
-                                id="_IDGenSearchField"
                                 search="handler.pesquisarTransacao"
                                 width="auto"
                             />
-                            <ToolbarSpacer id="_IDGenToolbarSpacer1" />
+                            <ToolbarSpacer />
                             <Button
                                 icon="sap-icon://nav-back"
                                 press="handler.retrocederFatura"
@@ -110,84 +80,84 @@
                                 icon="sap-icon://navigation-right-arrow"
                                 press="handler.avancarFatura"
                             />
-                            <ToolbarSpacer id="_IDGenToolbarSpacer2" />
+                            <ToolbarSpacer />
                             <Button
                                 text="Mudar Categoria"
                                 press="handler.mudarCategoria"
                             />
                             <Button
-                                id="_IDGenButton5"
                                 text="Excluir"
                                 press="handler.excluirTransacao"
                             />
                         </OverflowToolbar>
                     </headerToolbar>
                     <columns>
+                        <Column
+                            width="3rem"
+                            demandPopin="false"
+                            minScreenWidth="Tablet"
+                        >
+                            <Text text="Ct" />
+                        </Column>
+                        <Column
+                            width="3rem"
+                            demandPopin="false"
+                            minScreenWidth="Tablet"
+                        >
+                            <Text text="Ctg" />
+                        </Column>
                         <Column>
-                            <Text text="" />
+                            <Text text="Data" />
                         </Column>
-                        <Column id="_IDGenColumn7">
-                            <Text
-                                id="_IDGenText5"
-                                text="Data"
-                            />
+                        <Column>
+                            <Text text="Valor" />
                         </Column>
-                        <Column id="_IDGenColumn2">
-                            <Text
-                                id="_IDGenText6"
-                                text="Valor"
-                            />
+                        <Column>
+                            <Text text="Parcelas" />
                         </Column>
-                        <Column id="_IDGenColumn3">
-                            <Text
-                                id="_IDGenText7"
-                                text="Parcelas"
-                            />
-                        </Column>
-                        <Column id="_IDGenColumn4">
-                            <Text
-                                id="_IDGenText8"
-                                text="Descrição"
-                            />
+                        <Column>
+                            <Text text="Descrição" />
                         </Column>
                     </columns>
                     <items>
-                        <ColumnListItem id="_IDGenColumnListItem1">
+                        <ColumnListItem>
                             <cells>
                                 <Avatar
-                                    src="{path:'Categoria/Imagem'}"
+                                    src="{ path:'ImagemCartao' }"
                                     displaySize="XS"
                                     badgeTooltip=""
                                 />
+
+                                <Avatar
+                                    src="{ path:'ImagemCategoria' }"
+                                    displaySize="XS"
+                                    badgeTooltip=""
+                                />
+
                                 <Text
-                                    id="_IDGenText10"
-                                    text="{Data}"
+                                    text="{
+                                            path: 'Data',
+                                            formatter: 'handler.formatter.formatDate'
+                                    }"
                                 />
                                 <ObjectNumber
-                                    id="_IDGenObjectNumber1"
                                     number="{Valor}"
                                     unit="{Moeda_code}"
                                 />
+                                <Text text="{Parcela} de {ParcelasTotais}" />
+                                <Text text="{Descricao}" />
                                 <Text
-                                    id="_IDGenText11"
-                                    text="{Parcela} de {ParcelasTotais}"
-                                />
-                                <Text
-                                    id="_IDGenText12"
-                                    text="{Descricao}"
-                                />
-                                <Text
-                                    id="IdTransacao"
+                                    id="IdTransacaoPessoa"
                                     text="{ID}"
                                     visible="false"
                                 />
                                 <Text
-                                    id="IdentificadorTransacao"
+                                    id="IdentificadorTransacaoPessoa"
                                     text="{Identificador}"
                                     visible="false"
                                 />
                                 <Text
-                                    id="CategoriaTransacao"
+                                    id="CategoriaTransacaoPessoa"
                                     text="{Categoria_ID}"
                                     visible="false"
                                 />
@@ -202,8 +172,9 @@
                 </Table>
             </content>
         </Panel>
+
         <Panel
-            id="PainelSemFatura"
+            id="PainelSemFaturaPessoa"
             headerText="Sem Fatura Atual"
             width="100%"
         >

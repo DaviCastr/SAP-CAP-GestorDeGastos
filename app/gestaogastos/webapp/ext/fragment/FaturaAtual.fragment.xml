@@ -69,7 +69,7 @@
                         text="Cartao_ID"
                     />
                     <Text
-                         visible="false"
+                        visible="false"
                         text="{Cartao_ID}"
                     />
                 </form:SimpleForm>
@@ -89,7 +89,7 @@
                     mode="SingleSelect"
                     noDataText="Nenhuma transação encontrada"
                     growing="true"
-                    growingScrollToLoad="true"
+                    growingScrollToLoad="false"
                     growingThreshold="10"
                     width="auto"
                     items="{ path: 'Transacoes'}"
@@ -103,6 +103,15 @@
                             />
                             <ToolbarSpacer id="_IDGenToolbarSpacer1" />
                             <Button
+                                icon="sap-icon://nav-back"
+                                press="handler.retrocederFatura"
+                            />
+                            <Button
+                                icon="sap-icon://navigation-right-arrow"
+                                press="handler.avancarFatura"
+                            />
+                            <ToolbarSpacer id="_IDGenToolbarSpacer2" />
+                            <Button
                                 text="Mudar Categoria"
                                 press="handler.mudarCategoria"
                             />
@@ -114,10 +123,8 @@
                         </OverflowToolbar>
                     </headerToolbar>
                     <columns>
-                        <Column >
-                            <Text
-                                text=""
-                            />
+                        <Column>
+                            <Text text="" />
                         </Column>
                         <Column id="_IDGenColumn7">
                             <Text
@@ -147,7 +154,11 @@
                     <items>
                         <ColumnListItem id="_IDGenColumnListItem1">
                             <cells>
-                                <Avatar src="{path:'Categoria/Imagem'}"  displaySize="XS" badgeTooltip="" />
+                                <Avatar
+                                    src="{path:'Categoria/Imagem'}"
+                                    displaySize="XS"
+                                    badgeTooltip=""
+                                />
                                 <Text
                                     id="_IDGenText10"
                                     text="{Data}"
@@ -197,9 +208,21 @@
             width="100%"
         >
             <content>
-                <Text
-                    text="Caso seja adicionado gastos para fatura desse mês recarregue a página."
-                />
+                <VBox>
+                    <HBox>
+                        <Button
+                            icon="sap-icon://nav-back"
+                            press="handler.retrocederFatura"
+                        />
+                        <Button
+                            icon="sap-icon://navigation-right-arrow"
+                            press="handler.avancarFatura"
+                        />
+                    </HBox>
+                    <Text
+                        text="Caso seja adicionado gastos recarregue a página."
+                    />
+                </VBox>
             </content>
         </Panel>
     </VBox>

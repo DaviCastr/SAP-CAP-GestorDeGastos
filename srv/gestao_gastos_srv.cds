@@ -46,10 +46,11 @@ service GestaoGastos @(path: '/Gerenciamento') {
     // function inserirCartao(ID : UUID, Pessoa_ID : UUID, NomeCartao : String, Limite : Decimal, Moeda : String, DiaVencimento : Integer, DiaFechamento : Integer, Usuario : String)         returns db.retornoBooleano;
     // function modificarCartao(ID : UUID, Pessoa_ID : UUID, NomeCartao : String, Limite : Decimal, Moeda : String, DiaVencimento : Integer, DiaFechamento : Integer, Usuario : String)       returns db.retornoBooleano;
     //Ações utilizadas em ambos
-    function recuperaCategoriasParaGastoTotal(pessoa : UUID, mes : Integer, ano : Integer)                                                                                                                               returns db.retornoCategorias;
+
+    function recuperaCategoriasParaGastoTotal(pessoa : UUID, mes : Integer, ano : Integer)                                                                                                 returns db.retornoCategorias;
     function recuperaCategorias(pessoa : UUID, cartao : UUID, fatura : UUID, mes : Integer, ano : Integer)                                                                                 returns db.retornoCategorias;
     function recuperaTransacoesPorCategoria(pessoa : UUID, categoria : UUID, total : Boolean, mes : Integer, ano : Integer)                                                                returns db.retornoTransacoes;
-
+    function recuperaFaturaCompleta(pessoa : UUID, mes : Integer, ano : Integer)                                                                                                           returns db.retornoFaturaCompleta;
 
 }
 

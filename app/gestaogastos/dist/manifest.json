@@ -226,6 +226,14 @@
                                                 "PrevisaoDeGasto": {
                                                     "template": "apps.dflc.gestaogastos.ext.fragment.PrevisaoDeGasto",
                                                     "title": "{i18n>filtrarPrevisoDeGasto}"
+                                                },
+                                                "DetalhamentoFaturaCompleta": {
+                                                    "template": "apps.dflc.gestaogastos.ext.fragment.DetalhamentoFaturaCompleta",
+                                                    "position": {
+                                                        "placement": "Before",
+                                                        "anchor": "PrevisaoDeGasto"
+                                                    },
+                                                    "title": "Detalhamento de Fatura completa"
                                                 }
                                             }
                                         },
@@ -240,7 +248,7 @@
                                         "AnaliseCategoriaPessoa": {
                                             "template": "apps.dflc.gestaogastos.ext.fragment.AnaliseCategoriaPessoa",
                                             "position": {
-                                                "placement": "Before",
+                                                "placement": "After",
                                                 "anchor": "Dados"
                                             },
                                             "title": "Análise de gastos por categoria"
@@ -270,7 +278,10 @@
                                         "enableFullScreen": true,
                                         "enablePaste": true,
                                         "selectAll": true,
-                                        "selectionMode": "Multi"
+                                        "selectionMode": "Multi",
+                                        "personalization": {
+                                            "filter": true
+                                        }
                                     },
                                     "columns": {
                                         "ImagemCartaoLista": {
@@ -285,6 +296,13 @@
                                             "properties": [
                                                 "Imagem"
                                             ]
+                                        }
+                                    }
+                                },
+                                "Categoria/@com.sap.vocabularies.UI.v1.LineItem#Categorias1": {
+                                    "tableSettings": {
+                                        "personalization": {
+                                            "filter": true
                                         }
                                     }
                                 }

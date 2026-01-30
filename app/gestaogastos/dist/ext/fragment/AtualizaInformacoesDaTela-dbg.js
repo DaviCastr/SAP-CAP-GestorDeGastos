@@ -2,7 +2,9 @@ sap.ui.define([
     "apps/dflc/gestaogastos/ext/fragment/AnaliseCategoriaPessoa",
     "apps/dflc/gestaogastos/ext/fragment/AnaliseCategoriaCartao",
     "apps/dflc/gestaogastos/ext/fragment/AnaliseCategoriaFatura",
-], function (AnaliseCategoriaPessoa, AnaliseCategoriaCartao, AnaliseCategoriaFatura) {
+    "apps/dflc/gestaogastos/ext/fragment/DetalhamentoFaturaCompleta",
+    "apps/dflc/gestaogastos/ext/fragment/FaturaAtual"
+], function (AnaliseCategoriaPessoa, AnaliseCategoriaCartao, AnaliseCategoriaFatura, DetalhamentoFaturaCompleta, FaturaAtual) {
     'use strict';
 
     return {
@@ -87,6 +89,8 @@ sap.ui.define([
                         AnaliseCategoriaPessoa.defineGraficoMensalCategorias();
                         AnaliseCategoriaCartao.defineCategoriasFaturaAtual();
                         AnaliseCategoriaFatura.defineGraficoCategorias();
+                        DetalhamentoFaturaCompleta.defineFaturaCompleta();
+                        FaturaAtual.defineModeloFaturaAtual();
 
                     }, 1000);
 

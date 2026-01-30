@@ -1,8 +1,12 @@
 sap.ui.define(['sap/ui/core/mvc/ControllerExtension',
 	"sap/ui/core/message/Message",
 	"sap/ui/core/MessageType",
-	"apps/dflc/gestaogastos/ext/fragment/AnaliseCategoriaPessoa"
-], function (ControllerExtension, Message, MessageType, AnaliseCategoriaPessoa) {
+	"apps/dflc/gestaogastos/ext/fragment/AnaliseCategoriaPessoa",
+	"apps/dflc/gestaogastos/ext/fragment/DetalhamentoFaturaCompleta",
+	"sap/ui/model/json/JSONModel"
+
+
+], function (ControllerExtension, Message, MessageType, AnaliseCategoriaPessoa, DetalhamentoFaturaCompleta, JSONModel) {
 	'use strict';
 
 	return ControllerExtension.extend('apps.dflc.gestaogastos.ext.controller.PessoaObjeto', {
@@ -418,8 +422,8 @@ sap.ui.define(['sap/ui/core/mvc/ControllerExtension',
 			let oCampos = sap.ui.core.Element.registry.filter(function (oControl) {
 				try {
 					return oControl.isA("sap.m.ObjectNumber") && oControl.getId().includes("TotalDoMes")
-					 ||    oControl.isA("sap.m.ObjectNumber") && oControl.getId().includes("TotalDeGastos")
-					 ||    oControl.isA("sap.m.ObjectNumber") && oControl.getId().includes("ValorAEconomizar");
+						|| oControl.isA("sap.m.ObjectNumber") && oControl.getId().includes("TotalDeGastos")
+						|| oControl.isA("sap.m.ObjectNumber") && oControl.getId().includes("ValorAEconomizar");
 				} catch (erro) {
 
 				}
@@ -433,10 +437,10 @@ sap.ui.define(['sap/ui/core/mvc/ControllerExtension',
 					oCampos = sap.ui.core.Element.registry.filter(function (oControl) {
 						try {
 							return oControl.isA("sap.m.ObjectNumber") && oControl.getId().includes("TotalDoMes")
-							 ||    oControl.isA("sap.m.ObjectNumber") && oControl.getId().includes("TotalDeGastos")
-							 ||    oControl.isA("sap.m.ObjectNumber") && oControl.getId().includes("ValorAEconomizar");
+								|| oControl.isA("sap.m.ObjectNumber") && oControl.getId().includes("TotalDeGastos")
+								|| oControl.isA("sap.m.ObjectNumber") && oControl.getId().includes("ValorAEconomizar");
 						} catch (erro) {
-		
+
 						}
 					});
 
@@ -447,7 +451,7 @@ sap.ui.define(['sap/ui/core/mvc/ControllerExtension',
 			let oFlexBoxs = sap.ui.core.Element.registry.filter(function (oControl) {
 				try {
 					return oControl.isA("sap.m.FlexBox") && oControl.getId().includes("categoryPrevisao")
-					 ||    oControl.isA("sap.m.FlexBox") && oControl.getId().includes("categoryPrevisaoTotal");
+						|| oControl.isA("sap.m.FlexBox") && oControl.getId().includes("categoryPrevisaoTotal");
 				} catch (erro) {
 
 				}
@@ -461,9 +465,9 @@ sap.ui.define(['sap/ui/core/mvc/ControllerExtension',
 					oFlexBoxs = sap.ui.core.Element.registry.filter(function (oControl) {
 						try {
 							return oControl.isA("sap.m.FlexBox") && oControl.getId().includes("categoryPrevisao")
-							 ||    oControl.isA("sap.m.FlexBox") && oControl.getId().includes("categoryPrevisaoTotal");
+								|| oControl.isA("sap.m.FlexBox") && oControl.getId().includes("categoryPrevisaoTotal");
 						} catch (erro) {
-		
+
 						}
 					});
 
@@ -475,15 +479,21 @@ sap.ui.define(['sap/ui/core/mvc/ControllerExtension',
 
 				campo.setNumber("");
 				campo.setUnit("");
-				
+
 			});
 
 			oFlexBoxs.forEach(flexbox => {
 
 				flexbox.removeAllItems()
 				flexbox.addItem(new sap.m.Label({ text: 'Faça a pesquisa inicial' }));
-				
+
 			});
+
+		},
+
+		defineFaturaCompleta: async function (oBindingContext) {
+
+			DetalhamentoFaturaCompleta.defineFaturaCompleta(this, oBindingContext);
 
 		},
 
@@ -548,6 +558,8 @@ sap.ui.define(['sap/ui/core/mvc/ControllerExtension',
 					this.defineGraficoMensalCategorias(oBindingContext);
 
 					this.limpaPrevisao();
+
+					this.defineFaturaCompleta(oBindingContext);
 
 				}
 			}

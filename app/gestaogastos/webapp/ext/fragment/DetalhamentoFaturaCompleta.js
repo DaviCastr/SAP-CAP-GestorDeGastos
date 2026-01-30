@@ -1,18 +1,15 @@
 sap.ui.define([
     "sap/m/MessageToast",
-    "sap/ui/core/Fragment",
     "sap/ui/model/json/JSONModel",
     "sap/ui/model/Filter",
-    "sap/ui/model/FilterOperator"
-], function (MessageToast, Fragment, JSONModel, Filter, FilterOperator) {
+    "sap/ui/model/FilterOperator",
+    "sap/ui/core/Fragment",
+], function (MessageToast, JSONModel, Filter, FilterOperator, Fragment) {
     'use strict';
 
-    var oThat = this;
+    var oThat;
 
     return {
-        onPress: function (oEvent) {
-            MessageToast.show("Custom handler invoked.");
-        },
 
         formatter: {
 
@@ -28,55 +25,41 @@ sap.ui.define([
 
                 return `${dd}/${mm}/${yyyy}`; // Ou use '-' em vez de '/'
 
+            },
+
+            getImagemCategoria: function (sCampoId) {
+                if (!sCampoId) {
+                    return "";
+                }
+
+                return `Categoria(ID=${sCampoId},IsActiveEntity=true)/Imagem`;
             }
         },
 
-        defineModeloFaturaAtual: async function (oCartaoController, oBindingContext) {
+        defineFaturaCompleta: async function (oPessoaController, oBindingContext) {
 
-            // //Pesquisa formulário da fatura
-            // let oFormularios = sap.ui.core.Element.registry.filter(function (oControl) {
-            // 	return oControl.isA("sap.ui.layout.form.SimpleForm") && oControl.getId().includes("idFaturaForm");
-            // });
-
-            // // let oFormularioFatura = oFormularios[0];
-
-            // // if (oFormularioFatura) {
-            // // 	oFormularioFatura.unbindElement();
-            // // }
-
-            // //Pesquisa tabelas da tela para manipulação
-            // let oTabelas = sap.ui.core.Element.registry.filter(function (oControl) {
-            // 	return oControl.isA("sap.m.Table") && oControl.getId().includes("transactionsTable");
-            // });
-
-            // let oTabelaTransacoes = oTabelas[0];
-
-            // if (oTabelaTransacoes) {
-            // 	oTabelaTransacoes.unbindItems();
-            // }
-
-            if (oCartaoController) {
-                this.oCartaoController = oCartaoController;
+            if (oPessoaController) {
+                this.oPessoaController = oPessoaController;
                 this.oBindingContext = oBindingContext;
             }
 
-            if (!this.oCartaoController) {
+            if (!this.oPessoaController) {
                 return;
             }
 
             //Pesquisa formulário da fatura
             let oPainelSemFatura = sap.ui.core.Element.registry.filter(function (oControl) {
-                return oControl.isA("sap.m.Panel") && oControl.getId().includes("PainelSemFatura");
+                return oControl.isA("sap.m.Panel") && oControl.getId().includes("PainelSemFaturaPessoa");
             });
 
             //Paineis de fatura atual
             let oPaineis = sap.ui.core.Element.registry.filter(function (oControl) {
-                return oControl.isA("sap.m.Panel") && oControl.getId().includes("PainelFatura")
-                    || oControl.isA("sap.m.Panel") && oControl.getId().includes("PainelTransacoes");
+                return oControl.isA("sap.m.Panel") && oControl.getId().includes("PainelFaturaPessoa")
+                    || oControl.isA("sap.m.Panel") && oControl.getId().includes("PainelTransacoesPessoa");
             });
 
             let oVBoxs = sap.ui.core.Element.registry.filter(function (oControl) {
-                return oControl.isA("sap.m.VBox") && oControl.getId().includes("FaturaAtualVBox");
+                return oControl.isA("sap.m.VBox") && oControl.getId().includes("FaturaCompletaVBoxPessoa");
             });
 
             if (Array.isArray(oPainelSemFatura)) {
@@ -95,99 +78,74 @@ sap.ui.define([
 
             oVBoxFaturaAtual.setBusy(true)
 
+            let oDateAtual = new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
+            oDateAtual = oDateAtual.replaceAll(",", " ");
+            let [oDay, oMes, oAno] = oDateAtual.split(" ")[0].split("/");
+
+            oDay = Number(oDay);
+            oMes = Number(oMes);
+            oAno = Number(oAno);
+
+            if (oBindingContext) {
+                this.oMes = oMes;
+                this.oAno = oAno;
+                oThat = this;
+            }
+
             setTimeout(async function () {
 
-                if (this.oCartaoController.getView().getModel('ui').getData().isEditable == false) {
+                if (this.oPessoaController.getView().getModel('ui').getData().isEditable == false) {
 
-                    let oCartao = {};
+                    let oPessoa = {};
 
-                    if (oBindingContext) {
+                    if (this.oBindingContext) {
 
-                        oCartao = await oBindingContext.requestObject(oBindingContext.getPath());
-                        //let oCartao = await this.getView().getBindingContext().requestObject(oBindingContext.getPath());
-                        sap.ui.getCore().oCartao = oCartao;
+                        oPessoa = await this.oBindingContext.requestObject(this.oBindingContext.getPath());
+                        //let oCartao = await this.oPessoaController.getView().getBindingContext().requestObject(oBindingContext.getPath());
+                        sap.ui.getCore().oPessoa = oPessoa;
 
-                    } else if (sap.ui.getCore().oCartao) {
+                    } else if (sap.ui.getCore().oPessoa) {
 
-                        oCartao = sap.ui.getCore().oCartao;
+                        oPessoa = sap.ui.getCore().oPessoa;
 
                     }
 
-                    if (!oCartao.ID) {
+                    if (!oPessoa.ID) {
 
                         do {
 
-                            await this.wait();
+                            await this.oPessoaController.wait();
 
-                            oCartao = await this.oBindingContext.requestObject(oBindingContext.getPath());
+                            oPessoa = await this.oBindingContext.requestObject(this.oBindingContext.getPath());
 
-                        } while (!oCartao.ID);
-
-                    }
-
-                    const oView = this.oCartaoController.getView();
-                    const oFunctionName = "Fatura"; // Nome da função para consulta
-                    const oCartaoId = oCartao.ID;  // ID do cartão
-                    let oDateAtual = new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
-                    oDateAtual = oDateAtual.replaceAll(",", " ");
-                    let [oDay, oMes, oAno] = oDateAtual.split(" ")[0].split("/");
-
-                    oDay = Number(oDay);
-                    oMes = Number(oMes);
-                    oAno = Number(oAno);
-
-                    if (oBindingContext) {
-
-                        this.oMes = oMes;
-                        this.oAno = oAno;
-                        oThat = this;
-
-                        if (oCartao.DiaFechamento > oCartao.DiaVencimento) {
-
-                            if (this.oMes == 12) {
-                                this.oMes = 1;
-                                this.oAno += 1;
-                            } else {
-                                this.oMes += 1;
-                            }
-
-                        }
-
-                        if (oCartao.DiaFechamento <= oDay) {
-
-                            if (this.oMes < 12) {
-                                this.oMes += 1;
-                            } else {
-                                this.oMes = 1
-                                this.oAno += 1
-                            }
-
-                        }
+                        } while (!oPessoa.ID);
 
                     }
 
+                    const oView = this.oPessoaController.getView();
+                    const oFunctionName = "recuperaFaturaCompleta"; // Nome da função para consulta
+                    const oPessoaId = oPessoa.ID;  // ID do cartão
                     const oModel = oView.getModel();
 
-                    // Configurando os filtros
-                    let oFiltros = [
-                        new sap.ui.model.Filter("Cartao_ID", sap.ui.model.FilterOperator.EQ, oCartaoId),
-                        new sap.ui.model.Filter("Ano", sap.ui.model.FilterOperator.EQ, this.oAno),
-                        new sap.ui.model.Filter("Mes", sap.ui.model.FilterOperator.EQ, this.oMes),
-                    ];
+                    let oFuncao = oModel.bindContext(`/${oFunctionName}(...)`);
+                    oFuncao.setParameter("pessoa", oPessoaId);
+                    oFuncao.setParameter("ano", this.oAno);
+                    oFuncao.setParameter("mes", this.oMes);
 
                     // Fazendo a consulta
-                    oModel.bindList(`/${oFunctionName}`, null, null, oFiltros).requestContexts().then(async function (oContextos) {
-                        if (oContextos.length > 0) {
-                            // Obtendo o primeiro resultado
-                            const oContext = oContextos[0];
+                    oFuncao.execute().then(async function (oContextos) {
 
-                            //oFormularioFatura.bindElement(oContext.getPath());
-                            oVBoxFaturaAtual.bindElement(oContext.getPath())
-                            oVBoxFaturaAtual.setModel(oContext.oModel);
+                        let oContext = oFuncao.getBoundContext();
+
+                        if (oContext.getValue("Transacoes")?.length > 0) {
+
+                            const oDetails = new JSONModel(oContext.getValue());
+
+                            oVBoxFaturaAtual.setModel(oDetails);
 
                             //Pesquisa tabelas da tela para manipulação
                             let oTabelas = sap.ui.core.Element.registry.filter(function (oControl) {
-                                return oControl.isA("sap.m.Table") && oControl.getId().includes("transactionsTable");
+                                return oControl.isA("sap.m.Table") && oControl.getId().includes("transactionsDetailsTablePessoa");
                             });
 
                             if (oTabelas.length > 0) {
@@ -208,40 +166,6 @@ sap.ui.define([
                                 });
                             }
 
-                            // if (!oTabelaTransacoes.getBindingInfo("items")?.template) {
-                            // 	oTabelaTransacoes.addColumn(new sap.m.Column({
-                            // 		header: new sap.m.Label({ text: "Data" }) // Nome da coluna
-                            // 	}));
-                            // 	oTabelaTransacoes.addColumn(new sap.m.Column({
-                            // 		header: new sap.m.Label({ text: "Valor" }) // Nome da coluna
-                            // 	}));
-                            // 	oTabelaTransacoes.addColumn(new sap.m.Column({
-                            // 		header: new sap.m.Label({ text: "Parcelas" }) // Nome da coluna
-                            // 	}));
-                            // 	oTabelaTransacoes.addColumn(new sap.m.Column({
-                            // 		header: new sap.m.Label({ text: "Descrição" }) // Nome da coluna
-                            // 	}));
-
-                            // 	// Defina o template para as linhas da tabela
-                            // 	var oTemplate = new sap.m.ColumnListItem({
-                            // 		cells: [
-                            // 			new sap.m.Text({ text: "{Data}" }), // Mapeia o campo Data
-                            // 			new sap.m.ObjectNumber({ number: "{Valor}", unit: "{Moeda_code}" }), // Mapeia Valor e Moeda
-                            // 			new sap.m.Text({ text: "{Parcela} de {ParcelasTotais}" }),
-                            // 			new sap.m.Text({ text: "{Descricao}" }),
-                            // 			new sap.m.Text({ text: "{Identificador}" }),
-                            // 		]
-                            // 	});
-
-                            // } else {
-                            // 	var oTemplate = oTabelaTransacoes.getBindingInfo("items").template;
-                            // }
-
-                            // // Agora faça o binding usando esse template
-                            // oTabelaTransacoes.bindItems({
-                            // 	path: `${oContext.getPath()}/Transacoes`,
-                            // 	template: oTemplate
-                            // });
                             oVBoxFaturaAtual.setBusy(false);
 
                         } else {
@@ -257,7 +181,7 @@ sap.ui.define([
                             console.warn("Nenhuma fatura encontrada.");
                         }
 
-                    }.bind(this)).catch((error) => {
+                    }.bind(this.oPessoaController)).catch((error) => {
                         console.error("Erro ao buscar a fatura:", error);
                     });
 
@@ -267,18 +191,53 @@ sap.ui.define([
 
         },
 
+        retrocederFatura: function (e) {
+
+            if (oThat.oMes == 1) {
+                oThat.oMes = 12;
+                oThat.oAno -= 1;
+            } else {
+                oThat.oMes -= 1;
+            }
+
+            oThat.defineFaturaCompleta();
+
+        },
+
+        avancarFatura: function (e) {
+
+            if (oThat.oMes == 12) {
+                oThat.oMes = 1;
+                oThat.oAno += 1;
+            } else {
+                oThat.oMes += 1;
+            }
+
+            oThat.defineFaturaCompleta();
+
+        },
+
+        /**
+         * Generated event handler.
+         *
+         * @param oEvent the event object provided by the event provider.
+         */
+        onPress: function (oEvent) {
+            MessageToast.show("Custom handler invoked.");
+        },
+
         excluirTransacao: async function (oEvent) {
 
             //Pesquisa formulário da fatura
             let oFormularios = sap.ui.core.Element.registry.filter(function (oControl) {
-                return oControl.isA("sap.ui.layout.form.SimpleForm") && oControl.getId().includes("idFaturaForm");
+                return oControl.isA("sap.ui.layout.form.SimpleForm") && oControl.getId().includes("idFaturaFormPessoa");
             });
 
             let oFormularioFatura = oFormularios[0];
 
             //Pesquisa tabelas da tela para manipulação
             let oTabelas = sap.ui.core.Element.registry.filter(function (oControl) {
-                return oControl.isA("sap.m.Table") && oControl.getId().includes("transactionsTable");
+                return oControl.isA("sap.m.Table") && oControl.getId().includes("transactionsDetailsTablePessoa");
             });
 
             let oTabelaTransacoes = oTabelas[0];
@@ -292,15 +251,17 @@ sap.ui.define([
                 return;
             }
 
-            let oFaturaAtual = oFormularioFatura.getBindingContext().getValue();//oSelectedItems[0].getModel("FaturaAtual").getData();
+            let oFaturaGeral = oFormularioFatura.getModel().getData();
+            //.getBindingContext().getObject();//oSelectedItems[0].getModel("FaturaAtual").getData();
             //let oPath = oSelectedItems[0].getBindingContextPath().split('/');
 
-            let oTransacao = oSelectedItems[0].getBindingContext().getValue(); //oFaturaAtual.Transacoes[`${oPath[2]}`];
+            let oTransacao = oSelectedItems[0].getBindingContext().getObject(); //oFaturaGeral.Transacoes[`${oPath[2]}`];
+            oFaturaGeral.ID = oTransacao?.Fatura_ID;
 
             const oView = this._view;
             const oModel = this._view.getModel();
 
-            sap.ui.getCore().oFatura = oFaturaAtual;
+            sap.ui.getCore().oFatura = oFaturaGeral;
 
             if (oTransacao.ID) {
                 // oTransacao.ParcelasTotais > 1) {
@@ -344,7 +305,7 @@ sap.ui.define([
                                     sap.ui.getCore().pDialogExcluir = Fragment.load({
                                         id: "ExcluirTransacaoFragment",
                                         name: "apps.dflc.gestaogastos.ext.fragment.ExcluirTransacao",
-                                        //controller: this
+                                        //controller: this.oPessoaController
                                     }).then(function (oDialog) {
                                         oView.addDependent(oDialog);
                                         return oDialog;
@@ -405,7 +366,7 @@ sap.ui.define([
             //         sap.ui.getCore().pDialogExcluir = Fragment.load({
             //             id: "ExcluirTransacaoFragment",
             //             name: "apps.dflc.gestaogastos.ext.fragment.ExcluirTransacao",
-            //             //controller: this
+            //             //controller: this.oPessoaController
             //         }).then(function (oDialog) {
             //             oView.addDependent(oDialog);
             //             return oDialog;
@@ -415,7 +376,7 @@ sap.ui.define([
             //     sap.ui.getCore().pDialogExcluir.then(function (oDialog) {
             //         oDialog.open();
             //         oDialog.setModel(oTransacoesRelacionadas, "Transacao");
-            //     }.bind(this));
+            //     }.bind(this.oPessoaController));
 
             // }
 
@@ -427,14 +388,14 @@ sap.ui.define([
 
                 //Pesquisa formulário da fatura
                 let oFormularios = sap.ui.core.Element.registry.filter(function (oControl) {
-                    return oControl.isA("sap.ui.layout.form.SimpleForm") && oControl.getId().includes("idFaturaForm");
+                    return oControl.isA("sap.ui.layout.form.SimpleForm") && oControl.getId().includes("idFaturaFormPessoa");
                 });
 
                 let oFormularioFatura = oFormularios[0];
 
                 //Pesquisa tabelas da tela para manipulação
                 let oTabelas = sap.ui.core.Element.registry.filter(function (oControl) {
-                    return oControl.isA("sap.m.Table") && oControl.getId().includes("transactionsTable");
+                    return oControl.isA("sap.m.Table") && oControl.getId().includes("transactionsDetailsTablePessoa");
                 });
 
                 let oTabelaTransacoes = oTabelas[0];
@@ -450,47 +411,35 @@ sap.ui.define([
 
                 sap.ui.core.BusyIndicator.show();
 
-                let oFaturaAtual = oFormularioFatura.getBindingContext().getValue();
-
-                sap.ui.getCore().oFatura = oFaturaAtual;
-
-                let oTransacao = oSelectedItems[0].getBindingContext().getValue(); //oFaturaAtual.Transacoes[`${oPath[2]}`];
-
                 const oView = this._view,
                     oModel = oView.getModel();
 
+                let oTransacao = oSelectedItems[0].getBindingContext().getObject();
 
-                if (!oFaturaAtual.Cartao_ID) {
+                let oFaturaGeral;
+
+                if (sap.ui.getCore().oFatura) {
+                    oFaturaGeral = sap.ui.getCore().oFatura;
+                }
+
+                if (!oFaturaGeral?.Cartao_ID) {
 
                     let oFiltros = [
-                        new sap.ui.model.Filter("ID", sap.ui.model.FilterOperator.EQ, oFaturaAtual.ID)
+                        new sap.ui.model.Filter("ID", sap.ui.model.FilterOperator.EQ, oTransacao.Fatura_ID)
                     ];
 
                     let oFatura = await oModel.bindList(`/Fatura`, null, null, oFiltros).requestContexts();
 
                     if (oFatura.length > 0) {
 
-                        oFaturaAtual = oFatura[0].getObject();
+                        oFaturaGeral = oFatura[0].getObject();
+
+                        sap.ui.getCore().oFatura = oFaturaGeral;
 
                     }
 
                 }
 
-                if (!oTransacao.Categoria_ID) {
-
-                    let oFiltros = [
-                        new sap.ui.model.Filter("ID", sap.ui.model.FilterOperator.EQ, oTransacao.ID)
-                    ];
-
-                    let oTransacaoConsulta = await oModel.bindList(`/Transacao`, null, null, oFiltros).requestContexts();
-
-                    if (oTransacaoConsulta.length > 0) {
-
-                        oTransacao = oTransacaoConsulta[0].getObject();
-
-                    }
-
-                }
 
                 if (oTransacao.Categoria_ID) {
 
@@ -528,7 +477,7 @@ sap.ui.define([
                                     sap.ui.getCore().pMudar = Fragment.load({
                                         id: "MudarCategoria",
                                         name: "apps.dflc.gestaogastos.ext.fragment.MudarCategoria",
-                                        //controller: this
+                                        //controller: this.oPessoaController
                                     }).then(function (oDialog) {
                                         oView.addDependent(oDialog);
                                         return oDialog;
@@ -547,32 +496,12 @@ sap.ui.define([
 
                 } else {
 
-                    let oCartao = {};
-
-                    if (sap.ui.getCore().oCartao?.Pessoa_ID) {
-                        oCartao = sap.ui.getCore().oCartao;
-                    } else {
-
-                        let oFiltros = [
-                            new sap.ui.model.Filter("ID", sap.ui.model.FilterOperator.EQ, oFaturaAtual.Cartao_ID)
-                        ];
-
-                        let oCartoesContextos = await oModel.bindList(`/Cartao`, null, null, oFiltros).requestContexts();
-
-                        if (oCartoesContextos.length > 0) {
-
-                            oCartao = oCartoesContextos[0].getObject();
-
-                        }
-
-                    }
-
-                    if (oCartao.Pessoa_ID) {
+                    if (oTransacao.Pessoa_ID) {
 
                         let oCategoria = { ID: "sem", Nome: "Sem categoria" }
 
                         let oFiltros = [
-                            new sap.ui.model.Filter("Pessoa_ID", sap.ui.model.FilterOperator.EQ, oCartao.Pessoa_ID),
+                            new sap.ui.model.Filter("Pessoa_ID", sap.ui.model.FilterOperator.EQ, oTransacao.Pessoa_ID),
                         ];
 
                         let oNomeFuncao = `/Categoria`;
@@ -601,7 +530,7 @@ sap.ui.define([
                             sap.ui.getCore().pMudar = Fragment.load({
                                 id: "MudarCategoria",
                                 name: "apps.dflc.gestaogastos.ext.fragment.MudarCategoria",
-                                //controller: this
+                                //controller: this.oPessoaController
                             }).then(function (oDialog) {
                                 oView.addDependent(oDialog);
                                 return oDialog;
@@ -638,7 +567,7 @@ sap.ui.define([
 
             //Pesquisa tabelas da tela para manipulação
             let oTabelas = sap.ui.core.Element.registry.filter(function (oControl) {
-                return oControl.isA("sap.m.Table") && oControl.getId().includes("transactionsTable");
+                return oControl.isA("sap.m.Table") && oControl.getId().includes("transactionsDetailsTablePessoa");
             });
 
             let oTabelaTransacoes = oTabelas[0];
@@ -646,32 +575,6 @@ sap.ui.define([
             if (oTabelaTransacoes) {
                 oTabelaTransacoes.getBinding("items").filter(oPesquisaTabela, "Application");
             }
-
-        },
-
-        retrocederFatura: function (e) {
-
-            if (oThat.oMes == 1) {
-                oThat.oMes = 12;
-                oThat.oAno -= 1;
-            } else {
-                oThat.oMes -= 1;
-            }
-
-            oThat.defineModeloFaturaAtual();
-
-        },
-
-        avancarFatura: function (e) {
-
-            if (oThat.oMes == 12) {
-                oThat.oMes = 1;
-                oThat.oAno += 1;
-            } else {
-                oThat.oMes += 1;
-            }
-
-            oThat.defineModeloFaturaAtual();
 
         }
 
