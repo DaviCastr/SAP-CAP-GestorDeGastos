@@ -86,10 +86,14 @@ sap.ui.define([
             oMes = Number(oMes);
             oAno = Number(oAno);
 
+            let oTime = 5000;
+
             if (oBindingContext) {
                 this.oMes = oMes;
                 this.oAno = oAno;
                 oThat = this;
+            }else{
+                oTime = 0;
             }
 
             setTimeout(async function () {
@@ -187,7 +191,7 @@ sap.ui.define([
 
                 }
 
-            }.bind(this), 5000);
+            }.bind(this), oTime);
 
         },
 

@@ -95,6 +95,12 @@ sap.ui.define([
 
             oVBoxFaturaAtual.setBusy(true)
 
+            let oTime = 5000;
+
+            if(!oBindingContext){
+                oTime = 0;
+            }
+
             setTimeout(async function () {
 
                 if (this.oCartaoController.getView().getModel('ui').getData().isEditable == false) {
@@ -263,7 +269,7 @@ sap.ui.define([
 
                 }
 
-            }.bind(this), 5000);
+            }.bind(this), oTime);
 
         },
 
