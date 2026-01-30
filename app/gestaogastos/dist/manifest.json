@@ -241,14 +241,14 @@
                                             "template": "apps.dflc.gestaogastos.ext.fragment.ImagemPessoa",
                                             "position": {
                                                 "placement": "Before",
-                                                "anchor": "Dados"
+                                                "anchor": "AnaliseCategoriaPessoa"
                                             },
                                             "title": "{i18n>uploadDeFotoDo}"
                                         },
                                         "AnaliseCategoriaPessoa": {
                                             "template": "apps.dflc.gestaogastos.ext.fragment.AnaliseCategoriaPessoa",
                                             "position": {
-                                                "placement": "After",
+                                                "placement": "Before",
                                                 "anchor": "Dados"
                                             },
                                             "title": "Análise de gastos por categoria"
