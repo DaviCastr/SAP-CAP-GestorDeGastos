@@ -66,22 +66,24 @@ sap.ui.define([
 
             //Pesquisa formulário da fatura
             let oPainelSemFatura = sap.ui.core.Element.registry.filter(function (oControl) {
-                return oControl.isA("sap.m.Panel") && oControl.getId().includes("PainelSemFatura");
+                return oControl.isA("sap.m.Panel") && oControl.getId().includes("PainelSemFaturaCartao");
             });
 
             //Paineis de fatura atual
             let oPaineis = sap.ui.core.Element.registry.filter(function (oControl) {
-                return oControl.isA("sap.m.Panel") && oControl.getId().includes("PainelFatura")
-                    || oControl.isA("sap.m.Panel") && oControl.getId().includes("PainelTransacoes");
+                return oControl.isA("sap.m.Panel") && oControl.getId().includes("PainelFaturaCartao")
+                    || oControl.isA("sap.m.Panel") && oControl.getId().includes("PainelTransacoesCartao");
             });
 
             let oVBoxs = sap.ui.core.Element.registry.filter(function (oControl) {
-                return oControl.isA("sap.m.VBox") && oControl.getId().includes("FaturaAtualVBox");
+                return oControl.isA("sap.m.VBox") && oControl.getId().includes("FaturaAtualVBoxCartao");
             });
 
             if (Array.isArray(oPainelSemFatura)) {
 
-                oPainelSemFatura[0].setVisible(false);
+                oPainelSemFatura.forEach(painelSem => {
+                    painelSem.setVisible(false);
+                });
 
             }
 
@@ -97,7 +99,7 @@ sap.ui.define([
 
             let oTime = 5000;
 
-            if(!oBindingContext){
+            if (!oBindingContext) {
                 oTime = 0;
             }
 
@@ -193,7 +195,7 @@ sap.ui.define([
 
                             //Pesquisa tabelas da tela para manipulação
                             let oTabelas = sap.ui.core.Element.registry.filter(function (oControl) {
-                                return oControl.isA("sap.m.Table") && oControl.getId().includes("transactionsTable");
+                                return oControl.isA("sap.m.Table") && oControl.getId().includes("transactionsTableCartao");
                             });
 
                             if (oTabelas.length > 0) {
@@ -254,7 +256,9 @@ sap.ui.define([
 
                             if (Array.isArray(oPainelSemFatura)) {
 
-                                oPainelSemFatura[0].setVisible(true);
+                                oPainelSemFatura.forEach(painelSem => {
+                                    painelSem.setVisible(true);
+                                });
 
                             }
 
@@ -277,14 +281,14 @@ sap.ui.define([
 
             //Pesquisa formulário da fatura
             let oFormularios = sap.ui.core.Element.registry.filter(function (oControl) {
-                return oControl.isA("sap.ui.layout.form.SimpleForm") && oControl.getId().includes("idFaturaForm");
+                return oControl.isA("sap.ui.layout.form.SimpleForm") && oControl.getId().includes("idFaturaFormCartao");
             });
 
             let oFormularioFatura = oFormularios[0];
 
             //Pesquisa tabelas da tela para manipulação
             let oTabelas = sap.ui.core.Element.registry.filter(function (oControl) {
-                return oControl.isA("sap.m.Table") && oControl.getId().includes("transactionsTable");
+                return oControl.isA("sap.m.Table") && oControl.getId().includes("transactionsTableCartao");
             });
 
             let oTabelaTransacoes = oTabelas[0];
@@ -433,14 +437,14 @@ sap.ui.define([
 
                 //Pesquisa formulário da fatura
                 let oFormularios = sap.ui.core.Element.registry.filter(function (oControl) {
-                    return oControl.isA("sap.ui.layout.form.SimpleForm") && oControl.getId().includes("idFaturaForm");
+                    return oControl.isA("sap.ui.layout.form.SimpleForm") && oControl.getId().includes("idFaturaFormCartao");
                 });
 
                 let oFormularioFatura = oFormularios[0];
 
                 //Pesquisa tabelas da tela para manipulação
                 let oTabelas = sap.ui.core.Element.registry.filter(function (oControl) {
-                    return oControl.isA("sap.m.Table") && oControl.getId().includes("transactionsTable");
+                    return oControl.isA("sap.m.Table") && oControl.getId().includes("transactionsTableCartao");
                 });
 
                 let oTabelaTransacoes = oTabelas[0];
@@ -644,7 +648,7 @@ sap.ui.define([
 
             //Pesquisa tabelas da tela para manipulação
             let oTabelas = sap.ui.core.Element.registry.filter(function (oControl) {
-                return oControl.isA("sap.m.Table") && oControl.getId().includes("transactionsTable");
+                return oControl.isA("sap.m.Table") && oControl.getId().includes("transactionsTableCartao");
             });
 
             let oTabelaTransacoes = oTabelas[0];

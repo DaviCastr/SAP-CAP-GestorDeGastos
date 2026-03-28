@@ -64,7 +64,9 @@ sap.ui.define([
 
             if (Array.isArray(oPainelSemFatura)) {
 
-                oPainelSemFatura[0].setVisible(false);
+                oPainelSemFatura.forEach(painelSem => {
+                    painelSem.setVisible(false);
+                });
 
             }
 
@@ -92,7 +94,7 @@ sap.ui.define([
                 this.oMes = oMes;
                 this.oAno = oAno;
                 oThat = this;
-            }else{
+            } else {
                 oTime = 0;
             }
 
@@ -176,7 +178,9 @@ sap.ui.define([
 
                             if (Array.isArray(oPainelSemFatura)) {
 
-                                oPainelSemFatura[0].setVisible(true);
+                                oPainelSemFatura.forEach(painelSem => {
+                                    painelSem.setVisible(true);
+                                });
 
                             }
 

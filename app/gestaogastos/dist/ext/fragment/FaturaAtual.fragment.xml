@@ -6,18 +6,18 @@
     xmlns:form="sap.ui.layout.form"
 >
     <VBox
-        id="FaturaAtualVBox"
+        id="FaturaAtualVBoxCartao"
         core:require="{ handler: 'apps/dflc/gestaogastos/ext/fragment/FaturaAtual'}"
     >
         <!-- Painel para Detalhes da Fatura -->
         <Panel
-            id="PainelFatura"
+            id="PainelFaturaCartao"
             headerText="Detalhes da Fatura"
             width="100%"
         >
             <content>
                 <form:SimpleForm
-                    id="idFaturaForm"
+                    id="idFaturaFormCartao"
                     editable="false"
                     layout="ResponsiveGridLayout"
                     labelSpanL="4"
@@ -78,13 +78,13 @@
 
         <!-- Painel para Tabela de Transações -->
         <Panel
-            id="PainelTransacoes"
+            id="PainelTransacoesCartao"
             headerText="Transações da Fatura"
             width="100%"
         >
             <content>
                 <Table
-                    id="transactionsTable"
+                    id="transactionsTableCartao"
                     inset="false"
                     mode="SingleSelect"
                     noDataText="Nenhuma transação encontrada"
@@ -203,7 +203,7 @@
             </content>
         </Panel>
         <Panel
-            id="PainelSemFatura"
+            id="PainelSemFaturaCartao"
             headerText="Sem Fatura Atual"
             width="100%"
         >
